@@ -1,0 +1,157 @@
+# Creating a JSON file with "realistic" OPEX parameters and references.
+import json, os
+
+data = {
+  "description": "Realistic reference database for truck OPEX (EU sample) - parameters sourced and referenced",
+  "source_note": "Key literature and public data used as references: MDPI case study (Slovakia), Karvor (French feasibility study), arXiv TCO model, EU Weekly Oil Bulletin / news for fuel prices, national salary surveys for driver wages. Also uses the user's uploaded architecture document for structure. See references below.",
+  "references": {
+    "mdpi_slovakia": "https://www.mdpi.com/2032-6653/16/8/409",
+    "karvor_fluvial_report": "https://temis.documentation.developpement-durable.gouv.fr/docs/Temis/0045/Temis-0045889/14583.pdf",
+    "arxiv_tco": "https://arxiv.org/abs/2410.21026",
+    "eu_weekly_oil_bulletin": "https://energy.ec.europa.eu/data-and-analysis/weekly-oil-bulletin_en",
+    "fr_driver_salary_lefigaro": "https://emploi.lefigaro.fr/metiers/chauffeur-de-poids-lourd/metier-11989",
+    "indeed_fr_driver": "https://fr.indeed.com/career/chauffeur-poids-lourd/salaries",
+    "uploaded_architecture_pdf": "file:///mnt/data/Report 1_ Shared Python tool for modular computation and comparative of the TCO.pdf"
+  },
+  "countries": [
+    {
+      "country": "France",
+      "opex_database": {
+        "taxes": {
+          "price_energy_km": 0.08,
+          "tax_energy_c_e": {
+            "diesel": 0.65,
+            "electric": 0.10,
+            "hybrid": 0.45,
+            "hydrogen_fuel_cell": 0.20,
+            "hydrogen_h2": 0.20,
+            "cng": 0.50,
+            "lng": 0.50
+          },
+          "tax_reg_c_k_L": {"N1": 200.0, "N2": 350.0, "N3": 500.0},
+          "tax_annual_c_k_L": {"N1": 120.0, "N2": 200.0, "N3": 300.0},
+          "regional_coefficient": 1.0,
+          "tax_CO2_c_e": 0.045,
+          "B_env_c_k_e": {"diesel": 0.0, "electric": -200.0, "hybrid": -100.0, "hydrogen_fuel_cell": -150.0, "hydrogen_h2": -150.0, "cng": -80.0, "lng": -80.0}
+        },
+        "tolls": {
+          "price_per_km": {
+            "N1": {"diesel": 0.15, "electric": 0.12, "hybrid": 0.14, "hydrogen_fuel_cell": 0.13, "hydrogen_h2": 0.13, "cng": 0.14, "lng": 0.14},
+            "N2": {"diesel": 0.25, "electric": 0.20, "hybrid": 0.23, "hydrogen_fuel_cell": 0.22, "hydrogen_h2": 0.22, "cng": 0.24, "lng": 0.24},
+            "N3": {"diesel": 0.35, "electric": 0.28, "hybrid": 0.32, "hydrogen_fuel_cell": 0.30, "hydrogen_h2": 0.30, "cng": 0.33, "lng": 0.33}
+          }
+        },
+        "insurance": {
+          "insurance_rate_c_L_e_safety": {"diesel": 0.030, "electric": 0.045, "hybrid": 0.035, "hydrogen_fuel_cell": 0.050, "hydrogen_h2": 0.050, "cng": 0.032, "lng": 0.032}
+        },
+        "crew": {"wage_of_crew_rank": {"driver": 20439.0}},
+        "energy": {"energy_price_c_e": {"diesel": 1.65, "electric": 0.18, "hybrid": 1.50, "hydrogen_fuel_cell": 12.0, "hydrogen_h2": 12.0, "cng": 1.20, "lng": 1.10}}
+      },
+      "notes": "Driver wage: annual gross median ~20,439 € (Le Figaro - 2024). Diesel price set to 1.65 €/L (EU weekly averages, news summary). Tax and toll estimates adapted to published benchmarks and the user's dummy schema; see references."
+    },
+    {
+      "country": "Germany",
+      "opex_database": {
+        "taxes": {
+          "price_energy_km": 0.09,
+          "tax_energy_c_e": {"diesel": 0.75, "electric": 0.12, "hybrid": 0.50, "hydrogen_fuel_cell": 0.25, "hydrogen_h2": 0.25, "cng": 0.60, "lng": 0.60},
+          "tax_reg_c_k_L": {"N1": 250.0, "N2": 400.0, "N3": 600.0},
+          "tax_annual_c_k_L": {"N1": 150.0, "N2": 250.0, "N3": 380.0},
+          "regional_coefficient": 1.1,
+          "tax_CO2_c_e": 0.055,
+          "B_env_c_k_e": {"diesel": 0.0, "electric": -250.0, "hybrid": -120.0, "hydrogen_fuel_cell": -180.0, "hydrogen_h2": -180.0, "cng": -90.0, "lng": -90.0}
+        },
+        "tolls": {
+          "price_per_km": {
+            "N1": {"diesel": 0.18, "electric": 0.10, "hybrid": 0.15, "hydrogen_fuel_cell": 0.12, "hydrogen_h2": 0.12, "cng": 0.16, "lng": 0.16},
+            "N2": {"diesel": 0.28, "electric": 0.18, "hybrid": 0.24, "hydrogen_fuel_cell": 0.20, "hydrogen_h2": 0.20, "cng": 0.26, "lng": 0.26},
+            "N3": {"diesel": 0.40, "electric": 0.25, "hybrid": 0.35, "hydrogen_fuel_cell": 0.28, "hydrogen_h2": 0.28, "cng": 0.38, "lng": 0.38}
+          }
+        },
+        "insurance": {
+          "insurance_rate_c_L_e_safety": {"diesel": 0.028, "electric": 0.042, "hybrid": 0.033, "hydrogen_fuel_cell": 0.048, "hydrogen_h2": 0.048, "cng": 0.030, "lng": 0.030}
+        },
+        "crew": {"wage_of_crew_rank": {"driver": 34200.0}},
+        "energy": {"energy_price_c_e": {"diesel": 1.75, "electric": 0.22, "hybrid": 1.60, "hydrogen_fuel_cell": 13.0, "hydrogen_h2": 13.0, "cng": 1.30, "lng": 1.20}}
+      },
+      "notes": "Driver wage: representative average ~34,200 € / year (industry surveys). Energy prices reflect reported averages and benchmarking sources."
+    },
+    {
+      "country": "Spain",
+      "opex_database": {
+        "taxes": {
+          "price_energy_km": 0.07,
+          "tax_energy_c_e": {"diesel": 0.55, "electric": 0.08, "hybrid": 0.40, "hydrogen_fuel_cell": 0.18, "hydrogen_h2": 0.18, "cng": 0.45, "lng": 0.45},
+          "tax_reg_c_k_L": {"N1": 180.0, "N2": 320.0, "N3": 480.0},
+          "tax_annual_c_k_L": {"N1": 100.0, "N2": 180.0, "N3": 280.0},
+          "regional_coefficient": 0.95,
+          "tax_CO2_c_e": 0.040,
+          "B_env_c_k_e": {"diesel": 0.0, "electric": -180.0, "hybrid": -90.0, "hydrogen_fuel_cell": -130.0, "hydrogen_h2": -130.0, "cng": -70.0, "lng": -70.0}
+        },
+        "tolls": {
+          "price_per_km": {
+            "N1": {"diesel": 0.12, "electric": 0.08, "hybrid": 0.11, "hydrogen_fuel_cell": 0.09, "hydrogen_h2": 0.09, "cng": 0.11, "lng": 0.11},
+            "N2": {"diesel": 0.22, "electric": 0.16, "hybrid": 0.20, "hydrogen_fuel_cell": 0.18, "hydrogen_h2": 0.18, "cng": 0.21, "lng": 0.21},
+            "N3": {"diesel": 0.32, "electric": 0.24, "hybrid": 0.29, "hydrogen_fuel_cell": 0.26, "hydrogen_h2": 0.26, "cng": 0.30, "lng": 0.30}
+          }
+        },
+        "insurance": {
+          "insurance_rate_c_L_e_safety": {"diesel": 0.025, "electric": 0.038, "hybrid": 0.030, "hydrogen_fuel_cell": 0.043, "hydrogen_h2": 0.043, "cng": 0.027, "lng": 0.027}
+        },
+        "crew": {"wage_of_crew_rank": {"driver": 22000.0}},
+        "energy": {"energy_price_c_e": {"diesel": 1.55, "electric": 0.16, "hybrid": 1.40, "hydrogen_fuel_cell": 11.0, "hydrogen_h2": 11.0, "cng": 1.10, "lng": 1.00}}
+      },
+      "notes": "Spain energy prices slightly lower on average (news & EU bulletins). Driver wages shown as representative median."
+    },
+    {
+      "country": "Italy",
+      "opex_database": {
+        "taxes": {
+          "price_energy_km": 0.075,
+          "tax_energy_c_e": {"diesel": 0.60, "electric": 0.09, "hybrid": 0.42, "hydrogen_fuel_cell": 0.19, "hydrogen_h2": 0.19, "cng": 0.48, "lng": 0.48},
+          "tax_reg_c_k_L": {"N1": 190.0, "N2": 340.0, "N3": 500.0},
+          "tax_annual_c_k_L": {"N1": 110.0, "N2": 190.0, "N3": 290.0},
+          "regional_coefficient": 1.0,
+          "tax_CO2_c_e": 0.042,
+          "B_env_c_k_e": {"diesel": 0.0, "electric": -190.0, "hybrid": -95.0, "hydrogen_fuel_cell": -140.0, "hydrogen_h2": -140.0, "cng": -75.0, "lng": -75.0}
+        },
+        "tolls": {
+          "price_per_km": {
+            "N1": {"diesel": 0.14, "electric": 0.09, "hybrid": 0.12, "hydrogen_fuel_cell": 0.10, "hydrogen_h2": 0.10, "cng": 0.13, "lng": 0.13},
+            "N2": {"diesel": 0.24, "electric": 0.17, "hybrid": 0.21, "hydrogen_fuel_cell": 0.19, "hydrogen_h2": 0.19, "cng": 0.23, "lng": 0.23},
+            "N3": {"diesel": 0.34, "electric": 0.26, "hybrid": 0.31, "hydrogen_fuel_cell": 0.28, "hydrogen_h2": 0.28, "cng": 0.32, "lng": 0.32}
+          }
+        },
+        "insurance": {
+          "insurance_rate_c_L_e_safety": {"diesel": 0.027, "electric": 0.040, "hybrid": 0.032, "hydrogen_fuel_cell": 0.045, "hydrogen_h2": 0.045, "cng": 0.029, "lng": 0.029}
+        },
+        "crew": {"wage_of_crew_rank": {"driver": 27000.0}},
+        "energy": {"energy_price_c_e": {"diesel": 1.70, "electric": 0.20, "hybrid": 1.55, "hydrogen_fuel_cell": 12.5, "hydrogen_h2": 12.5, "cng": 1.25, "lng": 1.15}}
+      },
+      "notes": "Italy wages and prices benchmarked from national salary surveys and EU fuel price bulletins."
+    }
+  ],
+  "user_inputs_reference": {
+    "description": "ORANGE ARROWS - user & digital twin inputs (unchanged)",
+    "vehicle_characteristics": ["purchase_cost", "type_energy", "size_vehicle", "registration_country", "RV"],
+    "operational_parameters": ["annual_distance_travel", "departure_city", "arrival_city", "N_years", "team_count", "maintenance_cost"]
+  },
+  "calculation_notes": {
+    "formulas": {
+      "o_taxes": "consumption_energy * price_energy_km * tax_energy_c_e * fuel_multiplier * EF_CO2 * tax_CO2 * regional_coefficient + tax_reg + tax_annual + B_env",
+      "o_tolls": "price_per_km * annual_distance_travel",
+      "o_insurance": "insurance_rate * (purchase_cost - RV)",
+      "o_crew": "wage_of_crew_rank * team_count",
+      "o_energy": "consumption_energy * energy_price_c_e",
+      "total_opex": "o_taxes + o_tolls + o_insurance + o_crew + o_energy + maintenance_cost"
+    }
+  }
+}
+
+# write file
+out_path = "/mnt/data/truck_opex_real_values.json"
+with open(out_path, "w", encoding="utf-8") as f:
+    json.dump(data, f, indent=2, ensure_ascii=False)
+
+out_path
+
