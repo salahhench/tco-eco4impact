@@ -31,6 +31,11 @@ if sys.platform == "win32":
     sys.stdout.reconfigure(encoding="utf-8")
 
 
+import os
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+
 # ============================================================================
 # 0. SHIPS TYPES
 # ============================================================================
@@ -388,14 +393,20 @@ def run_ship_scenario(
     db_path: str = "data_opex_trucks.json",
 ):
     print("\n" + "#" * 80)
-    print(f" RUNNING SHIP SCENARIO: {scenario_name} ")
+    print(f"### RUNNING SHIP SCENARIO: {scenario_name} ###")
     print("#" * 80)
 
-    with open(inputs_path, "r", encoding="utf-8") as f:
+    # Rutas absolutas
+    inputs_full_path = os.path.join(BASE_DIR, inputs_path)
+    db_full_path = os.path.join(BASE_DIR, db_path)
+
+    # 1. Cargar todos los escenarios
+    with open(inputs_full_path, "r", encoding="utf-8") as f:
         all_data = json.load(f)
 
     scenarios = all_data.get("scenarios", [])
 
+    # 2. Buscar el escenario por name
     scenario = None
     for sc in scenarios:
         if sc.get("name") == scenario_name:
@@ -403,11 +414,12 @@ def run_ship_scenario(
             break
 
     if scenario is None:
-        raise ValueError(f"Scenario '{scenario_name}' not found in {inputs_path}")
+        raise ValueError(f"Scenario '{scenario_name}' not found in {inputs_full_path}")
 
-    #COSAPP
-    sys_ship = ShipOPEXCalculator("ship_opex_case", db_path=db_path)
+    # 3. Crear sistema CosApp
+    sys_ship = ShipOPEXCalculator("ship_opex_case", db_path=db_full_path)
 
+    # 4. Asignar inputs dinámicamente con casteo de tipos
     for key, value in scenario.items():
         if key in ("name", "description"):
             continue
@@ -415,25 +427,21 @@ def run_ship_scenario(
             continue
 
         current = getattr(sys_ship, key)
-
-        
         try:
             if isinstance(current, (float, int)) and isinstance(value, (int, float)):
-                
                 value = type(current)(value)
             elif isinstance(current, str):
                 value = str(value)
-           
         except Exception:
-            
             pass
 
         setattr(sys_ship, key, value)
 
+    # 5. Ejecutar
     driver = sys_ship.add_driver(RunOnce("run"))
     sys_ship.run_drivers()
 
-    #PRINT RESULTS
+    # 6. Imprimir resultados
     print("\n--- SHIP OPEX RESULTS ---")
     print(f"O_taxes:       {sys_ship.o_taxes:.2f} €")
     print(f"O_ports:       {sys_ship.o_ports:.2f} €")
@@ -443,9 +451,9 @@ def run_ship_scenario(
     print(f"O_energy:      {sys_ship.o_energy:.2f} €")
     print(f"OPEX_total:    {sys_ship.o_opex_total:.2f} €")
 
+    # 7. Guardar resultados en JSON específico del escenario
     safe_name = scenario_name.replace(" ", "_")
-
-    out_json = f"resultado_opex_ship_{safe_name}.json"
+    out_json = os.path.join(BASE_DIR, f"resultado_opex_ship_{safe_name}.json")
     sys_ship.save_results_to_json(out_json)
     print(f"Resultados guardados en: {out_json}")
 
@@ -460,8 +468,8 @@ if __name__ == "__main__":
     print("=" * 80)
 
     #Chose quelque scenario
-    run_ship_scenario("scenario1_cargo_diesel_france")
-    #run_ship_scenario("scenario2_ferry_diesel_spain")
+    #run_ship_scenario("scenario1_cargo_diesel_france")
+    run_ship_scenario("scenario2_ferry_diesel_spain")
     #run_ship_scenario("scenario3_ferry_electric_germany")
     #run_ship_scenario("scenario4_fishing_diesel_italy")
 
