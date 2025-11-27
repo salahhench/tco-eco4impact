@@ -286,45 +286,6 @@
             "truck":{
                 "electric":0.00001
             }
-        },
-        "density":{
-            "ships":{
-                "t1":0.0,
-                "t2":0.0,
-                "t3":0.0
-            },
-            "truck":{
-                "diesel":0.832,
-                "hydrogen_h2":0.0899,
-                "cng":0.717,
-                "lng":0.426
-            }
-        },
-        "healting_value_ref":{
-            "ships":{
-                "t1":0.0,
-                "t2":0.0,
-                "t3":0.0
-            },
-            "truck":{
-                "diesel":36.0,
-                "hydrogen_h2":120.0,
-                "cng":50.0,
-                "lng":70.0
-            }
-        },
-        "density_ref":{
-            "ships":{
-                "t1":0.0,
-                "t2":0.0,
-                "t3":0.0
-            },
-            "truck":{
-                "diesel":0.832,
-                "hydrogen_h2":0.0899,
-                "cng":0.717,
-                "lng":0.426
-            }
         }
-}
+    }
 }

@@ -1,3 +1,4 @@
+# %%
 """
 Residual Value (RV) Calculator - CoSApp Implementation
 """
@@ -68,34 +69,32 @@ class VehicleProperties(Port):
 
     def setup(self):
         # -------------------- USER INPUTS --------------------
-        self.add_variable('type_vehicle', dtype = str, desc = 'Vehicle type: Truck or Ship')
-        self.add_variable('type_energy', dtype = str, desc = 'Energy type: Diesel_fosile, Diesel_hibrid, BET, Fuel_cell, etc')
-        self.add_variable('registration_country', dtype = str, desc = 'Registration country of the vehicle')
+        self.add_variable('type_vehicle', dtype=str, desc='Vehicle type: Truck or Ship', default='truck')
+        self.add_variable('type_energy', dtype=str, desc='Energy type: diesel, electric, hybrid, hydrogen_fuel_cell, hydrogen_h2, cng, lng', default='diesel')
+        self.add_variable('registration_country', dtype=str, desc='Registration country of the vehicle', default='France')
         
-        self.add_variable('purchase_cost', dtype = float, desc = 'Initial purchase cost')
-        # self.add_variable('age_vehicle', dtype = float, desc = 'Age of vehicle (years) -> Current year - year of purchase (because if it is used vehicle, the year of purchase is not the model year, and we have to consider the depreciation that we have made since we bought it)')
-        self.add_variable('travel_measure', dtype = float, desc = 'Total Distance (km) or hours (h) -> Total distance or hours travelled by the vehicle until now')
-        self.add_variable('maintenance_cost', dtype = float, desc = 'Total maintenance cost incurred -> Total maintenance cost incurred until now')
+        self.add_variable('purchase_cost', dtype=float, desc='Initial purchase cost', default=0.0)
+        self.add_variable('travel_measure', dtype=float, desc='Total Distance (km) or hours (h)', default=0.0)
+        self.add_variable('maintenance_cost', dtype=float, desc='Total maintenance cost incurred', default=0.0)
         
-        self.add_variable('minimum_fuel_consumption', dtype = float, desc = 'SFC (g/kWh)')
-        self.add_variable('consumption_real', dtype = float, desc = 'Real consumption (kWh/km or kg/100km) -> Real consumption of the vehicle, can be obtained from telematics data')
-        self.add_variable('utility_factor', dtype = float, desc = 'Electric fraction for hybrids -> For hybrid vehicles, the fraction of distance travelled in electric mode')
+        self.add_variable('minimum_fuel_consumption', dtype=float, desc='SFC (g/kWh)', default=250.0)
+        self.add_variable('consumption_real', dtype=float, desc='Real consumption (kWh/km or kg/100km)', default=0.0)
+        self.add_variable('utility_factor', dtype=float, desc='Electric fraction for hybrids', default=0.0)
         
-        self.add_variable('E_annual_kwh', dtype = float, desc = 'Annual energy consumption (kWh) -> Annual energy consumption of the vehicle in kWh')
-        self.add_variable('C_bat_kwh', dtype = float, desc = 'Battery capacity (kWh)')
-        self.add_variable('DoD', dtype = float, desc = 'Depth of discharge')
-        self.add_variable('S_slow', dtype = float, desc = 'Proportion slow charging')
-        self.add_variable('S_fast', dtype = float, desc = 'Proportion fast charging')
-        self.add_variable('S_ultra', dtype = float, desc = 'Proportion ultra-fast charging')
+        self.add_variable('E_annual_kwh', dtype=float, desc='Annual energy consumption (kWh)', default=0.0)
+        self.add_variable('C_bat_kwh', dtype=float, desc='Battery capacity (kWh)', default=0.0)
+        self.add_variable('DoD', dtype=float, desc='Depth of discharge', default=0.8)
+        self.add_variable('S_slow', dtype=float, desc='Proportion slow charging', default=0.0)
+        self.add_variable('S_fast', dtype=float, desc='Proportion fast charging', default=0.0)
+        self.add_variable('S_ultra', dtype=float, desc='Proportion ultra-fast charging', default=0.0)
         
-        self.add_variable('powertrain_model_year', dtype = int, desc = 'Powertrain model year')
+        self.add_variable('powertrain_model_year', dtype=int, desc='Powertrain model year', default=2020)
         
-        self.add_variable('warranty', dtype = float, desc = 'Warranty duration (years or km)')
-        self.add_variable('type_warranty', dtype = str, desc = 'Type of warranty: years or km')
-        self.add_variable('year_purchase', dtype = int, desc = 'Year of purchase') # To calculate the age of the vehicle
+        self.add_variable('warranty', dtype=float, desc='Warranty duration (years or km)', default=5.0)
+        self.add_variable('type_warranty', dtype=str, desc='Type of warranty: years or km', default='years')
+        self.add_variable('year_purchase', dtype=int, desc='Year of purchase', default=2020)
         
-        self.add_variable('current_year', dtype = int, desc = 'Current year') # Obs. You can get it from datetime.now().year
-        # self.add_variable('current_year', datetime.now().year, desc='Current year')
+        self.add_variable('current_year', dtype=int, desc='Current year', default=datetime.now().year)
 
 
 class CountryProperties(Port):
@@ -104,9 +103,9 @@ class CountryProperties(Port):
     '''
 
     def setup(self):
-        self.add_variable('energy_price', dtype = float, desc = 'Energy price ($/L)')
-        self.add_variable('c02_taxes', dtype = float, desc = 'CO2 taxes ($)')
-        self.add_variable('subsidies', dtype = float, desc = 'Subsidies ($)')
+        self.add_variable('energy_price', dtype=float, desc='Energy price ($/L)', default=0.0)
+        self.add_variable('c02_taxes', dtype=float, desc='CO2 taxes ($)', default=0.0)
+        self.add_variable('subsidies', dtype=float, desc='Subsidies ($)', default=0.0)
 
 
 class ResidualValueCalculator(System):
@@ -116,11 +115,10 @@ class ResidualValueCalculator(System):
     OPEX Components:
     - DEPRECIATION
     - IMPACT HEALTH: 
-        - TECH
+        - EFICIENCY
         - CHARGING
         - OBSOLESCENCE
         - WARRANTY
-        - QUALITY
     - EXTERNAL FACTORS
     '''
     def setup(self, db_path='database_rv.json'):
@@ -136,6 +134,16 @@ class ResidualValueCalculator(System):
         # Add ports
         self.add_inward('in_vehicle_properties', VehicleProperties, desc='Vehicle Properties')
         self.add_inward('in_country_properties', CountryProperties, desc='Country Properties')
+
+        # Add output variables
+        self.add_outward('total_depreciation', 0.0, desc='Total depreciation cost')
+        self.add_outward('efficiency_penalty', 0.0, desc='Efficiency penalty (%)')
+        self.add_outward('obsolescence_penalty', 0.0, desc='Obsolescence penalty (%)')
+        self.add_outward('charging_penalty', 0.0, desc='Charging penalty (%)')
+        self.add_outward('warranty_penalty', 0.0, desc='Warranty penalty (%)')
+        self.add_outward('total_impact_health', 0.0, desc='Total impact health penalty')
+        self.add_outward('total_external_factors', 0.0, desc='Total external factors adjustment')
+        self.add_outward('rv', 0.0, desc='Final Residual Value')
 
 
     # COMPUTE METHODS FOR RV CALCULATION
@@ -167,8 +175,8 @@ class ResidualValueCalculator(System):
         # Total depreciation
         self.total_depreciation = purchase_cost - (dep_per_year + dep_by_usage + dep_maintenance)
 
-    # 2.1.- PENALIZATION OF EFICIENCY
-    def compute_eficiency(self):
+    # 2.1.- PENALIZATION OF EFFICIENCY
+    def compute_efficiency(self):
         # Inputs
         type_vehicle = self.in_vehicle_properties.type_vehicle
         type_energy = self.in_vehicle_properties.type_energy
@@ -176,36 +184,45 @@ class ResidualValueCalculator(System):
         consumption_real = self.in_vehicle_properties.consumption_real
         utility_factor = self.in_vehicle_properties.utility_factor
 
-        # Parameters of database
-        consumption_benchmark = self._vehicles_data["consumption_benchmark"][type_vehicle][type_energy]
-        heating_value = self._vehicles_data["heating_value"][type_vehicle][type_energy]
-        n_ev = self._vehicles_data["n_ev"][type_vehicle][type_energy]
-        n_ice = self._vehicles_data["n_ice"][type_vehicle][type_energy]
-
-
-        # Depends of the type of energy:
+        # Depends on the type of energy:
         if type_energy in ["diesel", "hydrogen_h2", "cng", "lng"]:
             # ICE vehicles: η_f = 3600 / (SFC * Q_HV)
-            n_f = 3600/(minimum_fuel_consumption * heating_value)
+            heating_value = self._vehicles_data["heating_value"][type_vehicle].get(type_energy, 40.0)
+            n_f = 3600 / (minimum_fuel_consumption * heating_value)
         
         elif type_energy in ["electric", "hydrogen_fuel_cell"]:
             # Electric/Fuel Cell: η_sys = consumption_benchmark / consumption_real
-            if consumption_real>0:
+            if type_energy in self._vehicles_data["consumption_benchmark"][type_vehicle]:
+                consumption_benchmark = self._vehicles_data["consumption_benchmark"][type_vehicle][type_energy]
+            else:
+                consumption_benchmark = 20.0  # Default
+                
+            if consumption_real > 0:
                 n_f = consumption_benchmark / consumption_real
             else:
                 n_f = 0.85
         
-        elif type_energy in ["HEV", "PHEV"]:
+        elif type_energy in ["hybrid"]:
             # Hybrid: η_hybrid = 1 / [(α/η_EV) + (1-α)/η_ICE]
-            if utility_factor>0 and utility_factor <1:
-                n_f = 1.0/((utility_factor/n_ev)+((1-utility_factor)/n_ice))
+            if type_energy in self._vehicles_data["n_ev"][type_vehicle]:
+                n_ev = self._vehicles_data["n_ev"][type_vehicle][type_energy]
+            else:
+                n_ev = 0.85
+                
+            if type_energy in self._vehicles_data["n_ice"][type_vehicle]:
+                n_ice = self._vehicles_data["n_ice"][type_vehicle][type_energy]
+            else:
+                n_ice = 0.40
+            
+            if utility_factor > 0 and utility_factor < 1:
+                n_f = 1.0 / ((utility_factor / n_ev) + ((1 - utility_factor) / n_ice))
             else:
                 n_f = n_ice
         else:
-            n_f = 0.40 # Default
+            n_f = 0.40  # Default
         
-        self.efficiency_penalty = (1.0 - n_f)*100.0
-        
+        self.efficiency_penalty = max(0.0, (1.0 - n_f) * 100.0)
+
     # 2.2.- OBSOLESCENCE
     def compute_obsolescence(self):
         # Inputs
@@ -241,7 +258,7 @@ class ResidualValueCalculator(System):
         d_ultra = self._vehicles_data["d_ultra"][type_vehicle][type_energy]
         k_d = self._vehicles_data["k_d"][type_vehicle][type_energy]
 
-        if self.type_energy == "electric":
+        if type_energy == "electric":
             # Average degradation per cycle
             degradation_per_cycle = (S_slow * d_slow + 
                                    S_fast * d_fast + 
@@ -327,12 +344,91 @@ class ResidualValueCalculator(System):
 
         self.rv = (self.total_depreciation+self.total_impact_health+self.total_external_factors)
 
+def print_results(system, scenario_name):
+    """Print formatted results"""
+    print("\n" + "="*80)
+    print(f"SCENARIO: {scenario_name}")
+    print("="*80)
+    print(f"\nVehicle: {system.in_vehicle_properties.type_energy.upper()} {system.in_vehicle_properties.type_vehicle}")
+    print(f"Country: {system.in_vehicle_properties.registration_country}")
+    print(f"Purchase Cost: ${system.in_vehicle_properties.purchase_cost:,.2f}")
+    print(f"Vehicle Age: {system.in_vehicle_properties.current_year - system.in_vehicle_properties.year_purchase} years")
+    print(f"Travel: {system.in_vehicle_properties.travel_measure:,.0f} km")
+    
+    print("\n" + "-"*80)
+    print("DEPRECIATION")
+    print("-"*80)
+    print(f"Total Depreciation Value: ${system.total_depreciation:,.2f}")
+    
+    print("\n" + "-"*80)
+    print("IMPACT HEALTH PENALTIES")
+    print("-"*80)
+    print(f"  • Efficiency Penalty:     {system.efficiency_penalty:.2f}%")
+    print(f"  • Obsolescence Penalty:   {system.obsolescence_penalty:.2f}%")
+    print(f"  • Charging Penalty:       {system.charging_penalty:.2f}%")
+    print(f"  • Warranty Penalty:       {system.warranty_penalty:.2f}%")
+    print(f"  Total Impact Health:      ${system.total_impact_health:,.2f}")
+    
+    print("\n" + "-"*80)
+    print("EXTERNAL FACTORS")
+    print("-"*80)
+    print(f"External Factors Adjustment: ${system.total_external_factors:,.2f}")
+    
+    print("\n" + "="*80)
+    print(f"FINAL RESIDUAL VALUE: ${system.rv:,.2f}")
+    print("="*80)
+
+
+def scenario_1_diesel_truck():
+    """Scenario 1: Diesel truck in France"""
+    rv_calc = ResidualValueCalculator('rv_diesel_truck' ,db_path='database_rv.json')
+    
+    # Vehicle properties
+    rv_calc.in_vehicle_properties.type_vehicle = 'truck'
+    rv_calc.in_vehicle_properties.type_energy = 'diesel'
+    rv_calc.in_vehicle_properties.registration_country = 'France'
+    rv_calc.in_vehicle_properties.purchase_cost = 80000.0
+    rv_calc.in_vehicle_properties.year_purchase = 2020
+    rv_calc.in_vehicle_properties.current_year = 2024
+    rv_calc.in_vehicle_properties.travel_measure = 150000.0  # km
+    rv_calc.in_vehicle_properties.maintenance_cost = 8000.0
+    rv_calc.in_vehicle_properties.minimum_fuel_consumption = 250.0  # g/kWh
+    rv_calc.in_vehicle_properties.powertrain_model_year = 2020
+    rv_calc.in_vehicle_properties.warranty = 5.0
+    rv_calc.in_vehicle_properties.type_warranty = 'years'
+    
+    # Country properties
+    rv_calc.in_country_properties.energy_price = 1.5  # $/L
+    rv_calc.in_country_properties.c02_taxes = 500.0
+    rv_calc.in_country_properties.subsidies = 0.0
+    
+    # Run calculation
+    rv_calc.add_driver(RunOnce('run1'))
+
+    # Run the system
+    rv_calc.run_drivers()
+    
+    print_results(rv_calc, "Diesel Truck in France (4 years old)")
+
+
 
 # %%
 # Example
 if __name__ == "__main__":
+    from main import ResidualValueCalculator
     from cosapp.drivers import RunOnce
+    from datetime import datetime
 
+
+    print("\n" + "="*80)
+    print("RESIDUAL VALUE CALCULATOR - TEST SCENARIOS")
     print("="*80)
-    print("CosApp RV Calculator - Test Scenarios")
-    print("="*80)
+    
+    # Run the scenario
+    scenario_1_diesel_truck()
+
+    print("\n" + "="*80)
+    print("ALL SCENARIOS COMPLETED")
+    print("="*80 + "\n")
+
+# %%
