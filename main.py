@@ -9,59 +9,6 @@ import math
 from datetime import datetime
 
 # %%
-# class RVPort(Port):
-#     '''
-#     Port for RV Calculation inputs and outputs for ships and trucks.
-#     '''
-
-#     def setup(self):
-#         # -------------------- USER INPUTS (ORANGE) --------------------
-#         self.add_variable('type_vehicle', dtype = str, desc = 'Vehicle type: Truck or Ship')
-#         self.add_variable('type_energy', dtype = str, desc = 'Energy type: Diesel_fosile, Diesel_hibrid, BET, Fuel_cell, etc')
-#         self.add_variable('registration_country', dtype = str, desc = 'Registration country of the vehicle')
-
-#         self.add_variable('current_year', dtype = int, desc = 'Current year') # Obs. You can get it from datetime.now().year
-
-
-
-#         # SUB-MODULE 1: Depreciation Calculation
-#         self.add_variable('purchase_cost', dtype = float, desc = 'Initial purchase cost')
-#         self.add_variable('age_vehicle', dtype = float, desc = 'Age of vehicle (years)')
-#         self.add_variable('travel_measure', dtype = float, desc = 'Distance (km) or hours (h)')
-#         self.add_variable('maintenance_cost', dtype = float, desc = 'Total maintenance cost incurred')
-
-        
-#         # SUB-MODULE 2: IMPACT HEALTH
-#         # 1.- TECH
-#         self.add_variable('minimum_fuel_consumption', dtype = float, desc = 'SFC (g/kWh)')
-#         self.add_variable('consumption_real', dtype = float, desc = 'Real consumption (kWh/km or kg/100km)')
-#         self.add_variable('utility_factor', dtype = float, desc = 'Electric fraction for hybrids')
-
-#         # 2.- CHARGING
-#         self.add_variable('E_annual_kwh', dtype = float, desc = 'Annual energy consumption (kWh)')
-#         self.add_variable('C_bat_kwh', dtype = float, desc = 'Battery capacity (kWh)')
-#         self.add_variable('DoD', dtype = float, desc = 'Depth of discharge')
-#         self.add_variable('S_slow', dtype = float, desc = 'Proportion slow charging')
-#         self.add_variable('S_fast', dtype = float, desc = 'Proportion fast charging')
-#         self.add_variable('S_ultra', dtype = float, desc = 'Proportion ultra-fast charging')
-
-#         # 3.- OBSOLESCENCE
-#         self.add_variable('powertrain_model_year', dtype = int, desc = 'Powertrain model year')
-
-#         # 4.- WARRANTY
-#         self.add_variable('warranty', dtype = float, desc = 'Warranty duration (years or km)')
-#         self.add_variable('type_warranty', dtype = str, desc = 'Type of warranty: years or km')
-#         self.add_variable('year_purchase', dtype = int, desc = 'Year of purchase')
-
-#         # 5.- QUALITY
-#         # It's variables are only type_energy and type_vehicle defined above
-
-#         # SUB-MODULE 3: EXTERNAL FACTORS
-#         self.add_variable('energy_price', dtype = float, desc = 'Energy price ($/L)')
-#         self.add_variable('c02_taxes', dtype = float, desc = 'CO2 taxes ($)')
-#         self.add_variable('subsidies', dtype = float, desc = 'Subsidies ($)')
-
-# %%
 class VehicleProperties(Port):
     '''
     Port for Vehicle Properties inputs and outputs for ships and trucks.
@@ -131,9 +78,9 @@ class ResidualValueCalculator(System):
         
         object.__setattr__(self, '_vehicles_data',db_rv['vehicle'])
         
-        # Add ports - instantiate them properly
-        self.add_inward('in_vehicle_properties', VehicleProperties(), desc='Vehicle Properties')
-        self.add_inward('in_country_properties', CountryProperties(), desc='Country Properties')
+        # Add ports
+        self.add_inward('in_vehicle_properties', VehicleProperties, desc='Vehicle Properties')
+        self.add_inward('in_country_properties', CountryProperties, desc='Country Properties')
 
         # Add output variables
         self.add_outward('total_depreciation', 0.0, desc='Total depreciation cost')
@@ -182,24 +129,20 @@ class ResidualValueCalculator(System):
         vp = self.in_vehicle_properties
         type_vehicle = vp.type_vehicle
         type_energy = vp.type_energy
-        minimum_fuel_consumption = vp.minimum_fuel_consumption
-        consumption_real = vp.consumption_real
-        utility_factor = vp.utility_factor
-
-        # Parameters of database
-        consumption_benchmark = self._vehicles_data["consumption_benchmark"][type_vehicle][type_energy]
-        heating_value = self._vehicles_data["heating_value"][type_vehicle][type_energy]
-        n_ev = self._vehicles_data["n_ev"][type_vehicle][type_energy]
-        n_ice = self._vehicles_data["n_ice"][type_vehicle][type_energy]
-
+        
 
         # Depends of the type of energy:
         if type_energy in ["diesel", "hydrogen_h2", "cng", "lng"]:
+            minimum_fuel_consumption = vp.minimum_fuel_consumption
+            heating_value = self._vehicles_data["heating_value"][type_vehicle][type_energy]
             # ICE vehicles: η_f = 3600 / (SFC * Q_HV)
             n_f = 3600/(minimum_fuel_consumption * heating_value)
         
         elif type_energy in ["electric", "hydrogen_fuel_cell"]:
             # Electric/Fuel Cell: η_sys = consumption_benchmark / consumption_real
+            consumption_real = vp.consumption_real
+            consumption_benchmark = self._vehicles_data["consumption_benchmark"][type_vehicle][type_energy]
+
             if consumption_real>0:
                 n_f = consumption_benchmark / consumption_real
             else:
@@ -207,6 +150,10 @@ class ResidualValueCalculator(System):
         
         elif type_energy in ["HEV", "PHEV"]:
             # Hybrid: η_hybrid = 1 / [(α/η_EV) + (1-α)/η_ICE]
+            utility_factor = vp.utility_factor
+            n_ev = self._vehicles_data["n_ev"][type_vehicle][type_energy]
+            n_ice = self._vehicles_data["n_ice"][type_vehicle][type_energy]
+
             if utility_factor>0 and utility_factor <1:
                 n_f = 1.0/((utility_factor/n_ev)+((1-utility_factor)/n_ice))
             else:
@@ -240,20 +187,20 @@ class ResidualValueCalculator(System):
         type_vehicle = vp.type_vehicle
         type_energy = vp.type_energy
 
-        E_annual_kwh = vp.E_annual_kwh
-        C_bat_kwh = vp.C_bat_kwh
-        DoD = vp.DoD
-        S_slow = vp.S_slow
-        S_fast = vp.S_fast
-        S_ultra = vp.S_ultra
-
-        # Parameters of database
-        d_slow = self._vehicles_data["d_slow"][type_vehicle][type_energy]
-        d_fast = self._vehicles_data["d_fast"][type_vehicle][type_energy]
-        d_ultra = self._vehicles_data["d_ultra"][type_vehicle][type_energy]
-        k_d = self._vehicles_data["k_d"][type_vehicle][type_energy]
-
         if type_energy == "electric":
+            E_annual_kwh = vp.E_annual_kwh
+            C_bat_kwh = vp.C_bat_kwh
+            DoD = vp.DoD
+            S_slow = vp.S_slow
+            S_fast = vp.S_fast
+            S_ultra = vp.S_ultra
+
+            # Parameters of database
+            d_slow = self._vehicles_data["d_slow"][type_vehicle][type_energy]
+            d_fast = self._vehicles_data["d_fast"][type_vehicle][type_energy]
+            d_ultra = self._vehicles_data["d_ultra"][type_vehicle][type_energy]
+            k_d = self._vehicles_data["k_d"][type_vehicle][type_energy]
+        
             # Average degradation per cycle
             degradation_per_cycle = (S_slow * d_slow + 
                                    S_fast * d_fast + 
@@ -273,6 +220,8 @@ class ResidualValueCalculator(System):
             
             # Penalization: charging = 1 - health_charging
             self.charging_penalty = (1.0 - health_charging) * 100.0
+        else:
+            self.charging_penalty = 0.0
 
     # 2.4.- COMPUTE WARRANTY
     def compute_warranty(self):
