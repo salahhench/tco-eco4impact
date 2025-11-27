@@ -131,9 +131,9 @@ class ResidualValueCalculator(System):
         
         object.__setattr__(self, '_vehicles_data',db_rv['vehicle'])
         
-        # Add ports
-        self.add_inward('in_vehicle_properties', VehicleProperties, desc='Vehicle Properties')
-        self.add_inward('in_country_properties', CountryProperties, desc='Country Properties')
+        # Add ports - instantiate them properly
+        self.add_inward('in_vehicle_properties', VehicleProperties(), desc='Vehicle Properties')
+        self.add_inward('in_country_properties', CountryProperties(), desc='Country Properties')
 
         # Add output variables
         self.add_outward('total_depreciation', 0.0, desc='Total depreciation cost')
@@ -156,9 +156,10 @@ class ResidualValueCalculator(System):
         '''
 
         # Inputs
-        type_vehicle = self.in_vehicle_properties.type_vehicle
-        type_energy = self.in_vehicle_properties.type_energy
-        country = self.in_vehicle_properties.registration_country
+        vp = self.in_vehicle_properties
+        type_vehicle = vp.type_vehicle
+        type_energy = vp.type_energy
+        country = vp.registration_country
 
         # Parameters of database
         rate_per_year = self._countries_data[country]["depreciation"]["depreciation_rate_per_year"][type_vehicle][type_energy]
@@ -166,11 +167,11 @@ class ResidualValueCalculator(System):
         coef_maintenance = self._countries_data[country]["depreciation"]["coef_depreciation_maintenance"][type_vehicle][type_energy]
 
         # Depreciation components
-        purchase_cost = self.in_vehicle_properties.purchase_cost
-        vehicle_age = self.in_vehicle_properties.current_year - self.in_vehicle_properties.year_purchase
+        purchase_cost = vp.purchase_cost
+        vehicle_age = vp.current_year - vp.year_purchase
         dep_per_year = rate_per_year * vehicle_age
-        dep_by_usage = rate_by_usage * self.in_vehicle_properties.travel_measure
-        dep_maintenance = coef_maintenance * self.in_vehicle_properties.maintenance_cost
+        dep_by_usage = rate_by_usage * vp.travel_measure
+        dep_maintenance = coef_maintenance * vp.maintenance_cost
 
         # Total depreciation
         self.total_depreciation = purchase_cost - (dep_per_year + dep_by_usage + dep_maintenance)
@@ -178,11 +179,12 @@ class ResidualValueCalculator(System):
     # 2.1.- PENALIZATION OF EFICIENCY
     def compute_eficiency(self):
         # Inputs
-        type_vehicle = self.in_vehicle_properties.type_vehicle
-        type_energy = self.in_vehicle_properties.type_energy
-        minimum_fuel_consumption = self.in_vehicle_properties.minimum_fuel_consumption
-        consumption_real = self.in_vehicle_properties.consumption_real
-        utility_factor = self.in_vehicle_properties.utility_factor
+        vp = self.in_vehicle_properties
+        type_vehicle = vp.type_vehicle
+        type_energy = vp.type_energy
+        minimum_fuel_consumption = vp.minimum_fuel_consumption
+        consumption_real = vp.consumption_real
+        utility_factor = vp.utility_factor
 
         # Parameters of database
         consumption_benchmark = self._vehicles_data["consumption_benchmark"][type_vehicle][type_energy]
@@ -217,31 +219,33 @@ class ResidualValueCalculator(System):
     # 2.2.- OBSOLESCENCE
     def compute_obsolescence(self):
         # Inputs
-        type_vehicle = self.in_vehicle_properties.type_vehicle
-        type_energy = self.in_vehicle_properties.type_energy
-        country = self.in_vehicle_properties.registration_country
-        powertrain_model_year = self.in_vehicle_properties.powertrain_model_year
+        vp = self.in_vehicle_properties
+        type_vehicle = vp.type_vehicle
+        type_energy = vp.type_energy
+        country = vp.registration_country
+        powertrain_model_year = vp.powertrain_model_year
 
         # Parameters of database
         yearly_obsolescence_rate = self._countries_data[country]["yearly_obsolescence_rate"][type_vehicle][type_energy]
 
         # Output
-        DM = math.exp(-yearly_obsolescence_rate * (self.in_vehicle_properties.current_year - powertrain_model_year) )
+        DM = math.exp(-yearly_obsolescence_rate * (vp.current_year - powertrain_model_year) )
         
         self.obsolescence_penalty = (1.0-DM)*100
 
     # 2.3.- CHARGING
     def compute_charging(self):
         # Inputs
-        type_vehicle = self.in_vehicle_properties.type_vehicle
-        type_energy = self.in_vehicle_properties.type_energy
+        vp = self.in_vehicle_properties
+        type_vehicle = vp.type_vehicle
+        type_energy = vp.type_energy
 
-        E_annual_kwh = self.in_vehicle_properties.E_annual_kwh
-        C_bat_kwh = self.in_vehicle_properties.C_bat_kwh
-        DoD = self.in_vehicle_properties.DoD
-        S_slow = self.in_vehicle_properties.S_slow
-        S_fast = self.in_vehicle_properties.S_fast
-        S_ultra = self.in_vehicle_properties.S_ultra
+        E_annual_kwh = vp.E_annual_kwh
+        C_bat_kwh = vp.C_bat_kwh
+        DoD = vp.DoD
+        S_slow = vp.S_slow
+        S_fast = vp.S_fast
+        S_ultra = vp.S_ultra
 
         # Parameters of database
         d_slow = self._vehicles_data["d_slow"][type_vehicle][type_energy]
@@ -273,19 +277,20 @@ class ResidualValueCalculator(System):
     # 2.4.- COMPUTE WARRANTY
     def compute_warranty(self):
         # Inputs
-        warranty = self.in_vehicle_properties.warranty
-        type_warranty = self.in_vehicle_properties.type_warranty
-        year_purchase = self.in_vehicle_properties.year_purchase
+        vp = self.in_vehicle_properties
+        warranty = vp.warranty
+        type_warranty = vp.type_warranty
+        year_purchase = vp.year_purchase
 
         if type_warranty=="year":
-            elapsed = self.in_vehicle_properties.current_year - year_purchase
+            elapsed = vp.current_year - year_purchase
 
             if warranty>0:
                 DW = 1.0 - (elapsed/warranty)
             else:
                 DW= 0.0
         elif type_warranty=="km":
-            elapsed = self.in_vehicle_properties.travel_measure
+            elapsed = vp.travel_measure
 
             if warranty>0:
                 DW = 1.0 - (elapsed/warranty)
@@ -311,12 +316,14 @@ class ResidualValueCalculator(System):
     # 3.- EXTERNAL FACTORS
     def compute_external_factors(self):
         # Inputs
-        energy_price = self.in_country_properties.energy_price
-        c02_taxes = self.in_country_properties.c02_taxes
-        subsidies = self.in_country_properties.subsidies
-        type_vehicle = self.in_vehicle_properties.type_vehicle
-        type_energy = self.in_vehicle_properties.type_energy
-        country = self.in_vehicle_properties.registration_country
+        cp = self.in_country_properties
+        vp = self.in_vehicle_properties
+        energy_price = cp.energy_price
+        c02_taxes = cp.c02_taxes
+        subsidies = cp.subsidies
+        type_vehicle = vp.type_vehicle
+        type_energy = vp.type_energy
+        country = vp.registration_country
 
 
         # Parameters of database
@@ -337,14 +344,15 @@ class ResidualValueCalculator(System):
 
 def print_results(system, scenario_name):
     """Print formatted results"""
+    vp = system.in_vehicle_properties
     print("\n" + "="*80)
     print(f"SCENARIO: {scenario_name}")
     print("="*80)
-    print(f"\nVehicle: {system.in_vehicle_properties.type_energy.upper()} {system.in_vehicle_properties.type_vehicle}")
-    print(f"Country: {system.in_vehicle_properties.registration_country}")
-    print(f"Purchase Cost: ${system.in_vehicle_properties.purchase_cost:,.2f}")
-    print(f"Vehicle Age: {system.in_vehicle_properties.current_year - system.in_vehicle_properties.year_purchase} years")
-    print(f"Travel: {system.in_vehicle_properties.travel_measure:,.0f} km")
+    print(f"\nVehicle: {vp.type_energy.upper()} {vp.type_vehicle}")
+    print(f"Country: {vp.registration_country}")
+    print(f"Purchase Cost: ${vp.purchase_cost:,.2f}")
+    print(f"Vehicle Age: {vp.current_year - vp.year_purchase} years")
+    print(f"Travel: {vp.travel_measure:,.0f} km")
     
     print("\n" + "-"*80)
     print("DEPRECIATION")
