@@ -175,8 +175,8 @@ class ResidualValueCalculator(System):
         # Total depreciation
         self.total_depreciation = purchase_cost - (dep_per_year + dep_by_usage + dep_maintenance)
 
-    # 2.1.- PENALIZATION OF EFFICIENCY
-    def compute_efficiency(self):
+    # 2.1.- PENALIZATION OF EFICIENCY
+    def compute_eficiency(self):
         # Inputs
         type_vehicle = self.in_vehicle_properties.type_vehicle
         type_energy = self.in_vehicle_properties.type_energy
@@ -184,45 +184,36 @@ class ResidualValueCalculator(System):
         consumption_real = self.in_vehicle_properties.consumption_real
         utility_factor = self.in_vehicle_properties.utility_factor
 
-        # Depends on the type of energy:
+        # Parameters of database
+        consumption_benchmark = self._vehicles_data["consumption_benchmark"][type_vehicle][type_energy]
+        heating_value = self._vehicles_data["heating_value"][type_vehicle][type_energy]
+        n_ev = self._vehicles_data["n_ev"][type_vehicle][type_energy]
+        n_ice = self._vehicles_data["n_ice"][type_vehicle][type_energy]
+
+
+        # Depends of the type of energy:
         if type_energy in ["diesel", "hydrogen_h2", "cng", "lng"]:
             # ICE vehicles: η_f = 3600 / (SFC * Q_HV)
-            heating_value = self._vehicles_data["heating_value"][type_vehicle].get(type_energy, 40.0)
-            n_f = 3600 / (minimum_fuel_consumption * heating_value)
+            n_f = 3600/(minimum_fuel_consumption * heating_value)
         
         elif type_energy in ["electric", "hydrogen_fuel_cell"]:
             # Electric/Fuel Cell: η_sys = consumption_benchmark / consumption_real
-            if type_energy in self._vehicles_data["consumption_benchmark"][type_vehicle]:
-                consumption_benchmark = self._vehicles_data["consumption_benchmark"][type_vehicle][type_energy]
-            else:
-                consumption_benchmark = 20.0  # Default
-                
-            if consumption_real > 0:
+            if consumption_real>0:
                 n_f = consumption_benchmark / consumption_real
             else:
                 n_f = 0.85
         
-        elif type_energy in ["hybrid"]:
+        elif type_energy in ["HEV", "PHEV"]:
             # Hybrid: η_hybrid = 1 / [(α/η_EV) + (1-α)/η_ICE]
-            if type_energy in self._vehicles_data["n_ev"][type_vehicle]:
-                n_ev = self._vehicles_data["n_ev"][type_vehicle][type_energy]
-            else:
-                n_ev = 0.85
-                
-            if type_energy in self._vehicles_data["n_ice"][type_vehicle]:
-                n_ice = self._vehicles_data["n_ice"][type_vehicle][type_energy]
-            else:
-                n_ice = 0.40
-            
-            if utility_factor > 0 and utility_factor < 1:
-                n_f = 1.0 / ((utility_factor / n_ev) + ((1 - utility_factor) / n_ice))
+            if utility_factor>0 and utility_factor <1:
+                n_f = 1.0/((utility_factor/n_ev)+((1-utility_factor)/n_ice))
             else:
                 n_f = n_ice
         else:
-            n_f = 0.40  # Default
+            n_f = 0.40 # Default
         
-        self.efficiency_penalty = max(0.0, (1.0 - n_f) * 100.0)
-
+        self.efficiency_penalty = (1.0 - n_f)*100.0
+        
     # 2.2.- OBSOLESCENCE
     def compute_obsolescence(self):
         # Inputs
