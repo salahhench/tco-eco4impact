@@ -1,0 +1,131 @@
+{
+  "scenarios": [
+    {
+      "name": "scenario1_cargo_diesel_france",
+      "description": "Large cargo ship, diesel, operating in France",
+
+      "country_reg": "France",
+      "country_oper": "France",
+
+      "ship_class": "cargo",
+      "length": 180,
+      "energy_type": "diesel",
+      "purchase_cost": 20000000,
+      "safety_class": "A",
+      "annual_distance": 50000,
+
+      "n_trips_per_year": 20,
+      "days_per_trip": 7,
+
+      "planning_horizon_years": 1,
+      "maintenance_cost_annual": 300000,
+
+      "crew_list": [
+        { "rank": "captain",  "attribute": "cargo", "team_size": 1 },
+        { "rank": "officer",  "attribute": "cargo", "team_size": 3 },
+        { "rank": "crew",     "attribute": "cargo", "team_size": 12 },
+        { "rank": "mechanic", "attribute": "cargo", "team_size": 3 }
+      ],
+
+      "I_energy": 0.8,
+      "EF_CO2": 0.27,
+      "NOxSOx_rate": 0.02,
+      "annual_energy_consumption_kWh": 12000000
+    },
+
+    {
+      "name": "scenario2_ferry_diesel_spain",
+      "description": "Medium ferry, diesel, short sea route in Spain",
+
+      "country_reg": "Spain",
+      "country_oper": "Spain",
+
+      "ship_class": "ferry",
+      "length": 110,
+      "energy_type": "diesel",
+      "purchase_cost": 8000000,
+      "safety_class": "B",
+      "annual_distance": 25000,
+
+      "n_trips_per_year": 180,
+      "days_per_trip": 1,
+
+      "planning_horizon_years": 1,
+      "maintenance_cost_annual": 180000,
+
+      "crew_list": [
+        { "rank": "captain",  "attribute": "ferry", "team_size": 1 },
+        { "rank": "officer",  "attribute": "ferry", "team_size": 2 },
+        { "rank": "crew",     "attribute": "ferry", "team_size": 8 },
+        { "rank": "mechanic", "attribute": "ferry", "team_size": 2 }
+      ],
+
+      "I_energy": 0.5,
+      "EF_CO2": 0.27,
+      "NOxSOx_rate": 0.015,
+      "annual_energy_consumption_kWh": 6000000
+    },
+
+    {
+      "name": "scenario3_ferry_electric_germany",
+      "description": "Electric ferry on inland waters in Germany",
+
+      "country_reg": "Germany",
+      "country_oper": "Germany",
+
+      "ship_class": "ferry",
+      "length": 90,
+      "energy_type": "electric",
+      "purchase_cost": 9000000,
+      "safety_class": "A",
+      "annual_distance": 20000,
+
+      "n_trips_per_year": 220,
+      "days_per_trip": 1,
+
+      "planning_horizon_years": 1,
+      "maintenance_cost_annual": 120000,
+
+      "crew_list": [
+        { "rank": "captain", "attribute": "ferry", "team_size": 1 },
+        { "rank": "crew",    "attribute": "ferry", "team_size": 6 }
+      ],
+
+      "I_energy": 0.35,
+      "EF_CO2": 0.0,
+      "NOxSOx_rate": 0.0,
+      "annual_energy_consumption_kWh": 3500000
+    },
+
+    {
+      "name": "scenario4_fishing_diesel_italy",
+      "description": "Small fishing vessel, diesel, coastal Italy",
+
+      "country_reg": "Italy",
+      "country_oper": "Italy",
+
+      "ship_class": "fishing",
+      "length": 35,
+      "energy_type": "diesel",
+      "purchase_cost": 1500000,
+      "safety_class": "C",
+      "annual_distance": 12000,
+
+      "n_trips_per_year": 160,
+      "days_per_trip": 0.5,
+
+      "planning_horizon_years": 1,
+      "maintenance_cost_annual": 60000,
+
+      "crew_list": [
+        { "rank": "captain", "attribute": "fishing", "team_size": 1 },
+        { "rank": "crew",    "attribute": "fishing", "team_size": 4 }
+      ],
+
+      "I_energy": 0.25,
+      "EF_CO2": 0.27,
+      "NOxSOx_rate": 0.012,
+      "annual_energy_consumption_kWh": 1200000
+    }
+  ]
+}

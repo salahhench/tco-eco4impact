@@ -1,0 +1,47 @@
+{
+    "country_reg": "Spain",
+    "country_oper": "Spain",
+    "ship_class": "ferry",
+    "length": 110.0,
+    "energy_type": "diesel",
+    "purchase_cost": 8000000.0,
+    "safety_class": "B",
+    "annual_distance": 25000.0,
+    "n_trips_per_year": 180.0,
+    "days_per_trip": 1.0,
+    "planning_horizon_years": 1.0,
+    "maintenance_cost_annual": 180000.0,
+    "crew_list": [
+        {
+            "rank": "captain",
+            "attribute": "ferry",
+            "team_size": 1
+        },
+        {
+            "rank": "officer",
+            "attribute": "ferry",
+            "team_size": 2
+        },
+        {
+            "rank": "crew",
+            "attribute": "ferry",
+            "team_size": 8
+        },
+        {
+            "rank": "mechanic",
+            "attribute": "ferry",
+            "team_size": 2
+        }
+    ],
+    "I_energy": 0.5,
+    "EF_CO2": 0.27,
+    "NOxSOx_rate": 0.015,
+    "annual_energy_consumption_kWh": 6000000.0,
+    "o_taxes": 7510.000000000001,
+    "o_ports": 0.0,
+    "o_insurance": 200000.0,
+    "o_crew": 364000.0,
+    "o_maintenance": 180000.0,
+    "o_energy": 9300000.0,
+    "o_opex_total": 10051510.0
+}
