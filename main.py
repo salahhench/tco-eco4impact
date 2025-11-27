@@ -68,7 +68,7 @@ class ResidualValueCalculator(System):
         - WARRANTY
     - EXTERNAL FACTORS
     '''
-    def setup(self, db_path='database_rv.json'):
+    def setup(self, db_path: str ='database_rv.json'):
         # Load database
         with open(db_path, 'r') as f:
             db_rv = json.load(f)
@@ -78,9 +78,43 @@ class ResidualValueCalculator(System):
         
         object.__setattr__(self, '_vehicles_data',db_rv['vehicle'])
         
-        # Add ports
-        self.add_inward('in_vehicle_properties', VehicleProperties, desc='Vehicle Properties')
-        self.add_inward('in_country_properties', CountryProperties, desc='Country Properties')
+        # # Add ports # SHOULD WE OMITE THIS PART?
+        # self.add_inward('in_vehicle_properties', VehicleProperties, desc='Vehicle Properties')
+        # self.add_inward('in_country_properties', CountryProperties, desc='Country Properties')
+
+        # INPUTS VEHICLE
+        self.add_inward('type_vehicle', 'truck', dtype=str)
+        self.add_inward('type_energy', 'diesel', dtype=str)
+        self.add_inward('registration_country', 'France', dtype=str)
+        
+        self.add_inward('purchase_cost', 0.0, dtype=float)
+        self.add_inward('travel_measure', 0.0, dtype=float)
+        self.add_inward('maintenance_cost', 0.0, dtype=float)
+        
+        self.add_inward('minimum_fuel_consumption', 250.0, dtype=float)
+        self.add_inward('consumption_real', 0.0, dtype=float)
+        self.add_inward('utility_factor', 0.0, dtype=float)
+        
+        self.add_inward('E_annual_kwh', 0.0, dtype=float)
+        self.add_inward('C_bat_kwh', 0.0, dtype=float)
+        self.add_inward('DoD', 0.8, dtype=float)
+        self.add_inward('S_slow', 0.0, dtype=float)
+        self.add_inward('S_fast', 0.0, dtype=float)
+        self.add_inward('S_ultra', 0.0, dtype=float)
+        
+        self.add_inward('powertrain_model_year', 2020, dtype=int)
+        
+        self.add_inward('warranty', 5.0, dtype=float)
+        self.add_inward('type_warranty', 'years', dtype=str)
+        self.add_inward('year_purchase', 2020, dtype=int)
+        
+        self.add_inward('current_year', datetime.now().year, dtype=int)
+
+        # INPUTS COUNTRY
+        self.add_inward('energy_price', 0.0, dtype=float, desc='Energy price ($/L)')
+        self.add_inward('c02_taxes', 0.0, dtype=float, desc='CO2 taxes ($)')
+        self.add_inward('subsidies', 0.0, dtype=float, desc='Subsidies ($)')
+
 
         # Add output variables
         self.add_outward('total_depreciation', 0.0, desc='Total depreciation cost')
@@ -101,7 +135,6 @@ class ResidualValueCalculator(System):
         Formula:        
         :param self: Description
         '''
-
         # Inputs
         vp = self.in_vehicle_properties
         type_vehicle = vp.type_vehicle
