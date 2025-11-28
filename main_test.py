@@ -1,10 +1,9 @@
 """
-Test script for Residual Value Calculator
+Test scenarios for the Residual Value Calculator
 """
 
-from main import ResidualValueCalculator
+from rv_functions import ResidualValueCalculator
 from cosapp.drivers import RunOnce
-from datetime import datetime
 
 def print_results(system, scenario_name):
     """Print formatted results"""
@@ -43,7 +42,7 @@ def print_results(system, scenario_name):
 
 def scenario_1_diesel_truck():
     """Scenario 1: Diesel truck in France"""
-    rv_calc = ResidualValueCalculator(db_path='database_rv.json')
+    rv_calc = ResidualValueCalculator('rv_diesel_truck' ,db_path='db_rv_trucks.json')
     
     # Vehicle properties
     rv_calc.in_vehicle_properties.type_vehicle = 'truck'
@@ -65,16 +64,18 @@ def scenario_1_diesel_truck():
     rv_calc.in_country_properties.subsidies = 0.0
     
     # Run calculation
-    driver = RunOnce()
-    driver.set_scenario(rv_calc)
-    driver.run()
+    rv_calc.add_driver(RunOnce('run1'))
+
+    # Run the system
+    rv_calc.run_drivers()
+
     
     print_results(rv_calc, "Diesel Truck in France (4 years old)")
 
 
 def scenario_2_electric_truck():
     """Scenario 2: Electric truck in Germany"""
-    rv_calc = ResidualValueCalculator(db_path='database_rv.json')
+    rv_calc = ResidualValueCalculator('rv_electric_truck' ,db_path='db_rv_trucks.json')
     
     # Vehicle properties
     rv_calc.in_vehicle_properties.type_vehicle = 'truck'
@@ -105,16 +106,18 @@ def scenario_2_electric_truck():
     rv_calc.in_country_properties.subsidies = 1.0  # Multiplier for subsidy
     
     # Run calculation
-    driver = RunOnce()
-    driver.set_scenario(rv_calc)
-    driver.run()
+    rv_calc.add_driver(RunOnce('run1'))
+
+    # Run the system
+    rv_calc.run_drivers()
+
     
     print_results(rv_calc, "Electric Truck in Germany (2 years old)")
 
 
 def scenario_3_hybrid_truck():
     """Scenario 3: Hybrid truck in France"""
-    rv_calc = ResidualValueCalculator(db_path='database_rv.json')
+    rv_calc = ResidualValueCalculator('rv_hybrid_truck' ,db_path='db_rv_trucks.json')
     
     # Vehicle properties
     rv_calc.in_vehicle_properties.type_vehicle = 'truck'
@@ -136,16 +139,18 @@ def scenario_3_hybrid_truck():
     rv_calc.in_country_properties.subsidies = 1.0
     
     # Run calculation
-    driver = RunOnce()
-    driver.set_scenario(rv_calc)
-    driver.run()
+    rv_calc.add_driver(RunOnce('run1'))
+
+    # Run the system
+    rv_calc.run_drivers()
+
     
     print_results(rv_calc, "Hybrid Truck in France (3 years old)")
 
 
 def scenario_4_hydrogen_truck():
     """Scenario 4: Hydrogen fuel cell truck in Germany"""
-    rv_calc = ResidualValueCalculator(db_path='database_rv.json')
+    rv_calc = ResidualValueCalculator('rv_hydrogen_truck' ,db_path='db_rv_trucks.json')
     
     # Vehicle properties
     rv_calc.in_vehicle_properties.type_vehicle = 'truck'
@@ -167,9 +172,11 @@ def scenario_4_hydrogen_truck():
     rv_calc.in_country_properties.subsidies = 1.0
     
     # Run calculation
-    driver = RunOnce()
-    driver.set_scenario(rv_calc)
-    driver.run()
+    rv_calc.add_driver(RunOnce('run1'))
+
+    # Run the system
+    rv_calc.run_drivers()
+
     
     print_results(rv_calc, "Hydrogen Fuel Cell Truck in Germany (1 year old)")
 
@@ -179,7 +186,7 @@ if __name__ == "__main__":
     print("RESIDUAL VALUE CALCULATOR - TEST SCENARIOS")
     print("="*80)
     
-    # Run all scenarios
+    # Run 4 scenarios
     scenario_1_diesel_truck()
     scenario_2_electric_truck()
     scenario_3_hybrid_truck()
