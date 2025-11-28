@@ -42,7 +42,7 @@ def print_results(system, scenario_name):
 
 def scenario_1_diesel_truck():
     """Scenario 1: Diesel truck in France"""
-    rv_calc = ResidualValueCalculator('rv_diesel_truck' ,db_path='db_rv_trucks.json')
+    rv_calc = ResidualValueCalculator('rv_diesel_truck' ,type_vehicle='trucks')
     
     # Vehicle properties
     rv_calc.in_vehicle_properties.type_vehicle = 'truck'
@@ -75,7 +75,7 @@ def scenario_1_diesel_truck():
 
 def scenario_2_electric_truck():
     """Scenario 2: Electric truck in Germany"""
-    rv_calc = ResidualValueCalculator('rv_electric_truck' ,db_path='db_rv_trucks.json')
+    rv_calc = ResidualValueCalculator('rv_electric_truck' ,type_vehicle='trucks')
     
     # Vehicle properties
     rv_calc.in_vehicle_properties.type_vehicle = 'truck'
@@ -117,7 +117,7 @@ def scenario_2_electric_truck():
 
 def scenario_3_hybrid_truck():
     """Scenario 3: Hybrid truck in France"""
-    rv_calc = ResidualValueCalculator('rv_hybrid_truck' ,db_path='db_rv_trucks.json')
+    rv_calc = ResidualValueCalculator('rv_hybrid_truck' ,type_vehicle='trucks')
     
     # Vehicle properties
     rv_calc.in_vehicle_properties.type_vehicle = 'truck'
@@ -150,10 +150,43 @@ def scenario_3_hybrid_truck():
 
 def scenario_4_hydrogen_truck():
     """Scenario 4: Hydrogen fuel cell truck in Germany"""
-    rv_calc = ResidualValueCalculator('rv_hydrogen_truck' ,db_path='db_rv_trucks.json')
+    rv_calc = ResidualValueCalculator('rv_hydrogen_truck' ,type_vehicle='trucks')
     
     # Vehicle properties
     rv_calc.in_vehicle_properties.type_vehicle = 'truck'
+    rv_calc.in_vehicle_properties.type_energy = 'hydrogen_fuel_cell'
+    rv_calc.in_vehicle_properties.registration_country = 'Germany'
+    rv_calc.in_vehicle_properties.purchase_cost = 200000.0
+    rv_calc.in_vehicle_properties.year_purchase = 2023
+    rv_calc.in_vehicle_properties.current_year = 2024
+    rv_calc.in_vehicle_properties.travel_measure = 25000.0  # km
+    rv_calc.in_vehicle_properties.maintenance_cost = 2000.0
+    rv_calc.in_vehicle_properties.consumption_real = 8.0  # kg/100km
+    rv_calc.in_vehicle_properties.powertrain_model_year = 2023
+    rv_calc.in_vehicle_properties.warranty = 10.0
+    rv_calc.in_vehicle_properties.type_warranty = 'years'
+    
+    # Country properties
+    rv_calc.in_country_properties.energy_price = 12.0  # $/kg
+    rv_calc.in_country_properties.c02_taxes = 0.0
+    rv_calc.in_country_properties.subsidies = 1.0
+    
+    # Run calculation
+    rv_calc.add_driver(RunOnce('run1'))
+
+    # Run the system
+    rv_calc.run_drivers()
+
+    
+    print_results(rv_calc, "Hydrogen Fuel Cell Truck in Germany (1 year old)")
+
+
+def scenario_5_ship():
+    """Scenario 4: Hydrogen fuel cell truck in Germany"""
+    rv_calc = ResidualValueCalculator('rv_hydrogen_truck' ,type_vehicle='ships')
+    
+    # Vehicle properties
+    rv_calc.in_vehicle_properties.type_vehicle = 'ships'
     rv_calc.in_vehicle_properties.type_energy = 'hydrogen_fuel_cell'
     rv_calc.in_vehicle_properties.registration_country = 'Germany'
     rv_calc.in_vehicle_properties.purchase_cost = 200000.0
@@ -191,6 +224,8 @@ if __name__ == "__main__":
     scenario_2_electric_truck()
     scenario_3_hybrid_truck()
     scenario_4_hydrogen_truck()
+    scenario_5_ship()
+
     
     print("\n" + "="*80)
     print("ALL SCENARIOS COMPLETED")

@@ -68,7 +68,10 @@ class ResidualValueCalculator(System):
         - WARRANTY
     - EXTERNAL FACTORS
     '''
-    def setup(self, db_path: str ='db_rv_trucks.json'):
+    def setup(self, type_vehicle: str = "truck"):
+        
+        db_path = f"db_rv_{type_vehicle}.json"
+        
         # Load database
         with open(db_path, 'r') as f:
             db_rv = json.load(f)
