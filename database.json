@@ -1,10 +1,10 @@
 
 
-  
+{  
   "valid_values": {
     "powertrain_types": [
       "diesel", "biodiesel", "hvo", "e_diesel",
-      "gnv", "lng", "bev, "fcet", "hev", "phev", "hice"
+      "gnv", "lng", "bev", "fcet", "hev", "phev", "hice"
     ],
     "countries": ["EU", "FR", "DE", "ES", "IT", "NL", "BE"],
     "vehicle_weight_classes": ["light", "medium", "heavy"]
@@ -162,7 +162,7 @@
   },
   
   "taxes": {
-    FR": {
+    "FR": {
       "heavy": {
         "diesel": {"registration": 2500},
         "biodiesel": {"registration": 1500},

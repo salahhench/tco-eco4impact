@@ -1,0 +1,176 @@
+{
+  "scenarios": [
+    {
+      "name": "scenario1_bet_heavy_eu",
+      "description": "Battery Electric Truck - Heavy Class - EU",
+      "powertrain_type": "bet",
+      "vehicle_number": 2,
+      "vehicle_id": 1,
+      "vehicle_weight_class": "heavy",
+      "country": "EU",
+      "year": 2025,
+      "is_new": true,
+      "owns_vehicle": false,
+      "purchase_price": 80000.0,
+      "conversion_cost": 0.0,
+      "certification_cost": 0.0,
+      "E_t": 15000.0,
+      "S_t": 0.3,
+      "F_t": 0.4,
+      "U_t": 0.1,
+      "Public_t": 0.2,
+      "Private_t": 0.0,
+      "n_slow": null,
+      "n_fast": null,
+      "n_ultra": null,
+      "n_stations": null,
+      "smart_charging_enabled": false,
+      "loan_years": 10,
+      "vehicle_dict": {
+        "1": {
+          "E_t": 15000.0,
+          "S_t": 0.3,
+          "F_t": 0.4,
+          "U_t": 0.1,
+          "Public_t": 0.2,
+          "Private_t": 0.0
+        },
+        "2": {
+          "E_t": 12000.0,
+          "S_t": 0.6,
+          "F_t": 0.3,
+          "U_t": 0.1,
+          "Public_t": 0.0,
+          "Private_t": 0.0
+        }
+      }
+    },
+    {
+      "name": "scenario2_diesel_medium_france",
+      "description": "Diesel Truck - Medium Class - France",
+      "powertrain_type": "diesel",
+      "vehicle_number": 1,
+      "vehicle_id": 1,
+      "vehicle_weight_class": "light",
+      "country": "FR",
+      "year": 2025,
+      "is_new": true,
+      "owns_vehicle": false,
+      "purchase_price": 50000.0,
+      "conversion_cost": 0.0,
+      "certification_cost": 0.0,
+      "E_t": 0.0,
+      "S_t": 0.0,
+      "F_t": 0.0,
+      "U_t": 0.0,
+      "Public_t": 0.0,
+      "Private_t": 1.0,
+      "n_slow": null,
+      "n_fast": null,
+      "n_ultra": null,
+      "n_stations": 1,
+      "smart_charging_enabled": false,
+      "loan_years": 10,
+      "vehicle_dict": {
+        "1": {
+          "E_t": 0.0,
+          "S_t": 0.0,
+          "F_t": 0.0,
+          "U_t": 0.0,
+          "Public_t": 0.0,
+          "Private_t": 1.0
+        }
+      }
+    },
+    {
+      "name": "scenario3_fcet_heavy_germany",
+      "description": "Fuel Cell Electric Truck - Heavy Class - Germany",
+      "powertrain_type": "fcet",
+      "vehicle_number": 3,
+      "vehicle_id": 1,
+      "vehicle_weight_class": "heavy",
+      "country": "Germany",
+      "year": 2025,
+      "is_new": true,
+      "owns_vehicle": false,
+      "purchase_price": 120000.0,
+      "conversion_cost": 0.0,
+      "certification_cost": 0.0,
+      "E_t": 0.0,
+      "S_t": 0.0,
+      "F_t": 0.0,
+      "U_t": 0.0,
+      "Public_t": 0.0,
+      "Private_t": 1.0,
+      "n_slow": null,
+      "n_fast": null,
+      "n_ultra": null,
+      "n_stations": 1,
+      "smart_charging_enabled": false,
+      "loan_years": 10,
+      "vehicle_dict": {
+        "1": {
+          "E_t": 0.0,
+          "S_t": 0.0,
+          "F_t": 0.0,
+          "U_t": 0.0,
+          "Public_t": 0.0,
+          "Private_t": 0.33
+        },
+        "2": {
+          "E_t": 0.0,
+          "S_t": 0.0,
+          "F_t": 0.0,
+          "U_t": 0.0,
+          "Public_t": 0.0,
+          "Private_t": 0.33
+        },
+        "3": {
+          "E_t": 0.0,
+          "S_t": 0.0,
+          "F_t": 0.0,
+          "U_t": 0.0,
+          "Public_t": 0.0,
+          "Private_t": 0.34
+        }
+      }
+    },
+    {
+      "name": "scenario4_phev_light_spain",
+      "description": "Plug-in Hybrid - Light Class - Spain",
+      "powertrain_type": "phev",
+      "vehicle_number": 1,
+      "vehicle_id": 1,
+      "vehicle_weight_class": "light",
+      "country": "Spain",
+      "year": 2025,
+      "is_new": true,
+      "owns_vehicle": false,
+      "purchase_price": 45000.0,
+      "conversion_cost": 0.0,
+      "certification_cost": 0.0,
+      "E_t": 8000.0,
+      "S_t": 0.8,
+      "F_t": 0.2,
+      "U_t": 0.0,
+      "Public_t": 0.0,
+      "Private_t": 0.0,
+      "n_slow": null,
+      "n_fast": null,
+      "n_ultra": null,
+      "n_stations": null,
+      "smart_charging_enabled": true,
+      "loan_years": 8,
+      "vehicle_dict": {
+        "1": {
+          "E_t": 8000.0,
+          "S_t": 0.8,
+          "F_t": 0.2,
+          "U_t": 0.0,
+          "Public_t": 0.0,
+          "Private_t": 0.0
+        }
+      }
+    }
+  ]
+}
