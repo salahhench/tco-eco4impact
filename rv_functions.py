@@ -42,6 +42,7 @@ class VehiclePropertiesPort(Port):
         self.add_variable('year_purchase', dtype=int, desc='Year of purchase', value=2020)
         
         self.add_variable('current_year', dtype=int, desc='Current year', value=datetime.now().year)
+        self.add_variable('vehicle_number', dtype=int, desc='Numbers of vehicle', value=0)
 
 
 class CountryPropertiesPort(Port):
@@ -110,6 +111,7 @@ class ResidualValueCalculator(System):
         type_vehicle = vp.type_vehicle
         type_energy = vp.type_energy
         country = vp.registration_country
+        number_of_vehicles = vp.vehicle_number
 
         # Parameters of database
         rate_per_year = self._countries_data[country]["depreciation"]["depreciation_rate_per_year"][type_energy]
@@ -125,6 +127,7 @@ class ResidualValueCalculator(System):
 
         # Total depreciation
         self.total_depreciation = purchase_cost - (dep_per_year + dep_by_usage + dep_maintenance)
+        self.total_depreciation = self.total_depreciation*number_of_vehicles
 
     # 2.1.- PENALIZATION OF EFICIENCY
     def compute_eficiency(self):
@@ -262,10 +265,13 @@ class ResidualValueCalculator(System):
         self.compute_obsolescence()
         self.compute_charging()
         self.compute_warranty()
-
+        vp = self.in_vehicle_properties
+        number_of_vehicles = vp.vehicle_number
+        
         # Compute IMPACT HEALTH
         self.total_impact_health = (self.efficiency_penalty+self.obsolescence_penalty+self.charging_penalty+self.warranty_penalty)
-    
+        self.total_impact_health = self.total_impact_health*number_of_vehicles
+
     # 3.- EXTERNAL FACTORS
     def compute_external_factors(self):
         # Inputs
@@ -274,9 +280,9 @@ class ResidualValueCalculator(System):
         energy_price = cp.energy_price
         c02_taxes = cp.c02_taxes
         subsidies = cp.subsidies
-        type_vehicle = vp.type_vehicle
         type_energy = vp.type_energy
         country = vp.registration_country
+        number_of_vehicles = vp.vehicle_number
 
 
         # Parameters of database
@@ -286,6 +292,7 @@ class ResidualValueCalculator(System):
 
         # Total external_factors
         self.total_external_factors = energy_price_factor*energy_price+ c02_taxes*cO2_taxes_factor + subsidies*subsidies_factor
+        self.total_external_factors = self.total_external_factors*number_of_vehicles
 
     # 4.- RV
     def compute(self):
@@ -294,3 +301,5 @@ class ResidualValueCalculator(System):
         self.compute_external_factors()
 
         self.rv = (self.total_depreciation+self.total_impact_health+self.total_external_factors)
+
+# %%

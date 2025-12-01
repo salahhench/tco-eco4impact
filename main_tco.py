@@ -21,8 +21,7 @@ from cosapp.drivers import RunOnce
 from capex_calculator import CAPEXSystem
 from Opex_Calculator_CosApp import TruckOPEXCalculator
 from Opex_Calculator_ships import ShipOPEXCalculator
-from rv_calculator import ResidualValueSystem   # pon el nombre real del archivo RV
-from compute import ResidualValueCalculator
+from rv_functions import ResidualValueCalculator
 
 # ----------------------------------------------------------------------
 # 1. ESTRUCTURA DE ENTRADA GENERAL
@@ -85,7 +84,7 @@ def make_example_truck_inputs():
             "registration_country": "France",
             "purchase_cost": 150_000.0,
             "year_purchase": 2020,
-            "current_year": 2024,
+            "current_year": 2025,
             "travel_measure": 600_000.0,
             "maintenance_cost": 7_000.0,
             "minimum_fuel_consumption": 250.0,
@@ -96,6 +95,7 @@ def make_example_truck_inputs():
             "energy_price": 1.5,
             "c02_taxes": 500,
             "subsidies":0,
+            "vehicle_number": 1,
         },
     }
 
@@ -246,28 +246,55 @@ def run_opex_ship(opex_inputs: dict) -> float:
 
 
 def run_rv(rv_inputs: dict) -> float:
-    """Lanza ResidualValueSystem y devuelve residual_value."""
-    rv_sys = ResidualValueSystem("rv_global")
+    """Lanza ResidualValueCalculator y devuelve residual_value."""
+    rv_sys = ResidualValueCalculator("rv_global")
 
-    # inputs mínimos
-    rv_sys.type_vehicle = rv_inputs.get("type_vehicle", "Truck")
-    rv_sys.type_energy = rv_inputs.get("type_energy", "Diesel_fosile")
-    rv_sys.taxes = rv_inputs.get("taxes", 0.0)
+    # Vehicle properties
+    rv_sys.in_vehicle_properties.type_vehicle = rv_inputs["type_vehicle"]
+    rv_sys.in_vehicle_properties.type_energy = rv_inputs["type_energy"]
+    rv_sys.in_vehicle_properties.registration_country = rv_inputs["registration_country"]
+    rv_sys.in_vehicle_properties.purchase_cost = rv_inputs["purchase_cost"]
+    rv_sys.in_vehicle_properties.year_purchase = rv_inputs["year_purchase"]
+    rv_sys.in_vehicle_properties.current_year = rv_inputs["current_year"]
+    rv_sys.in_vehicle_properties.travel_measure = rv_inputs["travel_measure"]
+    rv_sys.in_vehicle_properties.maintenance_cost = rv_inputs["maintenance_cost"]
+    rv_sys.in_vehicle_properties.minimum_fuel_consumption = rv_inputs["minimum_fuel_consumption"]
+    rv_sys.in_vehicle_properties.powertrain_model_year = rv_inputs["powertrain_model_year"]
+    rv_sys.in_vehicle_properties.warranty = rv_inputs["warranty"]
+    rv_sys.in_vehicle_properties.type_warranty = rv_inputs["type_warranty"]
+    
+    # Country properties
+    rv_sys.in_country_properties.energy_price = rv_inputs["energy_price"]
+    rv_sys.in_country_properties.c02_taxes = rv_inputs["co2_taxes"]
+    rv_sys.in_country_properties.subsidies = rv_inputs["subsidies"]
 
-    # módulo de depreciación
-    rv_sys.depreciation_module.purchase_cost = rv_inputs.get("purchase_cost", 0.0)
-    rv_sys.depreciation_module.age_vehicle = rv_inputs.get("age_vehicle", 0.0)
-    rv_sys.depreciation_module.travel_measure = rv_inputs.get("travel_measure", 0.0)
-    rv_sys.depreciation_module.maintenance_cost = rv_inputs.get("maintenance_cost", 0.0)
+    # Run calculation
+    rv_sys.add_driver(RunOnce('run1'))
 
+    # Run the system
     rv_sys.run_drivers()
 
-    print(f"\n[RV] Depreciation: {rv_sys.depreciation_module.depreciation:,.2f} €")
-    print(f"[RV] Impact health: {rv_sys.health_module.impact_health:.2f} %")
-    print(f"[RV] Taxes: {rv_sys.taxes:,.2f} €")
-    print(f"[RV] Residual value: {rv_sys.residual_value:,.2f} €")
+    print("\n--- RV RESULTS ---")
+    print("\n" + "-"*80)
+    print("DEPRECIATION")
+    print("-"*80)
+    print(f"Total Depreciation Value: ${rv_sys.total_depreciation:,.2f}")
+    
+    print("\n" + "-"*80)
+    print("IMPACT HEALTH PENALTIES")
+    print("-"*80)
+    print(f"  Total Impact Health:      ${rv_sys.total_impact_health:,.2f}")
+    
+    print("\n" + "-"*80)
+    print("EXTERNAL FACTORS")
+    print("-"*80)
+    print(f"External Factors Adjustment: ${rv_sys.total_external_factors:,.2f}")
+    
+    print("\n" + "="*80)
+    print(f"FINAL RESIDUAL VALUE: ${rv_sys.rv:,.2f}")
+    print("="*80)
 
-    return rv_sys.residual_value
+    return rv_sys.rv
 
 
 # ----------------------------------------------------------------------
