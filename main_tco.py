@@ -22,7 +22,7 @@ from capex_calculator import CAPEXSystem
 from Opex_Calculator_CosApp import TruckOPEXCalculator
 from Opex_Calculator_ships import ShipOPEXCalculator
 from rv_calculator import ResidualValueSystem   # pon el nombre real del archivo RV
-
+from compute import ResidualValueCalculator
 
 # ----------------------------------------------------------------------
 # 1. ESTRUCTURA DE ENTRADA GENERAL
@@ -80,13 +80,22 @@ def make_example_truck_inputs():
 
         # ---------- RV ----------
         "rv": {
-            "type_vehicle": "Truck",
-            "type_energy": "Diesel_fosile",  # ojo: usa los nombres del Enum
-            "taxes": 5_000.0,
+            "type_vehicle": "truck",
+            "type_energy": "diesel",
+            "registration_country": "France",
             "purchase_cost": 150_000.0,
-            "age_vehicle": 5.0,
+            "year_purchase": 2020,
+            "current_year": 2024,
             "travel_measure": 600_000.0,
-            "maintenance_cost": 20_000.0,
+            "maintenance_cost": 7_000.0,
+            "minimum_fuel_consumption": 250.0,
+            "powertrain_model_year" : 2020,
+            "warranty" : 5.0,
+            "type_warranty" : 'years',
+
+            "energy_price": 1.5,
+            "c02_taxes": 500,
+            "subsidies":0,
         },
     }
 
