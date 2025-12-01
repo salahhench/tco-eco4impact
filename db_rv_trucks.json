@@ -1,0 +1,163 @@
+{
+    "countries":[
+        {
+            "country":"France",
+            "data_country":{
+                "external_factors":{
+                    "energy_price_factor":{                        
+                            "diesel":0.05,
+                            "electric":0.00001,
+                            "hybrid":0.03,
+                            "hydrogen_fuel_cell":0.07,
+                            "hydrogen_h2":0.07,
+                            "cng":0.04,
+                            "lng":0.04                        
+                    },
+                    "CO2_taxes_factor":10,
+                    "subsidies_factor":{
+                            "diesel":0.0,
+                            "electric":5000.0,
+                            "hybrid":2000.0,
+                            "hydrogen_fuel_cell":8000.0,
+                            "hydrogen_h2":8000.0,
+                            "cng":3000.0,
+                            "lng":3000.0
+                    }
+                },
+                "yearly_obsolescence_rate":{
+                        "diesel": 0.05,
+                        "electric": 0.07,
+                        "hybrid": 0.06,
+                        "hydrogen_fuel_cell": 0.08,
+                        "hydrogen_h2": 0.08,
+                        "cng": 0.05,
+                        "lng": 0.05
+                },
+                "depreciation":{
+                    "depreciation_rate_per_year": {
+                            "diesel": 0.05,
+                            "electric": 0.07,
+                            "hybrid": 0.06,
+                            "hydrogen_fuel_cell": 0.08,
+                            "hydrogen_h2": 0.08,
+                            "cng": 0.05,
+                            "lng": 0.05
+                    },
+                    "depreciation_rate_by_usage": {
+                            "diesel": 0.05,
+                            "electric": 0.07,
+                            "hybrid": 0.06,
+                            "hydrogen_fuel_cell": 0.08,
+                            "hydrogen_h2": 0.08,
+                            "cng": 0.05,
+                            "lng": 0.05
+                    },
+                    "coef_depreciation_maintenance": {
+                            "diesel": 0.05,
+                            "electric": 0.07,
+                            "hybrid": 0.06,
+                            "hydrogen_fuel_cell": 0.08,
+                            "hydrogen_h2": 0.08,
+                            "cng": 0.05,
+                            "lng": 0.05
+                    }
+                }
+            }
+
+        },
+        {
+            "country":"Germany",
+            "data_country":{
+                "external_factors":{
+                    "energy_price_factor":{
+                            "diesel":0.06,
+                            "electric":0.00002,
+                            "hybrid":0.04,
+                            "hydrogen_fuel_cell":0.08,
+                            "hydrogen_h2":0.08,
+                            "cng":0.05,
+                            "lng":0.05
+                    },
+                    "CO2_taxes_factor":12,
+                    "subsidies_factor":{
+                            "diesel":0.0,
+                            "electric":6000.0,
+                            "hybrid":2500.0,
+                            "hydrogen_fuel_cell":9000.0,
+                            "hydrogen_h2":9000.0,
+                            "cng":3500.0,
+                            "lng":3500.0
+                    }
+                },
+                "yearly_obsolescence_rate":{
+                        "diesel": 0.06,
+                        "electric": 0.08,
+                        "hybrid": 0.07,
+                        "hydrogen_fuel_cell": 0.09,
+                        "hydrogen_h2": 0.09,
+                        "cng": 0.06,
+                        "lng": 0.06
+                },
+                "depreciation":{
+                    "depreciation_rate_per_year": {
+                            "diesel": 0.05,
+                            "electric": 0.07,
+                            "hybrid": 0.06,
+                            "hydrogen_fuel_cell": 0.08,
+                            "hydrogen_h2": 0.08,
+                            "cng": 0.05,
+                            "lng": 0.05
+                    },
+                    "depreciation_rate_by_usage": {
+                            "diesel": 0.05,
+                            "electric": 0.07,
+                            "hybrid": 0.06,
+                            "hydrogen_fuel_cell": 0.08,
+                            "hydrogen_h2": 0.08,
+                            "cng": 0.05,
+                            "lng": 0.05
+                    },
+                    "coef_depreciation_maintenance": {
+                            "diesel": 0.05,
+                            "electric": 0.07,
+                            "hybrid": 0.06,
+                            "hydrogen_fuel_cell": 0.08,
+                            "hydrogen_h2": 0.08,
+                            "cng": 0.05,
+                            "lng": 0.05
+                    }
+                }
+            }
+        }
+    ],
+    "vehicle":{
+        "consumption_benchmark":{            
+                "electric":20.0,
+                "hydrogen_fuel_cell":50.0            
+        },
+        "heating_value":{            
+                "diesel":36.0,
+                "hydrogen_h2":120.0,
+                "cng":50.0,
+                "lng":70.0
+        },
+        "n_ev":{            
+                "hybrid":150.0
+        },
+        "n_ice":{            
+                "hybrid":0.0
+        },
+        "d_slow":{            
+                "electric":0.0
+        },
+        "d_fast":{            
+                "electric":0.3
+        },
+        "d_ultra":{            
+                "electric":0.1
+        },
+        "k_d":{
+                "electric":0.00001
+        }
+    }   
+}    
