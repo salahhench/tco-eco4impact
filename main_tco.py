@@ -133,23 +133,42 @@ def make_example_ship_inputs():
         "year": 2025,
         "operation_years": 5,
 
-        # ---------- CAPEX (aún usando CAPEXSystem genérico) ----------
         "capex": {
-            "purchase_price": 12_000_000.0,
+            "powertrain_type": "diesel",
+            "vehicle_number": 1,
+            "vehicle_id": 1,
+            "vehicle_weight_class": "light",
+            "country": "FR",
+            "year": 2025,
+
+            # Vehicle acquisition
             "is_new": True,
             "owns_vehicle": False,
+            "purchase_price": 50000.0,
             "conversion_cost": 0.0,
             "certification_cost": 0.0,
-            "vehicle_number": 1,
-            "vehicle_dict": {
-                1: {"E_t": 5_000_000.0, "S_t": 0.0, "F_t": 0.0, "U_t": 0.0, "Public_t": 0.0}
-            },
-            "id": 1,
+
+            # Infrastructure
             "n_slow": None,
             "n_fast": None,
             "n_ultra": None,
-            "n_stations": None,
+            "n_stations": 1,
             "smart_charging_enabled": False,
+
+            # Financing
+            "loan_years": 10,
+
+            # Vehicle charging / energy structure (ONLY place where E_t, S_t, etc. are allowed)
+            "vehicle_dict": {
+                "1": {
+                    "E_t": 0.0,
+                    "S_t": 0.0,
+                    "F_t": 0.0,
+                    "U_t": 0.0,
+                    "Public_t": 0.0,
+                    "Private_t": 1.0
+                }
+            }
         },
 
         # ---------- OPEX SHIP ----------
