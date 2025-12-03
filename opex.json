@@ -1,0 +1,196 @@
+{
+    "countries": [
+      {
+        "country": "France",
+        "opex_database": {
+          "taxes": {
+            "price_energy_km": 0.08,
+            "tax_energy_c_e": {
+              "diesel": 0.65,
+              "electric": 0.10,
+              "hybrid": 0.45,
+              "hydrogen_fuel_cell": 0.20,
+              "hydrogen_h2": 0.20,
+              "cng": 0.50,
+              "lng": 0.50
+            },
+            "tax_reg_c_k_L": {
+              "N1": 200.0,
+              "N2": 350.0,
+              "N3": 500.0
+            },
+            "tax_annual_c_k_L": {
+              "N1": 120.0,
+              "N2": 200.0,
+              "N3": 300.0
+            },
+            "regional_coefficient": 1.0,
+            "tax_CO2_c_e": 0.045,
+            "B_env_c_k_e": {
+              "diesel": 0.0,
+              "electric": -200.0,
+              "hybrid": -100.0,
+              "hydrogen_fuel_cell": -150.0,
+              "hydrogen_h2": -150.0,
+              "cng": -80.0,
+              "lng": -80.0
+            }
+          },
+          "tolls": {
+            "price_per_km": {
+              "N1": {
+                "diesel": 0.15,
+                "electric": 0.12,
+                "hybrid": 0.14,
+                "hydrogen_fuel_cell": 0.13,
+                "hydrogen_h2": 0.13,
+                "cng": 0.14,
+                "lng": 0.14
+              },
+              "N2": {
+                "diesel": 0.25,
+                "electric": 0.20,
+                "hybrid": 0.23,
+                "hydrogen_fuel_cell": 0.22,
+                "hydrogen_h2": 0.22,
+                "cng": 0.24,
+                "lng": 0.24
+              },
+              "N3": {
+                "diesel": 0.35,
+                "electric": 0.28,
+                "hybrid": 0.32,
+                "hydrogen_fuel_cell": 0.30,
+                "hydrogen_h2": 0.30,
+                "cng": 0.33,
+                "lng": 0.33
+              }
+            }
+          },
+          "insurance": {
+            "insurance_rate_c_L_e_safety": {
+              "diesel": 0.030,
+              "electric": 0.045,
+              "hybrid": 0.035,
+              "hydrogen_fuel_cell": 0.050,
+              "hydrogen_h2": 0.050,
+              "cng": 0.032,
+              "lng": 0.032
+            }
+          },
+          "crew": {
+            "wage_of_crew_rank": {
+              "driver": 35000.0
+            }
+          },
+          "energy": {
+            "energy_price_c_e": {
+              "diesel": 1.65,
+              "electric": 0.18,
+              "hybrid": 1.50,
+              "hydrogen_fuel_cell": 12.0,
+              "hydrogen_h2": 12.0,
+              "cng": 1.20,
+              "lng": 1.10
+            }
+          }
+        }
+      },
+      {
+        "country": "Germany",
+        "opex_database": {
+          "taxes": {
+            "price_energy_km": 0.09,
+            "tax_energy_c_e": {
+              "diesel": 0.75,
+              "electric": 0.12,
+              "hybrid": 0.50,
+              "hydrogen_fuel_cell": 0.25,
+              "hydrogen_h2": 0.25,
+              "cng": 0.60,
+              "lng": 0.60
+            },
+            "tax_reg_c_k_L": {
+              "N1": 250.0,
+              "N2": 400.0,
+              "N3": 600.0
+            },
+            "tax_annual_c_k_L": {
+              "N1": 150.0,
+              "N2": 250.0,
+              "N3": 380.0
+            },
+            "regional_coefficient": 1.1,
+            "tax_CO2_c_e": 0.055,
+            "B_env_c_k_e": {
+              "diesel": 0.0,
+              "electric": -250.0,
+              "hybrid": -120.0,
+              "hydrogen_fuel_cell": -180.0,
+              "hydrogen_h2": -180.0,
+              "cng": -90.0,
+              "lng": -90.0
+            }
+          },
+          "tolls": {
+            "price_per_km": {
+              "N1": {
+                "diesel": 0.18,
+                "electric": 0.10,
+                "hybrid": 0.15,
+                "hydrogen_fuel_cell": 0.12,
+                "hydrogen_h2": 0.12,
+                "cng": 0.16,
+                "lng": 0.16
+              },
+              "N2": {
+                "diesel": 0.28,
+                "electric": 0.18,
+                "hybrid": 0.24,
+                "hydrogen_fuel_cell": 0.20,
+                "hydrogen_h2": 0.20,
+                "cng": 0.26,
+                "lng": 0.26
+              },
+              "N3": {
+                "diesel": 0.40,
+                "electric": 0.25,
+                "hybrid": 0.35,
+                "hydrogen_fuel_cell": 0.28,
+                "hydrogen_h2": 0.28,
+                "cng": 0.38,
+                "lng": 0.38
+              }
+            }
+          },
+          "insurance": {
+            "insurance_rate_c_L_e_safety": {
+              "diesel": 0.028,
+              "electric": 0.042,
+              "hybrid": 0.033,
+              "hydrogen_fuel_cell": 0.048,
+              "hydrogen_h2": 0.048,
+              "cng": 0.030,
+              "lng": 0.030
+            }
+          },
+          "crew": {
+            "wage_of_crew_rank": {
+              "driver": 42000.0
+            }
+          },
+          "energy": {
+            "energy_price_c_e": {
+              "diesel": 1.75,
+              "electric": 0.22,
+              "hybrid": 1.60,
+              "hydrogen_fuel_cell": 13.0,
+              "hydrogen_h2": 13.0,
+              "cng": 1.30,
+              "lng": 1.20
+            }
+          }
+        }
+      }
+    ]
+ }
