@@ -18,10 +18,10 @@ Main TCO orchestrator for Eco4Impact / BoatTwin project.
 from cosapp.drivers import RunOnce
 
 # === AJUSTA ESTOS IMPORTS A TUS NOMBRES REALES DE ARCHIVO ===
-from capex_calculator import CAPEXSystem
-from Opex_Calculator_CosApp import TruckOPEXCalculator
+from Opex_Calculator_trucks import TruckOPEXCalculator
 from Opex_Calculator_ships import ShipOPEXCalculator
 from rv_functions import ResidualValueCalculator
+from capex_calculator import VehicleCAPEXCalculator
 
 # ----------------------------------------------------------------------
 # 1. ESTRUCTURA DE ENTRADA GENERAL
