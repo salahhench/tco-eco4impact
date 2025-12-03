@@ -101,7 +101,7 @@ class VehicleCAPEXPort(Port):
 class VehicleCAPEXCalculator(System):
     """CAPEX calculation system for vehicles following OPEX structure."""
     
-    def setup(self, db_path: str = "database.json"):
+    def setup(self, db_path: str = "db_capex_trucks.json"):
         # -------------------- LOAD DATABASE (YELLOW) --------------------
         full_db_path = os.path.join(BASE_DIR, db_path) if not os.path.isabs(db_path) else db_path
         with open(full_db_path, "r", encoding="utf-8") as f:
