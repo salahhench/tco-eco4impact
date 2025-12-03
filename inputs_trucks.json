@@ -1,13 +1,13 @@
 {
   "scenarios": [
     {
-      "name": "scenario1_bet_heavy_eu",
-      "description": "Battery Electric Truck - Heavy Class - EU",
+      "name": "scenario1_bet_heavy_fr",
+      "description": "Battery Electric Truck - Heavy Class - FR",
       "powertrain_type": "bet",
       "vehicle_number": 2,
       "vehicle_id": 1,
       "vehicle_weight_class": "heavy",
-      "country": "EU",
+      "country": "FR",
       "year": 2025,
       "is_new": true,
       "owns_vehicle": false,
