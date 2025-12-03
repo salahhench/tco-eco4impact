@@ -41,23 +41,43 @@ def make_example_truck_inputs():
 
         # ---------- CAPEX ----------
         "capex": {
-            "purchase_price": 150_000.0,
+            "powertrain_type": "diesel",
+            "vehicle_number": 1,
+            "vehicle_id": 1,
+            "vehicle_weight_class": "light",
+            "country": "FR",
+            "year": 2025,
+
+            # Vehicle acquisition
             "is_new": True,
             "owns_vehicle": False,
+            "purchase_price": 50000.0,
             "conversion_cost": 0.0,
             "certification_cost": 0.0,
-            "vehicle_number": 1,
-            # energía de flota (ejemplo simple, 1 vehículo)
-            "vehicle_dict": {
-                1: {"E_t": 42_000.0, "S_t": 0.3, "F_t": 0.5, "U_t": 0.2, "Public_t": 0.0}
-            },
-            "id": 1,
+
+            # Infrastructure
             "n_slow": None,
             "n_fast": None,
             "n_ultra": None,
-            "n_stations": None,
+            "n_stations": 1,
             "smart_charging_enabled": False,
+
+            # Financing
+            "loan_years": 10,
+
+            # Vehicle charging / energy structure (ONLY place where E_t, S_t, etc. are allowed)
+            "vehicle_dict": {
+                "1": {
+                    "E_t": 0.0,
+                    "S_t": 0.0,
+                    "F_t": 0.0,
+                    "U_t": 0.0,
+                    "Public_t": 0.0,
+                    "Private_t": 1.0
+                }
+            }
         },
+
 
         # ---------- OPEX TRUCK ----------
         "opex_truck": {
@@ -113,23 +133,42 @@ def make_example_ship_inputs():
         "year": 2025,
         "operation_years": 5,
 
-        # ---------- CAPEX (aún usando CAPEXSystem genérico) ----------
         "capex": {
-            "purchase_price": 12_000_000.0,
+            "powertrain_type": "diesel",
+            "vehicle_number": 1,
+            "vehicle_id": 1,
+            "vehicle_weight_class": "light",
+            "country": "FR",
+            "year": 2025,
+
+            # Vehicle acquisition
             "is_new": True,
             "owns_vehicle": False,
+            "purchase_price": 50000.0,
             "conversion_cost": 0.0,
             "certification_cost": 0.0,
-            "vehicle_number": 1,
-            "vehicle_dict": {
-                1: {"E_t": 5_000_000.0, "S_t": 0.0, "F_t": 0.0, "U_t": 0.0, "Public_t": 0.0}
-            },
-            "id": 1,
+
+            # Infrastructure
             "n_slow": None,
             "n_fast": None,
             "n_ultra": None,
-            "n_stations": None,
+            "n_stations": 1,
             "smart_charging_enabled": False,
+
+            # Financing
+            "loan_years": 10,
+
+            # Vehicle charging / energy structure (ONLY place where E_t, S_t, etc. are allowed)
+            "vehicle_dict": {
+                "1": {
+                    "E_t": 0.0,
+                    "S_t": 0.0,
+                    "F_t": 0.0,
+                    "U_t": 0.0,
+                    "Public_t": 0.0,
+                    "Private_t": 1.0
+                }
+            }
         },
 
         # ---------- OPEX SHIP ----------
@@ -173,36 +212,40 @@ def make_example_ship_inputs():
 # 2. WRAPPERS PARA CADA MÓDULO
 # ----------------------------------------------------------------------
 def run_capex(capex_inputs: dict) -> float:
-    """Lanza CAPEXSystem y devuelve capex_per_vehicle."""
-    sys_capex = CAPEXSystem("capex_global")
+    capex_inputs = capex_inputs.get("capex", {})
 
-    # inputs principales
-    sys_capex.powertrain_type = capex_inputs.get("powertrain_type", "bet")
-    sys_capex.vehicle_number = capex_inputs.get("vehicle_number", 1)
-    sys_capex.id = capex_inputs.get("id", 1)
-    sys_capex.vehicle_weight_class = capex_inputs.get("vehicle_weight_class", "heavy")
-    sys_capex.country = capex_inputs.get("country", "EU")
-    sys_capex.year = capex_inputs.get("year", 2025)
+    sys_capex = VehicleCAPEXCalculator("capex_global")
 
-    # vehicle
-    sys_capex.is_new = capex_inputs.get("is_new", True)
-    sys_capex.owns_vehicle = capex_inputs.get("owns_vehicle", False)
-    sys_capex.purchase_price = capex_inputs.get("purchase_price", 0.0)
-    sys_capex.conversion_cost = capex_inputs.get("conversion_cost", 0.0)
+    # -------------------- MAIN USER INPUTS --------------------
+    sys_capex.powertrain_type      = capex_inputs.get("powertrain_type", "diesel")
+    sys_capex.vehicle_number       = capex_inputs.get("vehicle_number", 1)
+    sys_capex.vehicle_id           = capex_inputs.get("vehicle_id", 1)
+    sys_capex.vehicle_weight_class = capex_inputs.get("vehicle_weight_class", "light")
+    sys_capex.country              = capex_inputs.get("country", "FR")
+    sys_capex.year                 = capex_inputs.get("year", 2025)
+
+    # -------------------- VEHICLE ACQUISITION --------------------
+    sys_capex.is_new             = capex_inputs.get("is_new", True)
+    sys_capex.owns_vehicle       = capex_inputs.get("owns_vehicle", False)
+    sys_capex.purchase_price     = capex_inputs.get("purchase_price", 0.0)
+    sys_capex.conversion_cost    = capex_inputs.get("conversion_cost", 0.0)
     sys_capex.certification_cost = capex_inputs.get("certification_cost", 0.0)
-
-    # energía / infraestructura
     sys_capex.vehicle_dict = capex_inputs.get("vehicle_dict", {})
-    sys_capex.n_slow = capex_inputs.get("n_slow")
-    sys_capex.n_fast = capex_inputs.get("n_fast")
-    sys_capex.n_ultra = capex_inputs.get("n_ultra")
-    sys_capex.n_stations = capex_inputs.get("n_stations")
+
+    # -------------------- INFRASTRUCTURE --------------------
+    sys_capex.n_slow                = capex_inputs.get("n_slow")
+    sys_capex.n_fast                = capex_inputs.get("n_fast")
+    sys_capex.n_ultra               = capex_inputs.get("n_ultra")
+    sys_capex.n_stations            = capex_inputs.get("n_stations", 0)
     sys_capex.smart_charging_enabled = capex_inputs.get("smart_charging_enabled", False)
+
+    # -------------------- FINANCING --------------------
+    sys_capex.loan_years = capex_inputs.get("loan_years", 10)
 
     driver = sys_capex.add_driver(RunOnce("run_capex"))
     sys_capex.run_drivers()
 
-    return sys_capex.capex_per_vehicle
+    return sys_capex.c_capex_per_vehicle
 
 
 def run_opex_truck(opex_inputs: dict) -> float:
