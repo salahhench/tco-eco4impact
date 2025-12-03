@@ -32,7 +32,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 # ============================================================================
 POWERTRAIN_TYPES = [
     'bet', 'phev', 'fcet', 'hice', 'gnv', 'lng',
-    'diesel', 'biodiesel', 'hvo', 'e_diesel', 'hev'
+    'diesel', 'biodiesel', 'hvo', 'e_diesel'
 ]
 
 VEHICLE_WEIGHT_CLASSES = ['light', 'medium', 'heavy']
