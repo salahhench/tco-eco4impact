@@ -20,9 +20,9 @@ COLOR CODING FROM DIAGRAMS:
 
 import json
 import sys
+import os
 
 from cosapp.drivers import RunOnce 
-
 from cosapp.base import System
 from cosapp.ports import Port
 
@@ -31,26 +31,27 @@ if sys.platform == "win32":
     sys.stdout.reconfigure(encoding="utf-8")
 
 
-import os
-
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
 # ============================================================================
-# 0. SHIPS TYPES
+# 0. SHIPS TYPES → CLASE FISCAL PARA LA BD (ro_pax, small, medium, large, ctv)
 # ============================================================================
+
 SHIP_CLASS_TO_TRUCK_CLASS = {
-   
-    "fishing": "N1",
-    "small": "N1",
-    "crew_transport": "N1",
+    "fishing": "small",
+    "small": "small",
+    "crew_transport": "ctv",
+    "ctv": "ctv",
 
-    "ferry": "N2",
-    "medium": "N2",
+    "ferry": "ro_pax",
+    "ro_pax": "ro_pax",
 
-    "cargo": "N3",
-    "container": "N3",
-    "large": "N3",
+    "medium": "medium",
+
+    "cargo": "large",
+    "container": "large",
+    "large": "large",
 }
 
 
@@ -58,7 +59,7 @@ SHIP_CLASS_TO_TRUCK_CLASS = {
 # 1. PORTS DE SHIPS (ORANGE + GREEN)
 # ============================================================================
 
-class ShipOPEXPort(Port): #“conector” de variables (entrada/salida agrupadas).
+class ShipOPEXPort(Port):  # “conector” de variables (entrada/salida agrupadas).
     """Port for OPEX calculation inputs and outputs for ships."""
 
     def setup(self):
@@ -66,9 +67,9 @@ class ShipOPEXPort(Port): #“conector” de variables (entrada/salida agrupadas
         self.add_variable("country_reg", dtype=str, desc="Country of registration")
         self.add_variable("country_oper", dtype=str, desc="Country of operation")
 
-        self.add_variable("ship_class", dtype=str, desc="Ship class (cargo, ferry, fishing...)")
+        self.add_variable("ship_class", dtype=str, desc="Ship class (ro_pax, small, medium, large, ctv...)")
         self.add_variable("length", dtype=float, desc="Ship length in meters")
-        self.add_variable("energy_type", dtype=str, desc="Type of energy (diesel, electric...)")
+        self.add_variable("energy_type", dtype=str, desc="Type of energy (DIESEL, BET, FCET...)")
         self.add_variable("purchase_cost", dtype=float, desc="Purchase cost in EUR")
         self.add_variable("safety_class", dtype=str, desc="Safety class")
         self.add_variable("annual_distance", dtype=float, desc="Annual distance travelled (km or nm)")
@@ -114,30 +115,29 @@ class ShipOPEXPort(Port): #“conector” de variables (entrada/salida agrupadas
 # 2. SHIP OPEX COSAPP SYSTEM
 # ============================================================================
 
-class ShipOPEXCalculator(System): #modelo OPEX de barcos.
+class ShipOPEXCalculator(System):  # modelo OPEX de barcos.
     
-    #TEST
-    def setup(self, db_path: str = "data_opex_trucks.json"):
+    def setup(self, db_path: str = "data_opex_ships.json"):
         # -------------------- CARGA DE BASE DE DATOS BOAT (YELLOW) --------------------
         with open(db_path, "r", encoding="utf-8") as f:
             db_data = json.load(f)
 
-        # country -> opex_database (taxes, tolls, insurance, crew, energy)
+        # country -> full country dict (taxes_opex / taxes, ports, insurance, crew, energy, maintenance)
         object.__setattr__(
             self, "_countries_data",
-            {c["country"]: c["opex_database"] for c in db_data["countries"]}
+            {c["country"]: c for c in db_data["countries"]}
         )
 
         # -------------------- PORT SHIP (ORANGE+GREEN) --------------------
         self.add_inward("opex_ship", ShipOPEXPort, desc="OPEX calculation port for ships")
 
         # -------------------- USER INPUTS (ORANGE) --------------------
-        self.add_inward("country_reg", "Spain", dtype=str)
-        self.add_inward("country_oper", "Spain", dtype=str)
+        self.add_inward("country_reg", "France", dtype=str)
+        self.add_inward("country_oper", "France", dtype=str)
 
-        self.add_inward("ship_class", "cargo", dtype=str)
+        self.add_inward("ship_class", "large", dtype=str)  # ro_pax, small, medium, large, ctv...
         self.add_inward("length", 100.0, dtype=float)
-        self.add_inward("energy_type", "diesel", dtype=str)
+        self.add_inward("energy_type", "DIESEL", dtype=str)
         self.add_inward("purchase_cost", 10_000_000.0, dtype=float)
         self.add_inward("safety_class", "A", dtype=str)
         self.add_inward("annual_distance", 20_000.0, dtype=float)
@@ -148,13 +148,12 @@ class ShipOPEXCalculator(System): #modelo OPEX de barcos.
         self.add_inward("planning_horizon_years", 1.0, dtype=float)
         self.add_inward("maintenance_cost_annual", 100_000.0, dtype=float)
 
-        # Crew list (ORANGE, pero como estructura Python)
-        # Ejemplo por defecto: 1 capitán + 5 tripulantes
+        # Crew list (ORANGE, como estructura Python)
         self.add_inward(
             "crew_list",
             [
-                {"rank": "captain", "attribute": "ferry", "team_size": 1},
-                {"rank": "crew",    "attribute": "ferry", "team_size": 8},
+                {"rank": "skipper", "attribute": "ro_pax", "team_size": 1},
+                {"rank": "deckhand", "attribute": "ro_pax", "team_size": 8},
             ],
             desc="Lista de diccionarios de crew: rank, attribute, team_size",
         )
@@ -183,11 +182,26 @@ class ShipOPEXCalculator(System): #modelo OPEX de barcos.
     def get_db_params(self, country: str, category: str):
         if country not in self._countries_data:
             raise ValueError(f"Country '{country}' not found in database")
-        return self._countries_data[country][category]
+        
+        country_db = self._countries_data[country]
+
+        # Soportar "taxes" y "taxes_opex"
+        if category == "taxes":
+            if "taxes" in country_db:
+                return country_db["taxes"]
+            if "taxes_opex" in country_db:
+                return country_db["taxes_opex"]
+            raise ValueError(f"No 'taxes' or 'taxes_opex' entry for country '{country}'")
+        
+        if category in country_db:
+            return country_db[category]
+        
+        raise ValueError(f"Category '{category}' not found for country '{country}'")
 
     def _map_ship_class_to_truck_class(self, ship_class: str) -> str:
-        return SHIP_CLASS_TO_TRUCK_CLASS.get(ship_class, "N3")  # default N3 = big ship
-    
+        # Ahora devuelve la clase usada en la BD (ro_pax, small, medium, large, ctv)
+        return SHIP_CLASS_TO_TRUCK_CLASS.get(ship_class, "large")  # default large
+        
 
 # ============================================================================
 # 3. SHIP COMPUTE
@@ -197,27 +211,30 @@ class ShipOPEXCalculator(System): #modelo OPEX de barcos.
 
     def compute_o_taxes_ship(self):
         """
-        O_taxes_ship ≈tax_reg(c,k,L) +tax_annual(c,k,L) + D * (I_energy * tax_energy(c,e)) + D * (I_energy * EF_CO2 * tax_CO2(c,e)) + D * (NOxSOx_rate * tax_NOxSOx(c,k,e)) 
-        + B_env(c,k,e)
+        O_taxes_ship ≈ tax_reg(c,k,L) + tax_annual(c,k,L)
+                       + D * (I_energy * tax_energy(c,e))
+                       + D * (I_energy * EF_CO2 * tax_CO2(c,e))
+                       + D * (NOxSOx_rate * tax_NOxSOx(c,k,e)) 
+                       + B_env(c,k,e)
 
         Donde:
           - c: country_reg
-          - k: ship_class mapeada a N1/N2/N3
-          - e: energy_type
+          - k: ship_class (mapeada a ro_pax/small/medium/large/ctv)
+          - e: energy_type (DIESEL, BET, FCET...)
           - D: annual_distance
         """
         taxes_db = self.get_db_params(self.country_reg, "taxes")
 
-        #TO COMPARATE
-        k_truck = self._map_ship_class_to_truck_class(self.ship_class)
+        # Mapeo de ship_class a clave de BD
+        k_class = self._map_ship_class_to_truck_class(self.ship_class)
 
-        tax_reg = taxes_db["tax_reg_c_k_L"].get(k_truck, 0.0)
-        tax_annual = taxes_db["tax_annual_c_k_L"].get(k_truck, 0.0)
+        tax_reg = taxes_db["tax_reg_c_k_L"].get(k_class, 0.0)
+        tax_annual = taxes_db["tax_annual_c_k_L"].get(k_class, 0.0)
         tax_energy = taxes_db["tax_energy_c_e"].get(self.energy_type, 0.0)
         tax_CO2 = taxes_db["tax_CO2_c_e"]
         B_env = taxes_db["B_env_c_k_e"].get(self.energy_type, 0.0)
 
-        # NOxSOx
+        # NOxSOx (a futuro, tu BD podría añadir tax_NOxSOx)
         tax_NOxSOx = 0.0
 
         D = self.annual_distance
@@ -229,16 +246,25 @@ class ShipOPEXCalculator(System): #modelo OPEX de barcos.
         co2_tax_component = D * I_energy * EF_CO2 * tax_CO2
         noxsox_tax_component = D * NOxSOx_rate * tax_NOxSOx
 
-        self.o_taxes = (tax_reg+ tax_annual+ energy_tax_component+ co2_tax_component+ noxsox_tax_component+ B_env)
+        self.o_taxes = (
+            tax_reg
+            + tax_annual
+            + energy_tax_component
+            + co2_tax_component
+            + noxsox_tax_component
+            + B_env
+        )
 
     # ==================== O_PORTS SHIP ====================
 
     def compute_o_ports_ship(self):
         """
         O_ports_ship = price_per_day × (n_trips_per_year × days_per_trip)
-
         """
-        price_per_day = 0.0  # to fill from DB
+        ports_db = self.get_db_params(self.country_oper, "ports")
+        k_class = self._map_ship_class_to_truck_class(self.ship_class)
+        price_per_day = ports_db.get(k_class, 0.0)
+
         days_total = self.n_trips_per_year * self.days_per_trip
         self.o_ports = price_per_day * days_total
 
@@ -248,16 +274,14 @@ class ShipOPEXCalculator(System): #modelo OPEX de barcos.
         """
         O_insurance_ship = insurance_rate(c, e) × (purchase_cost - RV_ship)
 
-        bring RV from RV_ship
+        insurance_per_energy viene de la BD ships.
         """
         insurance_db = self.get_db_params(self.country_reg, "insurance")
 
-        if self.energy_type not in insurance_db["insurance_rate_c_L_e_safety"]:
-            insurance_rate = 0.0
-        else:
-            insurance_rate = insurance_db["insurance_rate_c_L_e_safety"][self.energy_type]
+        per_energy = insurance_db.get("insurance_per_energy", {})
+        insurance_rate = per_energy.get(self.energy_type, 0.0)
 
-        RV_ship = 0.0  # RV
+        RV_ship = 0.0  # Placeholder: aquí luego se puede conectar con RV_ship
         self.o_insurance = insurance_rate * (self.purchase_cost - RV_ship)
 
     # ==================== O_CREW SHIP ====================
@@ -265,17 +289,25 @@ class ShipOPEXCalculator(System): #modelo OPEX de barcos.
     def compute_o_crew_ship(self):
         """
         O_crew_ship = Σ (wage_rank × team_i) × N_years
+
+        BD:
+          crew.wage_by_quantity.wage_per_seafarer → salario base
+          crew.wage_by_rank[ship_class][rank] → coeficiente por rango
         """
         crew_db = self.get_db_params(self.country_reg, "crew")
-        wages = crew_db["wage_of_crew_rank"]
-        wage_default = wages.get("driver", 30_000.0) #captain
+
+        base_wage = crew_db["wage_by_quantity"]["wage_per_seafarer"]
+        wage_by_rank_all = crew_db["wage_by_rank"]
+        k_class = self._map_ship_class_to_truck_class(self.ship_class)
+        wage_rank_table = wage_by_rank_all.get(k_class, {})
 
         total_wage_year = 0.0
 
         for member in self.crew_list:
             rank = member["rank"]
             team_i = member["team_size"]
-            wage_rank = wages.get(rank, wage_default)
+            coeff = wage_rank_table.get(rank, 1.0)
+            wage_rank = base_wage * coeff
             total_wage_year += wage_rank * team_i
 
         self.o_crew = total_wage_year * self.planning_horizon_years
@@ -283,6 +315,7 @@ class ShipOPEXCalculator(System): #modelo OPEX de barcos.
     # ==================== O_MAINTENANCE SHIP ====================
 
     def compute_o_maintenance_ship(self):
+        # De momento usamos el input del usuario; la BD también tiene "maintenance"
         self.o_maintenance = self.maintenance_cost_annual
 
     # ==================== O_ENERGY SHIP ====================
@@ -292,14 +325,13 @@ class ShipOPEXCalculator(System): #modelo OPEX de barcos.
         O_energy_ship = annual_energy_consumption_kWh × energy_price(c_oper, e)
         """
         energy_db = self.get_db_params(self.country_oper, "energy")
-        if self.energy_type not in energy_db["energy_price_c_e"]:
-            energy_price = 0.0
-        else:
-            energy_price = energy_db["energy_price_c_e"][self.energy_type]
+        prices = energy_db["energy_price_c_e"]
+        energy_price = prices.get(self.energy_type, 0.0)
 
         self.o_energy = self.annual_energy_consumption_kWh * energy_price
 
-######################### MAIN COMPUTE ###########################################
+
+    ######################### MAIN COMPUTE ###########################################
 
     def compute(self):
         """
@@ -318,7 +350,14 @@ class ShipOPEXCalculator(System): #modelo OPEX de barcos.
         self.compute_o_energy_ship()
 
         # Total OPEX
-        self.o_opex_total = (self.o_taxes+ self.o_ports+ self.o_insurance+ self.o_crew+ self.o_maintenance+ self.o_energy)
+        self.o_opex_total = (
+            self.o_taxes
+            + self.o_ports
+            + self.o_insurance
+            + self.o_crew
+            + self.o_maintenance
+            + self.o_energy
+        )
 
         # Populate port outputs
         p.country_reg = self.country_reg
@@ -386,13 +425,12 @@ class ShipOPEXCalculator(System): #modelo OPEX de barcos.
         print(f"\nShip OPEX results saved to: {filename}")
 
 
-
-    #============================= SCENARIOS INPUTS=====================
+# ============================= SCENARIOS INPUTS =====================
 
 def run_ship_scenario(
     scenario_name: str,
     inputs_path: str = "inputs_ship.json",
-    db_path: str = "data_opex_trucks.json",
+    db_path: str = "data_opex_ships.json",
 ):
     print("\n" + "#" * 80)
     print(f"### RUNNING SHIP SCENARIO: {scenario_name} ###")
@@ -461,6 +499,7 @@ def run_ship_scenario(
 
     return sys_ship
 
+
 # ============================================================================
 # 4. SHIP MAIN
 # ============================================================================
@@ -470,10 +509,10 @@ if __name__ == "__main__":
     print("CosApp Ships OPEX Calculator - Run Scenarios")
     print("=" * 80)
 
-    #Chose quelque scenario
-    #run_ship_scenario("scenario1_cargo_diesel_france")
-    run_ship_scenario("scenario2_ferry_diesel_spain")
-    #run_ship_scenario("scenario3_ferry_electric_germany")
-    #run_ship_scenario("scenario4_fishing_diesel_italy")
+    # Choose any scenario defined in inputs_ship.json
+    run_ship_scenario("scenario1_cargo_diesel_france")
+    #run_ship_scenario("scenario2_ferry_diesel_spain")
+    # run_ship_scenario("scenario3_ferry_electric_germany")
+    # run_ship_scenario("scenario4_fishing_diesel_italy")
 
     print("\n\n========================================")
