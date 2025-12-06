@@ -38,15 +38,51 @@ Calculated by `rv_functions.py`, this module estimates the asset's market value 
 
 ## System Architecture
 
-### Main Orchestrator: `main_tco.py`
-This is the main entry point for the application. It defines and runs complete TCO scenarios for different assets (e.g., a diesel truck, an electric ferry). It calls the individual CAPEX, OPEX, and RV modules with the appropriate inputs and aggregates the results to present a final TCO breakdown.
+The project's architecture is designed for modularity, consistency, and scalability, with `cosapp` as its core framework. It is built upon a **"Single Source of Truth"** principle to ensure that all calculation modules operate on identical data.
 
-### Data-Driven Design
-The tool is designed to be highly data-driven. All parameters for calculations—from tax rates to component costs—are loaded from external **JSON files** (`db_rv_trucks.json`, `db_rv_ships.json`, etc.). These files act as the project's database, with two main categories of data:
-- **Country Data**: Contains country-specific parameters like taxes, wages, subsidies, and energy prices.
-- **Vehicle Characteristics**: Contains asset-specific parameters for different technologies and sizes.
+### 1. The Unified Vehicle Port
 
-This design allows for easy updates and the addition of new data without changing the core Python code.
+All vehicle input parameters (e.g., power, cost, weight, energy type) are centralized in a single, unified `cosapp` Port:
+
+- **File:** `models/vehicle_port.py`
+- **Class:** `VehiclePropertiesPort`
+
+This approach is critical for maintaining data integrity. It prevents the duplication of variables across different modules (CAPEX, OPEX, RV) and ensures that any change to a vehicle parameter is made in only one place.
+
+**Rule:** No file outside of `models/vehicle_port.py` should ever define or duplicate vehicle properties. All modules must source this information from the port.
+
+### 2. Integrating the Port into Calculation Modules
+
+Any `cosapp` System that requires vehicle parameters (such as the calculators for CAPEX, OPEX, or RV) **must** follow this standard pattern:
+
+1.  **Import the Port:** The module must import `VehiclePropertiesPort`.
+2.  **Declare as Input:** In its `setup()` method, the system must declare the port as a managed input.
+3.  **Access Data:** All vehicle-related variables must be accessed through the port.
+
+**Standard Implementation Example:**
+
+```python
+from models.vehicle_port import VehiclePropertiesPort
+
+class MyCalculator(System):
+    def setup(self):
+        # Add the unified port as an input
+        self.add_input(VehiclePropertiesPort, 'in_vehicle_properties')
+
+    def compute(self):
+        # Access vehicle data from the port
+        vp = self.in_vehicle_properties
+        cost = vp.purchase_cost
+        country = vp.registration_country
+```
+
+This standardized integration guarantees that every component in the system shares the exact same vehicle characteristics. All variable names must correspond exactly to those defined in `vehicle_port.py`.
+
+### 3. Main Orchestrator and Data Flow
+
+-   **Orchestrator:** `main_tco.py` is the main entry point of the application. It assembles the complete TCO model by connecting the `VehiclePropertiesPort` to the various calculation systems (CAPEX, OPEX, RV). It is responsible for setting the initial vehicle data, running the simulation, and aggregating the final results.
+
+-   **JSON Database:** The tool is highly data-driven. Non-vehicle parameters—such as country-specific tax rates, subsidies, crew wages, or infrastructure costs—are loaded from external JSON files located in the `database/` directory (`db_trucks.json`, `db_ships.json`). This design separates core logic from configuration data, allowing for easy updates and scenario modeling without altering the Python code.
 
 ## How to Run the Project
 
