@@ -18,195 +18,12 @@ Main TCO orchestrator for Eco4Impact / BoatTwin project.
 from cosapp.drivers import RunOnce
 
 # === AJUSTA ESTOS IMPORTS A TUS NOMBRES REALES DE ARCHIVO ===
-from Opex_Calculator_trucks import TruckOPEXCalculator
-from Opex_Calculator_ships import ShipOPEXCalculator
-from rv_functions import ResidualValueCalculator
-from capex_calculator import VehicleCAPEXCalculator
-
-# ----------------------------------------------------------------------
-# 1. ESTRUCTURA DE ENTRADA GENERAL
-# ----------------------------------------------------------------------
-def make_example_truck_inputs():
-    """Ejemplo de diccionario de entrada para un TRUCK."""
-    return {
-        "asset_type": "truck",
-        "description": "Heavy diesel N3 in France",
-
-        # Datos comunes
-        "powertrain_type": "diesel",      # para CAPEX / RV (ajusta a tu DB)
-        "vehicle_weight_class": "heavy",
-        "country": "France",
-        "year": 2025,
-        "operation_years": 5,
-
-        # ---------- CAPEX ----------
-        "capex": {
-            "powertrain_type": "diesel",
-            "vehicle_number": 1,
-            "vehicle_id": 1,
-            "vehicle_weight_class": "light",
-            "country": "FR",
-            "year": 2025,
-
-            # Vehicle acquisition
-            "is_new": True,
-            "owns_vehicle": False,
-            "purchase_price": 50000.0,
-            "conversion_cost": 0.0,
-            "certification_cost": 0.0,
-
-            # Infrastructure
-            "n_slow": None,
-            "n_fast": None,
-            "n_ultra": None,
-            "n_stations": 1,
-            "smart_charging_enabled": False,
-
-            # Financing
-            "loan_years": 10,
-
-            # Vehicle charging / energy structure (ONLY place where E_t, S_t, etc. are allowed)
-            "vehicle_dict": {
-                "1": {
-                    "E_t": 0.0,
-                    "S_t": 0.0,
-                    "F_t": 0.0,
-                    "U_t": 0.0,
-                    "Public_t": 0.0,
-                    "Private_t": 1.0
-                }
-            }
-        },
-
-
-        # ---------- OPEX TRUCK ----------
-        "opex_truck": {
-            "purchase_cost": 150_000.0,
-            "type_energy": "diesel",
-            "size_vehicle": "N3",
-            "registration_country": "France",
-            "annual_distance_travel": 120_000.0,
-            "departure_city": "Paris",
-            "arrival_city": "Marseille",
-            "RV": 45_000.0,
-            "N_years": 5.0,
-            "team_count": 1,
-            "maintenance_cost": 7_000.0,
-            "consumption_energy": 42_000.0,
-            "fuel_multiplier": 1.0,
-            "EF_CO2_diesel": 2.65,
-        },
-
-        # ---------- RV ----------
-        "rv": {
-            "type_vehicle": "truck",
-            "type_energy": "diesel",
-            "registration_country": "France",
-            "purchase_cost": 150_000.0,
-            "year_purchase": 2020,
-            "current_year": 2025,
-            "travel_measure": 600_000.0,
-            "maintenance_cost": 7_000.0,
-            "minimum_fuel_consumption": 250.0,
-            "powertrain_model_year" : 2020,
-            "warranty" : 5.0,
-            "type_warranty" : 'years',
-
-            "energy_price": 1.5,
-            "c02_taxes": 500,
-            "subsidies":0,
-            "vehicle_number": 1,
-        },
-    }
-
-
-def make_example_ship_inputs():
-    """Ejemplo de diccionario de entrada para un SHIP."""
-    return {
-        "asset_type": "ship",
-        "description": "Cargo ship diesel in Spain",
-
-        # Datos comunes
-        "powertrain_type": "diesel",
-        "vehicle_weight_class": "heavy",   # puedes inventar una clase “heavy_ship”
-        "country": "Spain",
-        "year": 2025,
-        "operation_years": 5,
-
-        "capex": {
-            "powertrain_type": "diesel",
-            "vehicle_number": 1,
-            "vehicle_id": 1,
-            "vehicle_weight_class": "light",
-            "country": "FR",
-            "year": 2025,
-
-            # Vehicle acquisition
-            "is_new": True,
-            "owns_vehicle": False,
-            "purchase_price": 50000.0,
-            "conversion_cost": 0.0,
-            "certification_cost": 0.0,
-
-            # Infrastructure
-            "n_slow": None,
-            "n_fast": None,
-            "n_ultra": None,
-            "n_stations": 1,
-            "smart_charging_enabled": False,
-
-            # Financing
-            "loan_years": 10,
-
-            # Vehicle charging / energy structure (ONLY place where E_t, S_t, etc. are allowed)
-            "vehicle_dict": {
-                "1": {
-                    "E_t": 0.0,
-                    "S_t": 0.0,
-                    "F_t": 0.0,
-                    "U_t": 0.0,
-                    "Public_t": 0.0,
-                    "Private_t": 1.0
-                }
-            }
-        },
-
-        # ---------- OPEX SHIP ----------
-        "opex_ship": {
-            "country_reg": "Spain",
-            "country_oper": "Spain",
-            "ship_class": "cargo",
-            "length": 120.0,
-            "energy_type": "diesel",
-            "purchase_cost": 12_000_000.0,
-            "safety_class": "A",
-            "annual_distance": 20_000.0,
-            "n_trips_per_year": 10.0,
-            "days_per_trip": 4.0,
-            "planning_horizon_years": 1.0,
-            "maintenance_cost_annual": 150_000.0,
-            "crew_list": [
-                {"rank": "captain", "attribute": "ferry", "team_size": 1},
-                {"rank": "crew", "attribute": "ferry", "team_size": 8},
-            ],
-            "I_energy": 0.5,
-            "EF_CO2": 0.27,
-            "NOxSOx_rate": 0.01,
-            "annual_energy_consumption_kWh": 5_000_000.0,
-        },
-
-        # ---------- RV ----------
-        "rv": {
-            "type_vehicle": "Ship",
-            "type_energy": "Diesel_fosile",
-            "taxes": 50_000.0,
-            "purchase_cost": 12_000_000.0,
-            "age_vehicle": 10.0,
-            "travel_measure": 200_000.0,  # horas o millas equivalentes
-            "maintenance_cost": 500_000.0,
-        },
-    }
-
+from functions.Opex_Calculator_trucks import TruckOPEXCalculator
+from functions.Opex_Calculator_ships import ShipOPEXCalculator
+from functions.rv_calculator import ResidualValueCalculator
+from functions.capex_calculator import VehicleCAPEXCalculator
+from inputs.gen_truck_in import make_example_truck_inputs
+from inputs.gen_ship_in import make_example_ship_inputs
 
 # ----------------------------------------------------------------------
 # 2. WRAPPERS PARA CADA MÓDULO
@@ -242,7 +59,7 @@ def run_capex(capex_inputs: dict) -> float:
     # -------------------- FINANCING --------------------
     sys_capex.loan_years = capex_inputs.get("loan_years", 10)
 
-    driver = sys_capex.add_driver(RunOnce("run_capex"))
+    sys_capex.add_driver(RunOnce("run_capex"))
     sys_capex.run_drivers()
 
     return sys_capex.c_capex_per_vehicle
@@ -258,7 +75,7 @@ def run_opex_truck(opex_inputs: dict) -> float:
             setattr(sys_opex, key, value)
 
     sys_opex.print_input_summary()
-    driver = sys_opex.add_driver(RunOnce("run_truck"))
+    sys_opex.add_driver(RunOnce("run_truck"))
     sys_opex.run_drivers()
     sys_opex.print_results()
 
@@ -312,7 +129,7 @@ def run_rv(rv_inputs: dict) -> float:
     rv_sys.in_country_properties.subsidies = rv_inputs["subsidies"]
 
     # Run calculation
-    rv_sys.add_driver(RunOnce('run1'))
+    rv_sys.add_driver(RunOnce('run_rv'))
 
     # Run the system
     rv_sys.run_drivers()
@@ -320,17 +137,14 @@ def run_rv(rv_inputs: dict) -> float:
     print("\n--- RV RESULTS ---")
     print("\n" + "-"*80)
     print("DEPRECIATION")
-    print("-"*80)
     print(f"Total Depreciation Value: ${rv_sys.total_depreciation:,.2f}")
     
     print("\n" + "-"*80)
     print("IMPACT HEALTH PENALTIES")
-    print("-"*80)
-    print(f"  Total Impact Health:      ${rv_sys.total_impact_health:,.2f}")
+    print(f"  Total Impact Health: ${rv_sys.total_impact_health:,.2f}")
     
     print("\n" + "-"*80)
     print("EXTERNAL FACTORS")
-    print("-"*80)
     print(f"External Factors Adjustment: ${rv_sys.total_external_factors:,.2f}")
     
     print("\n" + "="*80)

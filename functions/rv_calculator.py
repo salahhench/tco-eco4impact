@@ -1,59 +1,12 @@
-# %%
 """
 Residual Value (RV) Calculator - CoSApp Implementation
 """
 
-from cosapp.base import System, Port
+from cosapp.base import System
 import json
 import math
-from datetime import datetime
-
-# %%
-class VehiclePropertiesPort(Port):
-    '''
-    Port for Vehicle Properties inputs and outputs for ships and trucks.
-    '''
-
-    def setup(self):
-        # -------------------- USER INPUTS --------------------
-        self.add_variable('type_vehicle', dtype=str, desc='Vehicle type: Truck or Ship', value='truck')
-        self.add_variable('type_energy', dtype=str, desc='Energy type: diesel, electric, hybrid, hydrogen_fuel_cell, hydrogen_h2, cng, lng', value='diesel')
-        self.add_variable('registration_country', dtype=str, desc='Registration country of the vehicle', value='France')
-        
-        self.add_variable('purchase_cost', dtype=float, desc='Initial purchase cost', value=0.0)
-        self.add_variable('travel_measure', dtype=float, desc='Total Distance (km) or hours (h)', value=0.0)
-        self.add_variable('maintenance_cost', dtype=float, desc='Total maintenance cost incurred', value=0.0)
-        
-        self.add_variable('minimum_fuel_consumption', dtype=float, desc='SFC (g/kWh)', value=250.0)
-        self.add_variable('consumption_real', dtype=float, desc='Real consumption (kWh/km or kg/100km)', value=0.0)
-        self.add_variable('utility_factor', dtype=float, desc='Electric fraction for hybrids', value=0.0)
-        
-        self.add_variable('E_annual_kwh', dtype=float, desc='Annual energy consumption (kWh)', value=0.0)
-        self.add_variable('C_bat_kwh', dtype=float, desc='Battery capacity (kWh)', value=0.0)
-        self.add_variable('DoD', dtype=float, desc='Depth of discharge', value=0.8)
-        self.add_variable('S_slow', dtype=float, desc='Proportion slow charging', value=0.0)
-        self.add_variable('S_fast', dtype=float, desc='Proportion fast charging', value=0.0)
-        self.add_variable('S_ultra', dtype=float, desc='Proportion ultra-fast charging', value=0.0)
-        
-        self.add_variable('powertrain_model_year', dtype=int, desc='Powertrain model year', value=2020)
-        
-        self.add_variable('warranty', dtype=float, desc='Warranty duration (years or km)', value=5.0)
-        self.add_variable('type_warranty', dtype=str, desc='Type of warranty: years or km', value='years')
-        self.add_variable('year_purchase', dtype=int, desc='Year of purchase', value=2020)
-        
-        self.add_variable('current_year', dtype=int, desc='Current year', value=datetime.now().year)
-        self.add_variable('vehicle_number', dtype=int, desc='Numbers of vehicle', value=0)
-
-
-class CountryPropertiesPort(Port):
-    '''
-    Port for Country Properties inputs and outputs for ships and trucks.
-    '''
-
-    def setup(self):
-        self.add_variable('energy_price', dtype=float, desc='Energy price ($/L)', value=0.0)
-        self.add_variable('c02_taxes', dtype=float, desc='CO2 taxes ($)', value=0.0)
-        self.add_variable('subsidies', dtype=float, desc='Subsidies ($)', value=0.0)
+from models.vehicle_port import VehiclePropertiesPort
+from models.country_port import CountryPropertiesPort
 
 
 class ResidualValueCalculator(System):
@@ -69,9 +22,9 @@ class ResidualValueCalculator(System):
         - WARRANTY
     - EXTERNAL FACTORS
     '''
-    def setup(self, type_vehicle: str = "truck"):
+    def setup(self, type_vehicle: str = "trucks"):
         
-        db_path = f"db_rv_{type_vehicle}.json"
+        db_path = f"db_{type_vehicle}.json"
         
         # Load database
         with open(db_path, 'r') as f:
@@ -82,10 +35,9 @@ class ResidualValueCalculator(System):
         
         object.__setattr__(self, '_vehicles_data',db_rv['vehicle'])
         
-        # # Add ports # SHOULD WE OMITE THIS PART?
+        # # Add ports
         self.add_input(VehiclePropertiesPort, 'in_vehicle_properties')
         self.add_input(CountryPropertiesPort, 'in_country_properties')
-
 
         # Add output variables
         self.add_outward('total_depreciation', 0.0, desc='Total depreciation cost')
@@ -108,7 +60,6 @@ class ResidualValueCalculator(System):
         '''
         # Inputs
         vp = self.in_vehicle_properties
-        type_vehicle = vp.type_vehicle
         type_energy = vp.type_energy
         country = vp.registration_country
         number_of_vehicles = vp.vehicle_number
@@ -133,7 +84,6 @@ class ResidualValueCalculator(System):
     def compute_eficiency(self):
         # Inputs
         vp = self.in_vehicle_properties
-        type_vehicle = vp.type_vehicle
         type_energy = vp.type_energy
         
 
@@ -173,7 +123,6 @@ class ResidualValueCalculator(System):
     def compute_obsolescence(self):
         # Inputs
         vp = self.in_vehicle_properties
-        type_vehicle = vp.type_vehicle
         type_energy = vp.type_energy
         country = vp.registration_country
         powertrain_model_year = vp.powertrain_model_year
@@ -190,7 +139,6 @@ class ResidualValueCalculator(System):
     def compute_charging(self):
         # Inputs
         vp = self.in_vehicle_properties
-        type_vehicle = vp.type_vehicle
         type_energy = vp.type_energy
 
         if type_energy == "electric":
@@ -301,5 +249,3 @@ class ResidualValueCalculator(System):
         self.compute_external_factors()
 
         self.rv = (self.total_depreciation+self.total_impact_health+self.total_external_factors)
-
-# %%

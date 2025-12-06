@@ -16,7 +16,6 @@ SYSTEM OUTPUTS (Calculated results)
 import json
 import sys
 import os
-from cosapp.drivers import RunOnce
 from cosapp.base import System
 from cosapp.ports import Port
 import numpy as np
@@ -28,17 +27,6 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
 # ============================================================================
-# 0. VEHICLE TYPES MAPPING
-# ============================================================================
-POWERTRAIN_TYPES = [
-    'bet', 'phev', 'fcet', 'hice', 'gnv', 'lng',
-    'diesel', 'biodiesel', 'hvo', 'e_diesel'
-]
-
-VEHICLE_WEIGHT_CLASSES = ['light', 'medium', 'heavy']
-
-
-# ============================================================================
 # 1. PORT FOR VEHICLE CAPEX
 # ============================================================================
 
@@ -47,32 +35,13 @@ class VehicleCAPEXPort(Port):
 
     def setup(self):
         # -------------------- USER INPUTS --------------------
-        self.add_variable("powertrain_type", dtype=str, desc="Type of powertrain")
-        self.add_variable("vehicle_number", dtype=int, desc="Number of vehicles in fleet")
-        self.add_variable("vehicle_id", dtype=int, desc="Vehicle ID in fleet")
-        self.add_variable("vehicle_weight_class", dtype=str, desc="Weight class")
-        self.add_variable("country", dtype=str, desc="Country code")
-        self.add_variable("year", dtype=int, desc="Year for subsidies calculation")
         
-        # Vehicle acquisition
-        self.add_variable("is_new", dtype=bool, desc="True if buying new vehicle")
-        self.add_variable("owns_vehicle", dtype=bool, desc="True if already owns vehicle")
-        self.add_variable("purchase_price", dtype=float, desc="Purchase price in EUR")
-        self.add_variable("conversion_cost", dtype=float, desc="Conversion cost in EUR")
-        self.add_variable("certification_cost", dtype=float, desc="Certification cost in EUR")
         
-        # Fleet dictionary
-        self.add_variable("vehicle_dict", {}, desc="Dictionary of vehicles with energy data")
-                
-        # Infrastructure parameters
-        self.add_variable("n_slow", dtype=int, desc="Number of slow chargers")
-        self.add_variable("n_fast", dtype=int, desc="Number of fast chargers")
-        self.add_variable("n_ultra", dtype=int, desc="Number of ultra-fast chargers")
-        self.add_variable("n_stations", dtype=int, desc="Number of stations")
-        self.add_variable("smart_charging_enabled", dtype=bool, desc="Smart charging enabled")
         
-        # Financing
-        self.add_variable("loan_years", dtype=int, desc="Number of years for loan")
+        
+        
+        
+        
         
         # -------------------- OUTPUTS --------------------
         self.add_variable("c_vehicle_cost", dtype=float, desc="Vehicle acquisition cost")
@@ -111,7 +80,7 @@ class VehicleCAPEXCalculator(System):
         self.add_inward("capex_vehicle", VehicleCAPEXPort, desc="CAPEX calculation port")
         
         # -------------------- USER INPUTS --------------------
-        self.add_inward("powertrain_type", "bet", dtype=str)
+        self.add_inward("type_energy", "bet", dtype=str)
         self.add_inward("vehicle_number", 1, dtype=int)
         self.add_inward("vehicle_id", 1, dtype=int)
         self.add_inward("vehicle_weight_class", "heavy", dtype=str)
@@ -121,7 +90,7 @@ class VehicleCAPEXCalculator(System):
         # Vehicle acquisition
         self.add_inward("is_new", True, dtype=bool)
         self.add_inward("owns_vehicle", False, dtype=bool)
-        self.add_inward("purchase_price", 80000.0, dtype=float)
+        self.add_inward("purchase_cost", 80000.0, dtype=float)
         self.add_inward("conversion_cost", 0.0, dtype=float)
         self.add_inward("certification_cost", 0.0, dtype=float)
         
@@ -191,14 +160,14 @@ class VehicleCAPEXCalculator(System):
         country_data = self.get_country_data()
         software = country_data.get('infrastructure', {}).get('software', {})
         
-        if self.powertrain_type in ['bet', 'phev']:
+        if self.type_energy in ['bet', 'phev']:
             base = software.get('bet', {}).get('base_cost_eur', 0.0)
             if self.smart_charging_enabled:
                 base += software.get('bet', {}).get('load_management_addon_eur', 0.0)
             return base
-        elif self.powertrain_type in ['fcet', 'hice']:
+        elif self.type_energy in ['fcet', 'hice']:
             return software.get('fcet', {}).get('hice_monitoring_cost_eur', 0.0)
-        elif self.powertrain_type in ['gnv', 'lng']:
+        elif self.type_energy in ['gnv', 'lng']:
             return software.get('gnv', {}).get('gas_monitoring_cost_eur', 0.0)
         return 0.0
     
@@ -206,7 +175,7 @@ class VehicleCAPEXCalculator(System):
         """Get tax parameters from database."""
         country_data = self.get_country_data()
         taxes = country_data.get('taxes_registration', {})
-        return taxes.get(self.vehicle_weight_class, {}).get(self.powertrain_type, 0.0)
+        return taxes.get(self.vehicle_weight_class, {}).get(self.type_energy, 0.0)
     
     def get_subsidies_params(self):
         """Get subsidy parameters from database."""
@@ -214,7 +183,7 @@ class VehicleCAPEXCalculator(System):
         subsidies = country_data.get('subsidies', {})
         year_data = subsidies.get(str(self.year), {})
         weight_data = year_data.get(self.vehicle_weight_class, {})
-        return weight_data.get(self.powertrain_type, {})
+        return weight_data.get(self.type_energy, {})
     
     def get_financing_params(self):
         """Get financing parameters from database."""
@@ -230,7 +199,7 @@ class VehicleCAPEXCalculator(System):
         self.E_total_ultra = 0.0
         self.E_total_private = 0.0
         
-        if self.powertrain_type in ['bet', 'phev']:
+        if self.type_energy in ['bet', 'phev']:
             for vid, vdata in self.vehicle_dict.items():
                 E = vdata.get('E_t', 0.0)
                 S = vdata.get('Private_S_t', 0.0)
@@ -251,17 +220,17 @@ class VehicleCAPEXCalculator(System):
     def compute_c_vehicle_cost(self):
         """Calculate vehicle acquisition cost."""
         if self.is_new:
-            self.c_vehicle_cost = self.purchase_price
+            self.c_vehicle_cost = self.purchase_cost
         elif self.owns_vehicle:
             self.c_vehicle_cost = self.conversion_cost + self.certification_cost
         else:
-            self.c_vehicle_cost = self.purchase_price + self.conversion_cost + self.certification_cost
+            self.c_vehicle_cost = self.purchase_cost + self.conversion_cost + self.certification_cost
 
     # ==================== C_INFRASTRUCTURE_COST ====================
     
     def compute_c_infrastructure_cost(self):
         """Calculate infrastructure cost per vehicle."""
-        if self.powertrain_type in ['bet', 'phev']:
+        if self.type_energy in ['bet', 'phev']:
             self._compute_charging_infrastructure()
         else:
             self._compute_fueling_infrastructure()
@@ -272,12 +241,12 @@ class VehicleCAPEXCalculator(System):
         # Site preparation
         country_data = self.get_country_data()
         site_cost = country_data.get('infrastructure', {}).get('site_preparation', {}).get(
-            self.powertrain_type, {}
+            self.type_energy, {}
         ).get('cost_eur', 0.0) / self.vehicle_number
         
         # Safety
         n_stations_calc = self.n_stations if self.n_stations else 1
-        safety_data = country_data.get('infrastructure', {}).get('safety', {}).get(self.powertrain_type, {})
+        safety_data = country_data.get('infrastructure', {}).get('safety', {}).get(self.type_energy, {})
         if 'cost_per_station_eur' in safety_data:
             safety_cost = safety_data['cost_per_station_eur'] * n_stations_calc
         elif 'cost_total_eur' in safety_data:
@@ -288,7 +257,7 @@ class VehicleCAPEXCalculator(System):
         
         # Licensing
         country_data = self.get_country_data()
-        licensing_cost = country_data.get('licensing', {}).get(self.powertrain_type, 0.0) / self.vehicle_number
+        licensing_cost = country_data.get('licensing', {}).get(self.type_energy, 0.0) / self.vehicle_number
         
         # Total infrastructure
         self.c_infrastructure_cost = (
@@ -373,13 +342,13 @@ class VehicleCAPEXCalculator(System):
     def _compute_fueling_infrastructure(self):
         """Compute fueling infrastructure for non-electric vehicles."""
         # Determine station type
-        if self.powertrain_type in ['diesel', 'biodiesel', 'hvo', 'e_diesel', 'hev']:
+        if self.type_energy in ['diesel', 'biodiesel', 'hvo', 'e_diesel', 'hev']:
             station_type = 'diesel'
-        elif self.powertrain_type in ['fcet', 'hice']:
+        elif self.type_energy in ['fcet', 'hice']:
             station_type = 'hice'
-        elif self.powertrain_type == 'gnv':
+        elif self.type_energy == 'gnv':
             station_type = 'gnv'
-        elif self.powertrain_type == 'lng':
+        elif self.type_energy == 'lng':
             station_type = 'lng'
         else:
             station_type = 'diesel'
@@ -445,7 +414,7 @@ class VehicleCAPEXCalculator(System):
         
         base_rate = fin_params.get('base_interest_rate', 0.04)
         esg_adjustments = fin_params.get('esg_adjustments', {})
-        esg_adjustment = esg_adjustments.get(self.powertrain_type, 0.0)
+        esg_adjustment = esg_adjustments.get(self.type_energy, 0.0)
         adjusted_rate = base_rate + esg_adjustment
         
         # Origination fee
@@ -489,7 +458,7 @@ class VehicleCAPEXCalculator(System):
         self.c_capex_per_vehicle = self.c_capex_total * self.c_crf
         
         # Populate port outputs
-        p.powertrain_type = self.powertrain_type
+        p.type_energy = self.type_energy
         p.vehicle_number = self.vehicle_number
         p.vehicle_id = self.vehicle_id
         p.vehicle_weight_class = self.vehicle_weight_class
@@ -498,7 +467,7 @@ class VehicleCAPEXCalculator(System):
         
         p.is_new = self.is_new
         p.owns_vehicle = self.owns_vehicle
-        p.purchase_price = self.purchase_price
+        p.purchase_cost = self.purchase_cost
         p.conversion_cost = self.conversion_cost
         p.certification_cost = self.certification_cost
         
