@@ -59,5 +59,3 @@ class VehiclePropertiesPort(Port):
         self.add_variable("smart_charging_enabled", dtype=bool, desc="Smart charging enabled")
         # Financing
         self.add_variable("loan_years", dtype=int, desc="Number of years for loan")
-
-

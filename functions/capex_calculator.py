@@ -16,9 +16,9 @@ SYSTEM OUTPUTS (Calculated results)
 import json
 import sys
 import os
+import math
 from cosapp.base import System
-from cosapp.ports import Port
-import numpy as np
+from models.vehicle_port import VehiclePropertiesPort
 
 if sys.platform == "win32":
     sys.stdout.reconfigure(encoding="utf-8")
@@ -27,35 +27,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
 # ============================================================================
-# 1. PORT FOR VEHICLE CAPEX
-# ============================================================================
-
-class VehicleCAPEXPort(Port):
-    """Port for CAPEX calculation inputs and outputs for vehicles."""
-
-    def setup(self):
-        # -------------------- USER INPUTS --------------------
-        
-        
-        
-        
-        
-        
-        
-        
-        # -------------------- OUTPUTS --------------------
-        self.add_variable("c_vehicle_cost", dtype=float, desc="Vehicle acquisition cost")
-        self.add_variable("c_infrastructure_cost", dtype=float, desc="Infrastructure cost")
-        self.add_variable("c_taxes", dtype=float, desc="Registration taxes")
-        self.add_variable("c_financing_cost", dtype=float, desc="Financing cost")
-        self.add_variable("c_subsidies", dtype=float, desc="Total subsidies")
-        self.add_variable("c_capex_total", dtype=float, desc="Total CAPEX")
-        self.add_variable("c_capex_per_vehicle", dtype=float, desc="CAPEX per vehicle per year")
-        self.add_variable("c_crf", dtype=float, desc="Capital Recovery Factor")
-
-
-# ============================================================================
-# 2. VEHICLE CAPEX CALCULATOR
+# 1. VEHICLE CAPEX CALCULATOR
 # ============================================================================
 
 class VehicleCAPEXCalculator(System):
@@ -76,36 +48,8 @@ class VehicleCAPEXCalculator(System):
         object.__setattr__(self, "_db", db_data)
         object.__setattr__(self, "_countries", countries_dict)
         
-        # -------------------- PORT --------------------
-        self.add_inward("capex_vehicle", VehicleCAPEXPort, desc="CAPEX calculation port")
-        
-        # -------------------- USER INPUTS --------------------
-        self.add_inward("type_energy", "bet", dtype=str)
-        self.add_inward("vehicle_number", 1, dtype=int)
-        self.add_inward("vehicle_id", 1, dtype=int)
-        self.add_inward("vehicle_weight_class", "heavy", dtype=str)
-        self.add_inward("country", "France", dtype=str)
-        self.add_inward("year", 2025, dtype=int)
-        
-        # Vehicle acquisition
-        self.add_inward("is_new", True, dtype=bool)
-        self.add_inward("owns_vehicle", False, dtype=bool)
-        self.add_inward("purchase_cost", 80000.0, dtype=float)
-        self.add_inward("conversion_cost", 0.0, dtype=float)
-        self.add_inward("certification_cost", 0.0, dtype=float)
-        
-        # Infrastructure
-        self.add_inward("n_slow", None)
-        self.add_inward("n_fast", None)
-        self.add_inward("n_ultra", None)
-        self.add_inward("n_stations", None)
-        self.add_inward("smart_charging_enabled", False, dtype=bool)
-        
-        # Fleet dictionary
-        self.add_inward("vehicle_dict", {}, desc="Dictionary of vehicles")
-                
-        # Financing
-        self.add_inward("loan_years", 10, dtype=int)
+        # -------------------- PORTS --------------------
+        self.add_input(VehiclePropertiesPort, 'in_vehicle_properties')
         
         # -------------------- OUTPUTS --------------------
         self.add_outward("c_infrastructure_hardware", 0.0)
@@ -134,7 +78,8 @@ class VehicleCAPEXCalculator(System):
     
     def get_country_data(self):
         """Get country-specific data."""
-        return self._countries.get(self.country, {})
+        vp = self.in_vehicle_properties
+        return self._countries.get(vp.country, {})
     
     def get_charger_params(self, charger_type: str):
         """Get charger parameters from database."""
@@ -157,33 +102,36 @@ class VehicleCAPEXCalculator(System):
     
     def get_software_cost(self) -> float:
         """Get software cost based on powertrain type."""
+        vp = self.in_vehicle_properties
         country_data = self.get_country_data()
         software = country_data.get('infrastructure', {}).get('software', {})
         
-        if self.type_energy in ['bet', 'phev']:
+        if vp.type_energy in ['bet', 'phev']:
             base = software.get('bet', {}).get('base_cost_eur', 0.0)
-            if self.smart_charging_enabled:
+            if vp.smart_charging_enabled:
                 base += software.get('bet', {}).get('load_management_addon_eur', 0.0)
             return base
-        elif self.type_energy in ['fcet', 'hice']:
+        elif vp.type_energy in ['fcet', 'hice']:
             return software.get('fcet', {}).get('hice_monitoring_cost_eur', 0.0)
-        elif self.type_energy in ['gnv', 'lng']:
+        elif vp.type_energy in ['gnv', 'lng']:
             return software.get('gnv', {}).get('gas_monitoring_cost_eur', 0.0)
         return 0.0
     
     def get_taxes_params(self):
         """Get tax parameters from database."""
+        vp = self.in_vehicle_properties
         country_data = self.get_country_data()
         taxes = country_data.get('taxes_registration', {})
-        return taxes.get(self.vehicle_weight_class, {}).get(self.type_energy, 0.0)
+        return taxes.get(vp.vehicle_weight_class, {}).get(vp.type_energy, 0.0)
     
     def get_subsidies_params(self):
         """Get subsidy parameters from database."""
+        vp = self.in_vehicle_properties
         country_data = self.get_country_data()
         subsidies = country_data.get('subsidies', {})
-        year_data = subsidies.get(str(self.year), {})
-        weight_data = year_data.get(self.vehicle_weight_class, {})
-        return weight_data.get(self.type_energy, {})
+        year_data = subsidies.get(str(vp.year), {})
+        weight_data = year_data.get(vp.vehicle_weight_class, {})
+        return weight_data.get(vp.type_energy, {})
     
     def get_financing_params(self):
         """Get financing parameters from database."""
@@ -194,13 +142,14 @@ class VehicleCAPEXCalculator(System):
     
     def compute_fleet_energy(self):
         """Calculate total energy consumption for the fleet."""
+        vp = self.in_vehicle_properties
         self.E_total_slow = 0.0
         self.E_total_fast = 0.0
         self.E_total_ultra = 0.0
         self.E_total_private = 0.0
         
-        if self.type_energy in ['bet', 'phev']:
-            for vid, vdata in self.vehicle_dict.items():
+        if vp.type_energy in ['bet', 'phev']:
+            for vid, vdata in vp.vehicle_dict.items():
                 E = vdata.get('E_t', 0.0)
                 S = vdata.get('Private_S_t', 0.0)
                 F = vdata.get('Private_F_t', 0.0)   
@@ -210,7 +159,7 @@ class VehicleCAPEXCalculator(System):
                 self.E_total_fast += E * F
                 self.E_total_ultra += E * U
         else:
-            for vid, vdata in self.vehicle_dict.items():
+            for vid, vdata in vp.vehicle_dict.items():
                 E = vdata.get('E_t', 0.0)
                 P = vdata.get('Private_t', 0.0)
                 self.E_total_private += E * P
@@ -219,45 +168,47 @@ class VehicleCAPEXCalculator(System):
     
     def compute_c_vehicle_cost(self):
         """Calculate vehicle acquisition cost."""
-        if self.is_new:
-            self.c_vehicle_cost = self.purchase_cost
-        elif self.owns_vehicle:
-            self.c_vehicle_cost = self.conversion_cost + self.certification_cost
+        vp = self.in_vehicle_properties
+        if vp.is_new:
+            self.c_vehicle_cost = vp.purchase_cost
+        elif vp.owns_vehicle:
+            self.c_vehicle_cost = vp.conversion_cost + vp.certification_cost
         else:
-            self.c_vehicle_cost = self.purchase_cost + self.conversion_cost + self.certification_cost
+            self.c_vehicle_cost = vp.purchase_cost + vp.conversion_cost + vp.certification_cost
 
     # ==================== C_INFRASTRUCTURE_COST ====================
     
     def compute_c_infrastructure_cost(self):
         """Calculate infrastructure cost per vehicle."""
-        if self.type_energy in ['bet', 'phev']:
+        vp = self.in_vehicle_properties
+        if vp.type_energy in ['bet', 'phev']:
             self._compute_charging_infrastructure()
         else:
             self._compute_fueling_infrastructure()
         
         # Software cost
-        software_cost = self.get_software_cost() / self.vehicle_number
+        software_cost = self.get_software_cost() / vp.vehicle_number
         
         # Site preparation
         country_data = self.get_country_data()
         site_cost = country_data.get('infrastructure', {}).get('site_preparation', {}).get(
-            self.type_energy, {}
-        ).get('cost_eur', 0.0) / self.vehicle_number
+            vp.type_energy, {}
+        ).get('cost_eur', 0.0) / vp.vehicle_number
         
         # Safety
-        n_stations_calc = self.n_stations if self.n_stations else 1
-        safety_data = country_data.get('infrastructure', {}).get('safety', {}).get(self.type_energy, {})
+        n_stations_calc = vp.n_stations if vp.n_stations else 1
+        safety_data = country_data.get('infrastructure', {}).get('safety', {}).get(vp.type_energy, {})
         if 'cost_per_station_eur' in safety_data:
             safety_cost = safety_data['cost_per_station_eur'] * n_stations_calc
         elif 'cost_total_eur' in safety_data:
             safety_cost = safety_data['cost_total_eur']
         else:
             safety_cost = 0.0
-        safety_cost = safety_cost / self.vehicle_number
+        safety_cost = safety_cost / vp.vehicle_number
         
         # Licensing
         country_data = self.get_country_data()
-        licensing_cost = country_data.get('licensing', {}).get(self.type_energy, 0.0) / self.vehicle_number
+        licensing_cost = country_data.get('licensing', {}).get(vp.type_energy, 0.0) / vp.vehicle_number
         
         # Total infrastructure
         self.c_infrastructure_cost = (
@@ -272,12 +223,13 @@ class VehicleCAPEXCalculator(System):
     
     def _compute_charging_infrastructure(self):
         """Compute charging infrastructure for BET/PHEV."""
+        vp = self.in_vehicle_properties
         slow_params = self.get_charger_params('slow')
         fast_params = self.get_charger_params('fast')
         ultra_params = self.get_charger_params('ultra')
         
         # Calculate number of chargers if not specified
-        if self.n_slow is None and self.n_fast is None and self.n_ultra is None:
+        if vp.n_slow is None and vp.n_fast is None and vp.n_ultra is None:
             H_demand_slow = (self.E_total_slow / 
                            (slow_params.get('power_kw', 1) * slow_params.get('charging_efficiency', 0.95)) 
                            if self.E_total_slow > 0 else 0)
@@ -292,16 +244,16 @@ class VehicleCAPEXCalculator(System):
             H_cap_fast = fast_params.get('operating_hours_per_day', 20) * fast_params.get('operating_days_per_year', 365)
             H_cap_ultra = ultra_params.get('operating_hours_per_day', 20) * ultra_params.get('operating_days_per_year', 365)
             
-            self.n_slow_calculated = int(np.ceil(H_demand_slow / H_cap_slow)) if H_demand_slow > 0 else 0
-            self.n_fast_calculated = int(np.ceil(H_demand_fast / H_cap_fast)) if H_demand_fast > 0 else 0
-            self.n_ultra_calculated = int(np.ceil(H_demand_ultra / H_cap_ultra)) if H_demand_ultra > 0 else 0
+            self.n_slow_calculated = int(math.ceil(H_demand_slow / H_cap_slow)) if H_demand_slow > 0 else 0
+            self.n_fast_calculated = int(math.ceil(H_demand_fast / H_cap_fast)) if H_demand_fast > 0 else 0
+            self.n_ultra_calculated = int(math.ceil(H_demand_ultra / H_cap_ultra)) if H_demand_ultra > 0 else 0
         else:
-            self.n_slow_calculated = self.n_slow or 0
-            self.n_fast_calculated = self.n_fast or 0
-            self.n_ultra_calculated = self.n_ultra or 0
+            self.n_slow_calculated = vp.n_slow or 0
+            self.n_fast_calculated = vp.n_fast or 0
+            self.n_ultra_calculated = vp.n_ultra or 0
         
         # Calculate shares for this vehicle
-        vdata = self.vehicle_dict.get(str(self.vehicle_id), {})
+        vdata = vp.vehicle_dict.get(str(vp.vehicle_id), {})
         E = vdata.get('E_t', 0.0)   
         S = vdata.get('Private_S_t', 0.0)
         F = vdata.get('Private_F_t', 0.0)
@@ -341,21 +293,22 @@ class VehicleCAPEXCalculator(System):
     
     def _compute_fueling_infrastructure(self):
         """Compute fueling infrastructure for non-electric vehicles."""
+        vp = self.in_vehicle_properties
         # Determine station type
-        if self.type_energy in ['diesel', 'biodiesel', 'hvo', 'e_diesel', 'hev']:
+        if vp.type_energy in ['diesel', 'biodiesel', 'hvo', 'e_diesel', 'hev']:
             station_type = 'diesel'
-        elif self.type_energy in ['fcet', 'hice']:
+        elif vp.type_energy in ['fcet', 'hice']:
             station_type = 'hice'
-        elif self.type_energy == 'gnv':
+        elif vp.type_energy == 'gnv':
             station_type = 'gnv'
-        elif self.type_energy == 'lng':
+        elif vp.type_energy == 'lng':
             station_type = 'lng'
         else:
             station_type = 'diesel'
         
         station_params = self.get_station_params(station_type)
-        n_stations_calc = self.n_stations if self.n_stations else 1
-        vdata = self.vehicle_dict.get(str(self.vehicle_id), {})
+        n_stations_calc = vp.n_stations if vp.n_stations else 1
+        vdata = vp.vehicle_dict.get(str(vp.vehicle_id), {})
         E = vdata.get('E_t', 0.0)   
         P = vdata.get('Private_t', 0.0)
         share_private = (E * P / self.E_total_private) if self.E_total_private > 0 else 0
@@ -382,7 +335,7 @@ class VehicleCAPEXCalculator(System):
             n_stations_calc * 
             station_params.get('installation_cost_per_station_eur', 
                              station_params.get('installation_cost_per_pump_eur', 0.0)) / 
-            self.vehicle_number
+            vp.vehicle_number
         )
 
     # ==================== C_TAXES ====================
@@ -395,6 +348,7 @@ class VehicleCAPEXCalculator(System):
     
     def compute_c_subsidies(self):
         """Calculate total subsidies (vehicle + infrastructure)."""
+        vp = self.in_vehicle_properties
         subsidies_params = self.get_subsidies_params()
         
         # Vehicle subsidy
@@ -404,17 +358,18 @@ class VehicleCAPEXCalculator(System):
         infra_rate = subsidies_params.get('infrastructure_subsidy_rate', 0.0)
         infrastructure_subsidy = self.c_infrastructure_cost * infra_rate
         
-        self.c_subsidies = vehicle_subsidy + (infrastructure_subsidy / self.vehicle_number)
+        self.c_subsidies = vehicle_subsidy + (infrastructure_subsidy / vp.vehicle_number)
 
     # ==================== C_FINANCING_COST ====================
     
     def compute_c_financing_cost(self):
         """Calculate financing cost and CRF."""
+        vp = self.in_vehicle_properties
         fin_params = self.get_financing_params()
         
         base_rate = fin_params.get('base_interest_rate', 0.04)
         esg_adjustments = fin_params.get('esg_adjustments', {})
-        esg_adjustment = esg_adjustments.get(self.type_energy, 0.0)
+        esg_adjustment = esg_adjustments.get(vp.type_energy, 0.0)
         adjusted_rate = base_rate + esg_adjustment
         
         # Origination fee
@@ -423,7 +378,7 @@ class VehicleCAPEXCalculator(System):
         
         # CRF calculation
         r = adjusted_rate
-        n = self.loan_years
+        n = vp.loan_years
         if r > 0:
             self.c_crf = (r * (1 + r)**n) / ((1 + r)**n - 1)
         else:
@@ -433,7 +388,6 @@ class VehicleCAPEXCalculator(System):
     
     def compute(self):
         """Main compute method for vehicle CAPEX."""
-        p = self.capex_vehicle
         
         # Calculate fleet energy totals
         self.compute_fleet_energy()
@@ -456,35 +410,4 @@ class VehicleCAPEXCalculator(System):
         
         # CAPEX per year
         self.c_capex_per_vehicle = self.c_capex_total * self.c_crf
-        
-        # Populate port outputs
-        p.type_energy = self.type_energy
-        p.vehicle_number = self.vehicle_number
-        p.vehicle_id = self.vehicle_id
-        p.vehicle_weight_class = self.vehicle_weight_class
-        p.country = self.country
-        p.year = self.year
-        
-        p.is_new = self.is_new
-        p.owns_vehicle = self.owns_vehicle
-        p.purchase_cost = self.purchase_cost
-        p.conversion_cost = self.conversion_cost
-        p.certification_cost = self.certification_cost
-        
-        p.n_slow = self.n_slow
-        p.n_fast = self.n_fast
-        p.n_ultra = self.n_ultra
-        p.n_stations = self.n_stations
-        p.smart_charging_enabled = self.smart_charging_enabled
-        
-        p.loan_years = self.loan_years
-        
-        p.c_vehicle_cost = self.c_vehicle_cost
-        p.c_infrastructure_cost = self.c_infrastructure_cost
-        p.c_taxes = self.c_taxes
-        p.c_financing_cost = self.c_financing_cost
-        p.c_subsidies = self.c_subsidies
-        p.c_capex_total = self.c_capex_total
-        p.c_capex_per_vehicle = self.c_capex_per_vehicle
-        p.c_crf = self.c_crf
 
