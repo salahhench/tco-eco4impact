@@ -1,0 +1,540 @@
+{
+    "countries": [
+     {
+        "country": "France",
+        "data_country": {
+            "taxes_registration": {
+              "large": {
+                "DIESEL": 8000,
+                "BIO_DIESEL": 5000,
+                "HVO": 2000,
+                "E_DIESEL": 2000,
+                "BET": 0,
+                "FCET": 0,
+                "HEV": 4500,
+                "H2_ICE": 2500
+              },
+              "medium": {
+                "DIESEL": 3000,
+                "BIO_DIESEL": 2000,
+                "HVO": 800,
+                "E_DIESEL": 800,
+                "BET": 0,
+                "FCET": 0,
+                "HEV": 1800,
+                "H2_ICE": 1000
+              },
+              "small": {
+                "DIESEL": 3000,
+                "BIO_DIESEL": 2000,
+                "HVO": 800,
+                "E_DIESEL": 800,
+                "BET": 0,
+                "FCET": 0,
+                "HEV": 1800,
+                "H2_ICE": 1000
+              },
+            "licensing": {
+              "FCET": 38000,
+              "BET": 13000,
+              "H2_ICE": 13000,
+              "DIESEL": 5500,
+              "BIO_DIESEL": 5500,
+              "HVO": 5500,
+              "E_DIESEL": 5500,
+              "HEV": 5500
+            }
+          },
+          "subsidies": {
+            "2025": {
+              "large": {
+              "vehicle_subsidies": {
+                "DIESEL": 0,
+                "BIO_DIESEL": 0,  
+                "HVO": 0,
+                "E_DIESEL": 0,
+                "BET": 0,
+                "FCET": 0,
+                "HEV": 0,
+                "H2_ICE": 0
+                },
+              "infrastructure_subsidy_rates": {
+                "DIESEL": 0,  
+                "BIO_DIESEL": 0,
+                "HVO": 0,
+                "E_DIESEL": 0,
+                "BET": 0,
+                "FCET": 0,
+                "HEV": 0,
+                "H2_ICE": 0
+                }
+              },
+              "medium": { 
+              "vehicle_subsidys": {
+                "DIESEL": 0,
+                "BIO_DIESEL": 0,  
+                "HVO": 0,
+                "E_DIESEL": 0,
+                "BET": 0,
+                "FCET": 0,
+                "HEV": 0,
+                "H2_ICE": 0
+                },
+              "infrastructure_subsidy_rates": {
+                "DIESEL": 0,  
+                "BIO_DIESEL": 0,
+                "HVO": 0,
+                "E_DIESEL": 0,
+                "BET": 0,
+                "FCET": 0,
+                "HEV": 0,
+                "H2_ICE": 0
+                }
+              },  
+              "small": {
+              "vehicle_subsidys": {
+                "DIESEL": 0,
+                "BIO_DIESEL": 0,  
+                "HVO": 0,
+                "E_DIESEL": 0,
+                "BET": 0,
+                "FCET": 0,
+                "HEV": 0,
+                "H2_ICE": 0
+                },
+              "infrastructure_subsidy_rates": {
+                "DIESEL": 0,  
+                "BIO_DIESEL": 0,
+                "HVO": 0,
+                "E_DIESEL": 0,
+                "BET": 0,
+                "FCET": 0,
+                "HEV": 0,
+                "H2_ICE": 0
+                }
+              }             
+            }
+          },
+          "financing": {
+            "base_interest_rate": 0.045,
+            "origination_fee_rate": 0.015,
+            "esg_adjustments": {
+              "BET": -0.007,
+              "FCET": -0.008,
+              "H2_ICE": -0.004,
+              "HEV": -0.003
+            }
+          },
+          "conversion_costs": {
+            "diesel_to_bet": {"conversion_cost_eur": 400000, "certification_cost_eur": 30000, "marine_certification_premium_eur": 20000},
+            "diesel_to_fcet": {"conversion_cost_eur": 900000, "certification_cost_eur": 60000, "marine_certification_premium_eur": 40000},
+            "diesel_to_hice": {"conversion_cost_eur": 220000, "certification_cost_eur": 20000, "marine_certification_premium_eur": 15000},
+            "diesel_to_biodiesel": {"conversion_cost_eur": 15000, "certification_cost_eur": 5000, "marine_certification_premium_eur": 3000},
+            "diesel_to_hvo": {"conversion_cost_eur": 0, "certification_cost_eur": 0, "marine_certification_premium_eur": 0},
+            "diesel_to_e_diesel": {"conversion_cost_eur": 0, "certification_cost_eur": 0, "marine_certification_premium_eur": 0}
+          },
+          "infrastructure": {
+            "chargers": {
+              "slow": {"power_kw": 25, "price_eur": 15000, "installation_cost_eur": 10000, "operating_hours_per_day": 18, "operating_days_per_year": 320, "charging_efficiency": 0.92},
+              "fast": {"power_kw": 100, "price_eur": 70000, "installation_cost_eur": 40000, "operating_hours_per_day": 18, "operating_days_per_year": 320, "charging_efficiency": 0.92, "marine_grade_premium": 0.3},
+              "ultra": {"power_kw": 300, "price_eur": 220000, "installation_cost_eur": 150000, "operating_hours_per_day": 18, "operating_days_per_year": 320, "charging_efficiency": 0.92, "marine_grade_premium": 0.3}
+            },
+            "stations": {
+              "diesel": {"hardware_cost_per_station_eur": 25000, "installation_cost_per_pump_eur": 35000, "vessels_per_station": 15},
+              "hvo": {"hardware_cost_per_station_eur": 1500000, "hardware_cost_per_station_with_electrolyzer_eur": 3000000, "installation_cost_per_station_eur": 700000, "vessels_per_station": 8, "electrolyzer_grid_connection_cost_eur": 200000, "marine_safety_premium_eur": 150000}
+            },
+            "grid_connection": {
+              "tiers": [
+                {"max_power_kw": 100, "cost_eur": 15000},
+                {"max_power_kw": 1000, "cost_eur": 100000},
+                {"max_power_kw": 5000, "cost_eur": 400000},
+                {"max_power_kw": 999999, "cost_eur": 800000}
+              ],
+              "shore_power_integration_eur": 50000
+            },
+            "software": {
+              "BET": {"base_cost_eur": 25000, "load_management_addon_eur": 15000},
+              "FCET": {"H2_ICE_monitoring_cost_eur": 35000}
+            },
+            "site_preparation": 
+            {"cost_eur":
+            {"BET":250000,"H2_ICE":250000,"FCET":800000,"DIESEL":50000,"BIO_DIESEL":50000,"HVO":50000,"E_DIESEL":50000,"HEV":50000}
+            },
+            "safety": {"cost_per_station_eur":
+            {"FCET":80000 ,"BET":20000,"H2_ICE":20000,"DIESEL":8000,"BIO_DIESEL":8000,"HVO":8000,"E_DIESEL":8000,"HEV":8000}
+            }
+          },       
+         "taxes_opex": {
+            "tax_energy_c_e": {
+              "DIESEL": 0.65,
+              "BIODIESEL": 0.65,
+              "HVO": 0.3,
+              "E_DIESEL": 0.10,
+              "BET": 0.45,
+              "FCET": 0.20,
+              "HEV": 0.20,
+              "HICE": 0.3              
+            },
+            "tax_reg_c_k_L": {
+              "ro_pax": 200.0,
+              "small": 350.0,
+              "medium": 500.0,
+              "large": 700.0,
+              "ctv": 300.5
+            },
+            "tax_annual_c_k_L": {
+              "ro_pax": 200.0,
+              "small": 350.0,
+              "medium": 500.0,
+              "large": 700.0
+            },            
+            "tax_CO2_c_e": 0.045,
+            "B_env_c_k_e": {
+              "DIESEL": 0.65,
+              "BIODIESEL": 0.65,
+              "HVO": 0.3,
+              "E_DIESEL": 0.10,
+              "BET": 0.45,
+              "FCET": 0.20,
+              "HEV": 0.20,
+              "HICE": 0.3
+            }
+          },
+          "ports": {
+              "ro_pax": 200.0,
+              "small": 350.0,
+              "medium": 500.0,
+              "large": 700.0
+          },
+          "insurance": {
+            "insurance_per_energy": {
+              "DIESEL": 0.65,
+              "BIODIESEL": 0.65,
+              "HVO": 0.3,
+              "E_DIESEL": 0.10,
+              "BET": 0.45,
+              "FCET": 0.20,
+              "HEV": 0.20,
+              "HICE": 0.3
+              }            
+          },
+          "crew": {
+            "wage_by_quantity": {
+              "wage_per_seafarer": 35000.0
+            },
+            "wage_by_rank": {
+              "ro_pax": {
+                "skipper": 3.0,
+                "stand_in_skipper": 3.2,
+                "deckhand": 3.1,
+                "engineer":92.1
+              },
+              "small": {
+                "skipper": 3.0,
+                "stand_in_skipper": 3.2,
+                "deckhand": 3.1
+              },
+              "medium": {
+                "skipper": 3.0,
+                "stand_in_skipper": 3.2,
+                "deckhand": 3.1,
+                "engineer":92.1
+              },
+              "large": {
+                "skipper": 3.0,
+                "stand_in_skipper": 3.2,
+                "deckhand": 3.1,
+                "engineer":92.1
+              }
+            }
+          },
+          "energy": {
+            "energy_price_c_e": {
+              "DIESEL": 0.65,
+              "BIODIESEL": 0.65,
+              "HVO": 0.3,
+              "E_DIESEL": 0.10,
+              "BET": 0.45,
+              "FCET": 0.20,
+              "HEV": 0.20,
+              "HICE": 0.3
+            }
+          },
+          "maintenance": {
+            "ro_pax": 200.0,
+            "small": 350.0,
+            "medium": 500.0,
+            "large": 700.0
+          }
+    }
+    },
+     {
+        "country": "Germany", 
+        "data_country": {
+            "taxes_registration": {
+              "large": {
+                "DIESEL": 8000,
+                "BIO_DIESEL": 5000,
+                "HVO": 2000,
+                "E_DIESEL": 2000,
+                "BET": 0,
+                "FCET": 0,
+                "HEV": 4500,
+                "H2_ICE": 2500
+              },
+              "medium": {
+                "DIESEL": 3000,
+                "BIO_DIESEL": 2000,
+                "HVO": 800,
+                "E_DIESEL": 800,
+                "BET": 0,
+                "FCET": 0,
+                "HEV": 1800,
+                "H2_ICE": 1000
+              },
+              "small": {
+                "DIESEL": 3000,
+                "BIO_DIESEL": 2000,
+                "HVO": 800,
+                "E_DIESEL": 800,
+                "BET": 0,
+                "FCET": 0,
+                "HEV": 1800,
+                "H2_ICE": 1000
+              },
+            "licensing": {
+              "FCET": 38000,
+              "BET": 13000,
+              "H2_ICE": 13000,
+              "DIESEL": 5500,
+              "BIO_DIESEL": 5500,
+              "HVO": 5500,
+              "E_DIESEL": 5500,
+              "HEV": 5500
+            }
+          },
+          "subsidies": {
+            "2025": {
+              "large": {
+              "vehicle_subsidies": {
+                "DIESEL": 0,
+                "BIO_DIESEL": 0,  
+                "HVO": 0,
+                "E_DIESEL": 0,
+                "BET": 0,
+                "FCET": 0,
+                "HEV": 0,
+                "H2_ICE": 0
+                },
+              "infrastructure_subsidy_rates": {
+                "DIESEL": 0,  
+                "BIO_DIESEL": 0,
+                "HVO": 0,
+                "E_DIESEL": 0,
+                "BET": 0,
+                "FCET": 0,
+                "HEV": 0,
+                "H2_ICE": 0
+                }
+              },
+              "medium": { 
+              "vehicle_subsidys": {
+                "DIESEL": 0,
+                "BIO_DIESEL": 0,  
+                "HVO": 0,
+                "E_DIESEL": 0,
+                "BET": 0,
+                "FCET": 0,
+                "HEV": 0,
+                "H2_ICE": 0
+                },
+              "infrastructure_subsidy_rates": {
+                "DIESEL": 0,  
+                "BIO_DIESEL": 0,
+                "HVO": 0,
+                "E_DIESEL": 0,
+                "BET": 0,
+                "FCET": 0,
+                "HEV": 0,
+                "H2_ICE": 0
+                }
+              },  
+              "small": {
+              "vehicle_subsidys": {
+                "DIESEL": 0,
+                "BIO_DIESEL": 0,  
+                "HVO": 0,
+                "E_DIESEL": 0,
+                "BET": 0,
+                "FCET": 0,
+                "HEV": 0,
+                "H2_ICE": 0
+                },
+              "infrastructure_subsidy_rates": {
+                "DIESEL": 0,  
+                "BIO_DIESEL": 0,
+                "HVO": 0,
+                "E_DIESEL": 0,
+                "BET": 0,
+                "FCET": 0,
+                "HEV": 0,
+                "H2_ICE": 0
+                }
+              }             
+            }
+          },
+          "financing": {
+            "base_interest_rate": 0.045,
+            "origination_fee_rate": 0.015,
+            "esg_adjustments": {
+              "BET": -0.007,
+              "FCET": -0.008,
+              "H2_ICE": -0.004,
+              "HEV": -0.003
+            }
+          },
+          "conversion_costs": {
+            "diesel_to_bet": {"conversion_cost_eur": 400000, "certification_cost_eur": 30000, "marine_certification_premium_eur": 20000},
+            "diesel_to_fcet": {"conversion_cost_eur": 900000, "certification_cost_eur": 60000, "marine_certification_premium_eur": 40000},
+            "diesel_to_hice": {"conversion_cost_eur": 220000, "certification_cost_eur": 20000, "marine_certification_premium_eur": 15000},
+            "diesel_to_biodiesel": {"conversion_cost_eur": 15000, "certification_cost_eur": 5000, "marine_certification_premium_eur": 3000},
+            "diesel_to_hvo": {"conversion_cost_eur": 0, "certification_cost_eur": 0, "marine_certification_premium_eur": 0},
+            "diesel_to_e_diesel": {"conversion_cost_eur": 0, "certification_cost_eur": 0, "marine_certification_premium_eur": 0}
+          },
+          "infrastructure": {
+            "chargers": {
+              "slow": {"power_kw": 25, "price_eur": 15000, "installation_cost_eur": 10000, "operating_hours_per_day": 18, "operating_days_per_year": 320, "charging_efficiency": 0.92},
+              "fast": {"power_kw": 100, "price_eur": 70000, "installation_cost_eur": 40000, "operating_hours_per_day": 18, "operating_days_per_year": 320, "charging_efficiency": 0.92, "marine_grade_premium": 0.3},
+              "ultra": {"power_kw": 300, "price_eur": 220000, "installation_cost_eur": 150000, "operating_hours_per_day": 18, "operating_days_per_year": 320, "charging_efficiency": 0.92, "marine_grade_premium": 0.3}
+            },
+            "stations": {
+              "diesel": {"hardware_cost_per_station_eur": 25000, "installation_cost_per_pump_eur": 35000, "vessels_per_station": 15},
+              "hvo": {"hardware_cost_per_station_eur": 1500000, "hardware_cost_per_station_with_electrolyzer_eur": 3000000, "installation_cost_per_station_eur": 700000, "vessels_per_station": 8, "electrolyzer_grid_connection_cost_eur": 200000, "marine_safety_premium_eur": 150000}
+            },
+            "grid_connection": {
+              "tiers": [
+                {"max_power_kw": 100, "cost_eur": 15000},
+                {"max_power_kw": 1000, "cost_eur": 100000},
+                {"max_power_kw": 5000, "cost_eur": 400000},
+                {"max_power_kw": 999999, "cost_eur": 800000}
+              ],
+              "shore_power_integration_eur": 50000
+            },
+            "software": {
+              "BET": {"base_cost_eur": 25000, "load_management_addon_eur": 15000},
+              "FCET": {"H2_ICE_monitoring_cost_eur": 35000}
+            },
+            "site_preparation": 
+            {"cost_eur":
+            {"BET":250000,"H2_ICE":250000,"FCET":800000,"DIESEL":50000,"BIO_DIESEL":50000,"HVO":50000,"E_DIESEL":50000,"HEV":50000}
+            },
+            "safety": {"cost_per_station_eur":
+            {"FCET":80000 ,"BET":20000,"H2_ICE":20000,"DIESEL":8000,"BIO_DIESEL":8000,"HVO":8000,"E_DIESEL":8000,"HEV":8000}
+            }
+          },            
+         "taxes_opex": {
+            "tax_energy_c_e": {
+              "DIESEL": 0.65,
+              "BIODIESEL": 0.65,
+              "HVO": 0.3,
+              "E_DIESEL": 0.10,
+              "BET": 0.45,
+              "FCET": 0.20,
+              "HEV": 0.20,
+              "HICE": 0.3              
+            },
+            "tax_reg_c_k_L": {
+              "ro_pax": 200.0,
+              "small": 350.0,
+              "medium": 500.0,
+              "large": 700.0,
+              "ctv": 300.5
+            },
+            "tax_annual_c_k_L": {
+              "ro_pax": 200.0,
+              "small": 350.0,
+              "medium": 500.0,
+              "large": 700.0
+            },            
+            "tax_CO2_c_e": 0.045,
+            "B_env_c_k_e": {
+              "DIESEL": 0.65,
+              "BIODIESEL": 0.65,
+              "HVO": 0.3,
+              "E_DIESEL": 0.10,
+              "BET": 0.45,
+              "FCET": 0.20,
+              "HEV": 0.20,
+              "HICE": 0.3
+            }
+          },
+          "ports": {
+              "ro_pax": 200.0,
+              "small": 350.0,
+              "medium": 500.0,
+              "large": 700.0
+          },
+          "insurance": {
+            "insurance_per_energy": {
+              "DIESEL": 0.65,
+              "BIODIESEL": 0.65,
+              "HVO": 0.3,
+              "E_DIESEL": 0.10,
+              "BET": 0.45,
+              "FCET": 0.20,
+              "HEV": 0.20,
+              "HICE": 0.3
+              }            
+          },
+          "crew": {
+            "wage_by_quantity": {
+              "wage_per_seafarer": 35000.0
+            },
+            "wage_by_rank": {
+              "ro_pax": {
+                "skipper": 3.0,
+                "stand_in_skipper": 3.2,
+                "deckhand": 3.1,
+                "engineer":92.1
+              },
+              "small": {
+                "skipper": 3.0,
+                "stand_in_skipper": 3.2,
+                "deckhand": 3.1
+              },
+              "medium": {
+                "skipper": 3.0,
+                "stand_in_skipper": 3.2,
+                "deckhand": 3.1,
+                "engineer":92.1
+              },
+              "large": {
+                "skipper": 3.0,
+                "stand_in_skipper": 3.2,
+                "deckhand": 3.1,
+                "engineer":92.1
+              }
+            }
+          },
+          "energy": {
+            "energy_price_c_e": {
+              "DIESEL": 0.65,
+              "BIODIESEL": 0.65,
+              "HVO": 0.3,
+              "E_DIESEL": 0.10,
+              "BET": 0.45,
+              "FCET": 0.20,
+              "HEV": 0.20,
+              "HICE": 0.3
+            }
+          },
+          "maintenance": {
+            "ro_pax": 200.0,
+            "small": 350.0,
+            "medium": 500.0,
+            "large": 700.0
+          }
+    }
+    
+    ]    
+}
