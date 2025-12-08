@@ -471,8 +471,8 @@ if __name__ == "__main__":
     print("=" * 80)
 
     #Chose quelque scenario
-    #run_ship_scenario("scenario1_cargo_diesel_france")
-    run_ship_scenario("scenario2_ferry_diesel_spain")
+    run_ship_scenario("scenario1_cargo_diesel_france")
+    #run_ship_scenario("scenario2_ferry_diesel_spain")
     #run_ship_scenario("scenario3_ferry_electric_germany")
     #run_ship_scenario("scenario4_fishing_diesel_italy")
 
