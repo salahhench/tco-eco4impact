@@ -144,105 +144,177 @@
           },       
          "taxes_opex": {
             "tax_energy_c_e": {
-              "DIESEL": 0.65,
-              "BIODIESEL": 0.65,
-              "HVO": 0.3,
-              "E_DIESEL": 0.10,
-              "BET": 0.45,
-              "FCET": 0.20,
-              "HEV": 0.20,
-              "HICE": 0.3              
-            },
-            "tax_reg_c_k_L": {
-              "ro_pax": 200.0,
-              "small": 350.0,
-              "medium": 500.0,
-              "large": 700.0,
-              "ctv": 300.5
-            },
-            "tax_annual_c_k_L": {
-              "ro_pax": 200.0,
-              "small": 350.0,
-              "medium": 500.0,
-              "large": 700.0
-            },            
-            "tax_CO2_c_e": 0.045,
-            "B_env_c_k_e": {
-              "DIESEL": 0.65,
-              "BIODIESEL": 0.65,
-              "HVO": 0.3,
-              "E_DIESEL": 0.10,
-              "BET": 0.45,
-              "FCET": 0.20,
-              "HEV": 0.20,
-              "HICE": 0.3
+              "co2_price": 70.0,
+              "ro_pax_small": {
+                "DIESEL": [3.206, 0.0014, 0.0477],
+                "BIODIESEL": [2.834, 0.0014, 0.0477],
+                "HVO": [3.115, 0.0014, 0.0477],
+                "E_DIESEL": [3.206, 0.0014, 0.0477],
+                "BET": [0.0, 0.0, 0.0],
+                "FCET": [0.0, 0.0, 0.0],
+                "HEV": [0.0, 0.0, 0.0],
+                "HICE": [0.0, 0.0, 0.0477]
+              },
+              "ro_pax_medium": {
+                "DIESEL": [3.206, 0.0014, 0.0477],
+                "BIODIESEL": [2.834, 0.0014, 0.0477],
+                "HVO": [3.115, 0.0014, 0.0477],
+                "E_DIESEL": [3.206, 0.0014, 0.0477],
+                "BET": [0.0, 0.0, 0.0],
+                "FCET": [0.0, 0.0, 0.0],
+                "HEV": [0.0, 0.0, 0.0],
+                "HICE": [0.0, 0.0, 0.0477]
+              },
+              "ro_pax_large": {
+                "DIESEL": [3.206, 0.0014, 0.0477],
+                "BIODIESEL": [2.834, 0.0014, 0.0477],
+                "HVO": [3.115, 0.0014, 0.0477],
+                "E_DIESEL": [3.206, 0.0014, 0.0477],
+                "BET": [0.0, 0.0, 0.0],
+                "FCET": [0.0, 0.0, 0.0],
+                "HEV": [0.0, 0.0, 0.0],
+                "HICE": [0.0, 0.0, 0.0477]
+              },         
+              "fishing_small": {
+                "DIESEL": [0.0, 0.0, 0.0],
+                "BIODIESEL": [0.0, 0.0, 0.0],
+                "HVO": [0.0, 0.0, 0.0],
+                "E_DIESEL": [0.0, 0.0, 0.0],
+                "BET": [0.0, 0.0, 0.0],
+                "FCET": [0.0, 0.0, 0.0],
+                "HEV": [0.0, 0.0, 0.0],
+                "HICE": [0.0, 0.0, 0.0]
+              },
+              "fishing_medium": {
+                "DIESEL": [0.0, 0.0, 0.0],
+                "BIODIESEL": [0.0, 0.0, 0.0],
+                "HVO": [0.0, 0.0, 0.0],
+                "E_DIESEL": [0.0, 0.0, 0.0],
+                "BET": [0.0, 0.0, 0.0],
+                "FCET": [0.0, 0.0, 0.0],
+                "HEV": [0.0, 0.0, 0.0],
+                "HICE": [0.0, 0.0, 0.0]
+              },
+              "fishing_large": {
+                "DIESEL": [0.0, 0.0, 0.0],
+                "BIODIESEL": [0.0, 0.0, 0.0],
+                "HVO": [0.0, 0.0, 0.0],
+                "E_DIESEL": [0.0, 0.0, 0.0],
+                "BET": [0.0, 0.0, 0.0],
+                "FCET": [0.0, 0.0, 0.0],
+                "HEV": [0.0, 0.0, 0.0],
+                "HICE": [0.0, 0.0, 0.0]
+              },
+              "ctv_small": {
+                "DIESEL": [0.0, 0.0, 0.0],
+                "BIODIESEL": [0.0, 0.0, 0.0],
+                "HVO": [0.0, 0.0, 0.0],
+                "E_DIESEL": [0.0, 0.0, 0.0],
+                "BET": [0.0, 0.0, 0.0],
+                "FCET": [0.0, 0.0, 0.0],
+                "HEV": [0.0, 0.0, 0.0],
+                "HICE": [0.0, 0.0, 0.0]
+              },
+              "ctv_medium": {
+                "DIESEL": [0.0, 0.0, 0.0],
+                "BIODIESEL": [0.0, 0.0, 0.0],
+                "HVO": [0.0, 0.0, 0.0],
+                "E_DIESEL": [0.0, 0.0, 0.0],
+                "BET": [0.0, 0.0, 0.0],
+                "FCET": [0.0, 0.0, 0.0],
+                "HEV": [0.0, 0.0, 0.0],
+                "HICE": [0.0, 0.0, 0.0]
+              },
+              "ctv_large": {
+                "DIESEL": [0.0, 0.0, 0.0],
+                "BIODIESEL": [0.0, 0.0, 0.0],
+                "HVO": [0.0, 0.0, 0.0],
+                "E_DIESEL": [0.0, 0.0, 0.0],
+                "BET": [0.0, 0.0, 0.0],
+                "FCET": [0.0, 0.0, 0.0],
+                "HEV": [0.0, 0.0, 0.0],
+                "HICE": [0.0, 0.0, 0.0]
+              }
             }
           },
           "ports": {
-              "ro_pax": 200.0,
-              "small": 350.0,
-              "medium": 500.0,
-              "large": 700.0
+              "ro_pax_small": {
+                "port_parameters": [0.0464],
+                "port_discounts": [0.8]
+              },
+              "ro_pax_medium": {
+                "port_parameters": [0.0464],
+                "port_discounts": [0.8]
+              },
+              "ro_pax_large": {
+                "port_parameters": [0.0464],
+                "port_discounts": [0.8]
+              },
+              "fishing_small": {
+                "port_parameters": [0.0430, 0.4680],
+                "port_discounts": [1.0, 1.0]
+              },
+              "fishing_medium": {
+                "port_parameters": [0.0430, 0.4680],
+                "port_discounts": [1.0, 1.0]
+              },
+              "fishing_large": {
+                "port_parameters": [0.0430, 0.4680],
+                "port_discounts": [1.0, 1.0]
+              },
+              "ctv_small": {
+                "port_parameters": [0.0, 0.0],
+                "port_discounts": [1.0, 1.0]
+              },
+              "ctv_medium": {
+                "port_parameters": [0.0, 0.0],
+                "port_discounts": [1.0, 1.0]
+              },
+              "ctv_large": {
+                "port_parameters": [0.0, 0.0],
+                "port_discounts": [1.0, 1.0]
+              }
           },
           "insurance": {
-            "insurance_per_energy": {
-              "DIESEL": 0.65,
-              "BIODIESEL": 0.65,
-              "HVO": 0.3,
-              "E_DIESEL": 0.10,
-              "BET": 0.45,
-              "FCET": 0.20,
-              "HEV": 0.20,
-              "HICE": 0.3
-              }            
+            "insurance_per_type": {
+              "ro_pax_small": 0.015,
+              "ro_pax_medium": 0.015,
+              "ro_pax_large": 0.015,
+              "fishing_small": 0.025,
+              "fishing_medium": 0.025,
+              "fishing_large": 0.025,
+              "ctv_small": 0.02,
+              "ctv_medium": 0.02,
+              "ctv_large": 0.02
+            }
           },
           "crew": {
-            "wage_by_quantity": {
-              "wage_per_seafarer": 35000.0
-            },
-            "wage_by_rank": {
-              "ro_pax": {
-                "skipper": 3.0,
-                "stand_in_skipper": 3.2,
-                "deckhand": 3.1,
-                "engineer":92.1
-              },
-              "small": {
-                "skipper": 3.0,
-                "stand_in_skipper": 3.2,
-                "deckhand": 3.1
-              },
-              "medium": {
-                "skipper": 3.0,
-                "stand_in_skipper": 3.2,
-                "deckhand": 3.1,
-                "engineer":92.1
-              },
-              "large": {
-                "skipper": 3.0,
-                "stand_in_skipper": 3.2,
-                "deckhand": 3.1,
-                "engineer":92.1
-              }
+            "wage_of_crew_rank": {
+              "seafarer": 35000.0
             }
           },
           "energy": {
             "energy_price_c_e": {
-              "DIESEL": 0.65,
-              "BIODIESEL": 0.65,
-              "HVO": 0.3,
-              "E_DIESEL": 0.10,
-              "BET": 0.45,
-              "FCET": 0.20,
-              "HEV": 0.20,
-              "HICE": 0.3
+              "DIESEL": 1500,
+              "BIODIESEL": 1800,
+              "HVO": 2000,
+              "E_DIESEL": 4000,
+              "BET": 150,
+              "FCET": 8000,
+              "HEV": 1500,
+              "HICE": 5000
             }
           },
           "maintenance": {
-            "ro_pax": 200.0,
-            "small": 350.0,
-            "medium": 500.0,
-            "large": 700.0
+            "ro_pax_small": 0.1765,
+            "ro_pax_medium": 0.1765,
+            "ro_pax_large": 0.1765,
+            "fishing_small": 0.1765,
+            "fishing_medium": 0.1765,
+            "fishing_large": 0.1765,
+            "ctv_small": 0.1765,
+            "ctv_medium": 0.1765,
+            "ctv_large": 0.1765
           },
           "external_factors": {
           "energy_price_factor": {
@@ -449,105 +521,177 @@
           },       
          "taxes_opex": {
             "tax_energy_c_e": {
-              "DIESEL": 0.65,
-              "BIODIESEL": 0.65,
-              "HVO": 0.3,
-              "E_DIESEL": 0.10,
-              "BET": 0.45,
-              "FCET": 0.20,
-              "HEV": 0.20,
-              "HICE": 0.3              
-            },
-            "tax_reg_c_k_L": {
-              "ro_pax": 200.0,
-              "small": 350.0,
-              "medium": 500.0,
-              "large": 700.0,
-              "ctv": 300.5
-            },
-            "tax_annual_c_k_L": {
-              "ro_pax": 200.0,
-              "small": 350.0,
-              "medium": 500.0,
-              "large": 700.0
-            },            
-            "tax_CO2_c_e": 0.045,
-            "B_env_c_k_e": {
-              "DIESEL": 0.65,
-              "BIODIESEL": 0.65,
-              "HVO": 0.3,
-              "E_DIESEL": 0.10,
-              "BET": 0.45,
-              "FCET": 0.20,
-              "HEV": 0.20,
-              "HICE": 0.3
+              "co2_price": 80.0,
+              "ro_pax_small": {
+                "DIESEL": [3.206, 0.0014, 0.0477],
+                "BIODIESEL": [2.834, 0.0014, 0.0477],
+                "HVO": [3.115, 0.0014, 0.0477],
+                "E_DIESEL": [3.206, 0.0014, 0.0477],
+                "BET": [0.0, 0.0, 0.0],
+                "FCET": [0.0, 0.0, 0.0],
+                "HEV": [0.0, 0.0, 0.0],
+                "HICE": [0.0, 0.0, 0.0477]
+              },
+              "ro_pax_medium": {
+                "DIESEL": [3.206, 0.0014, 0.0477],
+                "BIODIESEL": [2.834, 0.0014, 0.0477],
+                "HVO": [3.115, 0.0014, 0.0477],
+                "E_DIESEL": [3.206, 0.0014, 0.0477],
+                "BET": [0.0, 0.0, 0.0],
+                "FCET": [0.0, 0.0, 0.0],
+                "HEV": [0.0, 0.0, 0.0],
+                "HICE": [0.0, 0.0, 0.0477]
+              },
+              "ro_pax_large": {
+                "DIESEL": [3.206, 0.0014, 0.0477],
+                "BIODIESEL": [2.834, 0.0014, 0.0477],
+                "HVO": [3.115, 0.0014, 0.0477],
+                "E_DIESEL": [3.206, 0.0014, 0.0477],
+                "BET": [0.0, 0.0, 0.0],
+                "FCET": [0.0, 0.0, 0.0],
+                "HEV": [0.0, 0.0, 0.0],
+                "HICE": [0.0, 0.0, 0.0477]
+              },
+              "fishing_small": {
+                "DIESEL": [3.206, 0.0014, 0.0477],
+                "BIODIESEL": [2.834, 0.0014, 0.0477],
+                "HVO": [3.115, 0.0014, 0.0477],
+                "E_DIESEL": [3.206, 0.0014, 0.0477],
+                "BET": [0.0, 0.0, 0.0],
+                "FCET": [0.0, 0.0, 0.0],
+                "HEV": [0.0, 0.0, 0.0],
+                "HICE": [0.0, 0.0, 0.0477]
+              },
+              "fishing_medium": {
+                "DIESEL": [3.206, 0.0014, 0.0477],
+                "BIODIESEL": [2.834, 0.0014, 0.0477],
+                "HVO": [3.115, 0.0014, 0.0477],
+                "E_DIESEL": [3.206, 0.0014, 0.0477],
+                "BET": [0.0, 0.0, 0.0],
+                "FCET": [0.0, 0.0, 0.0],
+                "HEV": [0.0, 0.0, 0.0],
+                "HICE": [0.0, 0.0, 0.0477]
+              },
+              "fishing_large": {
+                "DIESEL": [3.206, 0.0014, 0.0477],
+                "BIODIESEL": [2.834, 0.0014, 0.0477],
+                "HVO": [3.115, 0.0014, 0.0477],
+                "E_DIESEL": [3.206, 0.0014, 0.0477],
+                "BET": [0.0, 0.0, 0.0],
+                "FCET": [0.0, 0.0, 0.0],
+                "HEV": [0.0, 0.0, 0.0],
+                "HICE": [0.0, 0.0, 0.0477]
+              },
+              "ctv_small": {
+                "DIESEL": [3.206, 0.0014, 0.0477],
+                "BIODIESEL": [2.834, 0.0014, 0.0477],
+                "HVO": [3.115, 0.0014, 0.0477],
+                "E_DIESEL": [3.206, 0.0014, 0.0477],
+                "BET": [0.0, 0.0, 0.0],
+                "FCET": [0.0, 0.0, 0.0],
+                "HEV": [0.0, 0.0, 0.0],
+                "HICE": [0.0, 0.0, 0.0477]
+              },
+              "ctv_medium": {
+                "DIESEL": [3.206, 0.0014, 0.0477],
+                "BIODIESEL": [2.834, 0.0014, 0.0477],
+                "HVO": [3.115, 0.0014, 0.0477],
+                "E_DIESEL": [3.206, 0.0014, 0.0477],
+                "BET": [0.0, 0.0, 0.0],
+                "FCET": [0.0, 0.0, 0.0],
+                "HEV": [0.0, 0.0, 0.0],
+                "HICE": [0.0, 0.0, 0.0477]
+              },
+              "ctv_large": {
+                "DIESEL": [3.206, 0.0014, 0.0477],
+                "BIODIESEL": [2.834, 0.0014, 0.0477],
+                "HVO": [3.115, 0.0014, 0.0477],
+                "E_DIESEL": [3.206, 0.0014, 0.0477],
+                "BET": [0.0, 0.0, 0.0],
+                "FCET": [0.0, 0.0, 0.0],
+                "HEV": [0.0, 0.0, 0.0],
+                "HICE": [0.0, 0.0, 0.0477]
+              }
             }
           },
           "ports": {
-              "ro_pax": 200.0,
-              "small": 350.0,
-              "medium": 500.0,
-              "large": 700.0
+              "ro_pax_small": {
+                "port_parameters": [0.0464, 0.0145],
+                "port_discounts": [1.0, 1.0]
+              },
+              "ro_pax_medium": {
+                "port_parameters": [0.0464, 0.0145],
+                "port_discounts": [1.0, 1.0]
+              },
+              "ro_pax_large": {
+                "port_parameters": [0.0464, 0.0145],
+                "port_discounts": [1.0, 1.0]
+              },
+              "fishing_small": {
+                "port_parameters": [0.0430, 0.108],
+                "port_discounts": [0.0, 1.0]
+              },
+              "fishing_medium": {
+                "port_parameters": [0.0430, 0.108],
+                "port_discounts": [0.0, 1.0]
+              },
+              "fishing_large": {
+                "port_parameters": [0.0430, 0.108],
+                "port_discounts": [0.0, 1.0]
+              },
+              "ctv_small": {
+                "port_parameters": [0.0, 0.0],
+                "port_discounts": [1.0, 1.0]
+              },
+              "ctv_medium": {
+                "port_parameters": [0.0, 0.0],
+                "port_discounts": [1.0, 1.0]
+              },
+              "ctv_large": {
+                "port_parameters": [0.0, 0.0],
+                "port_discounts": [1.0, 1.0]
+              }
           },
           "insurance": {
-            "insurance_per_energy": {
-              "DIESEL": 0.65,
-              "BIODIESEL": 0.65,
-              "HVO": 0.3,
-              "E_DIESEL": 0.10,
-              "BET": 0.45,
-              "FCET": 0.20,
-              "HEV": 0.20,
-              "HICE": 0.3
-              }            
+            "insurance_per_type": {
+              "ro_pax_small": 0.015,
+              "ro_pax_medium": 0.015,
+              "ro_pax_large": 0.015,
+              "fishing_small": 0.025,
+              "fishing_medium": 0.025,
+              "fishing_large": 0.025,
+              "ctv_small": 0.02,
+              "ctv_medium": 0.02,
+              "ctv_large": 0.02
+            }
           },
           "crew": {
-            "wage_by_quantity": {
-              "wage_per_seafarer": 35000.0
-            },
-            "wage_by_rank": {
-              "ro_pax": {
-                "skipper": 3.0,
-                "stand_in_skipper": 3.2,
-                "deckhand": 3.1,
-                "engineer":92.1
-              },
-              "small": {
-                "skipper": 3.0,
-                "stand_in_skipper": 3.2,
-                "deckhand": 3.1
-              },
-              "medium": {
-                "skipper": 3.0,
-                "stand_in_skipper": 3.2,
-                "deckhand": 3.1,
-                "engineer":92.1
-              },
-              "large": {
-                "skipper": 3.0,
-                "stand_in_skipper": 3.2,
-                "deckhand": 3.1,
-                "engineer":92.1
-              }
+            "wage_of_crew_rank": {
+              "seafarer": 35000.0
             }
           },
           "energy": {
             "energy_price_c_e": {
-              "DIESEL": 0.65,
-              "BIODIESEL": 0.65,
-              "HVO": 0.3,
-              "E_DIESEL": 0.10,
-              "BET": 0.45,
-              "FCET": 0.20,
-              "HEV": 0.20,
-              "HICE": 0.3
+            "DIESEL": 1600,
+            "BIODIESEL": 1800,
+            "HVO": 2000,
+            "E_DIESEL": 4000,
+            "BET": 220,
+            "FCET": 8000,
+            "HEV": 1600,
+            "HICE": 5000              
             }
           },
           "maintenance": {
-            "ro_pax": 200.0,
-            "small": 350.0,
-            "medium": 500.0,
-            "large": 700.0
+            "ro_pax_small": 0.1765,
+            "ro_pax_medium": 0.1765,
+            "ro_pax_large": 0.1765,
+            "fishing_small": 0.1765,
+            "fishing_medium": 0.1765,
+            "fishing_large": 0.1765,
+            "ctv_small": 0.1765,
+            "ctv_medium": 0.1765,
+            "ctv_large": 0.1765
           },
           "external_factors": {
           "energy_price_factor": {
