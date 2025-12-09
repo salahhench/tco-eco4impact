@@ -17,7 +17,7 @@ Main TCO orchestrator for Eco4Impact / BoatTwin project.
 
 from cosapp.drivers import RunOnce
 
-# === AJUSTA ESTOS IMPORTS A TUS NOMBRES REALES DE ARCHIVO ===
+
 from functions.Opex_Calculator_trucks import TruckOPEXCalculator
 from functions.Opex_Calculator_ships import ShipOPEXCalculator
 from functions.rv_calculator import ResidualValueCalculator
@@ -26,7 +26,7 @@ from inputs.gen_truck_in import make_example_truck_inputs
 from inputs.gen_ship_in import make_example_ship_inputs
 
 # ----------------------------------------------------------------------
-# 2. WRAPPERS PARA CADA MÓDULO
+# 2. WRAPPERS FOR EACH MODULE
 # ----------------------------------------------------------------------
 def run_capex(capex_inputs: dict) -> float:
     capex_inputs = capex_inputs.get("capex", {})
@@ -66,10 +66,10 @@ def run_capex(capex_inputs: dict) -> float:
 
 
 def run_opex_truck(opex_inputs: dict) -> float:
-    """Lanza TruckOPEXCalculator y devuelve o_opex_total."""
+    
     sys_opex = TruckOPEXCalculator("opex_truck", db_path="data_opex_trucks.json")
 
-    # copiar todas las claves que existan
+    
     for key, value in opex_inputs.items():
         if hasattr(sys_opex, key):
             setattr(sys_opex, key, value)
@@ -83,7 +83,7 @@ def run_opex_truck(opex_inputs: dict) -> float:
 
 
 def run_opex_ship(opex_inputs: dict) -> float:
-    """Lanza ShipOPEXCalculator y devuelve o_opex_total."""
+    
     sys_ship = ShipOPEXCalculator("ship_opex_case", db_path="data_opex_trucks.json")
 
     for key, value in opex_inputs.items():
@@ -106,7 +106,7 @@ def run_opex_ship(opex_inputs: dict) -> float:
 
 
 def run_rv(rv_inputs: dict) -> float:
-    """Lanza ResidualValueCalculator y devuelve residual_value."""
+   
     rv_sys = ResidualValueCalculator("rv_global")
 
     # Vehicle properties
@@ -158,10 +158,7 @@ def run_rv(rv_inputs: dict) -> float:
 # 3. FUNCIÓN GLOBAL: RUN_TCO_SCENARIO
 # ----------------------------------------------------------------------
 def run_tco_scenario(user_inputs: dict):
-    """
-    Orquesta CAPEX + OPEX + RV para un escenario dado.
-    user_inputs viene de make_example_truck_inputs() o make_example_ship_inputs().
-    """
+    
     asset_type = user_inputs["asset_type"]
     print("\n" + "=" * 80)
     print(f"RUNNING GLOBAL TCO SCENARIO: {user_inputs.get('description', '')}")
@@ -170,14 +167,14 @@ def run_tco_scenario(user_inputs: dict):
 
     # 1) CAPEX
     capex_inputs = dict(user_inputs["capex"])
-    # añadimos cosas comunes que capex necesita
+    
     capex_inputs["powertrain_type"] = user_inputs["powertrain_type"]
     capex_inputs["vehicle_weight_class"] = user_inputs["vehicle_weight_class"]
     capex_inputs["country"] = user_inputs["country"]
     capex_inputs["year"] = user_inputs["year"]
 
     capex_per_year = run_capex(capex_inputs)
-    print(f"\n[CAPEX] CAPEX anualizado por vehículo (CRF aplicado): {capex_per_year:,.2f} €")
+    print(f"\n[CAPEX] CAPEX per vehicle: {capex_per_year:,.2f} €")
 
     # 2) OPEX
     if asset_type == "truck":
@@ -186,25 +183,25 @@ def run_tco_scenario(user_inputs: dict):
         opex_total = run_opex_ship(user_inputs["opex_ship"])
     else:
         raise ValueError(f"asset_type desconocido: {asset_type}")
-    print(f"[OPEX] OPEX anual total: {opex_total:,.2f} €")
+    print(f"[OPEX] OPEX annual: {opex_total:,.2f} €")
 
     # 3) RV
     rv_value = run_rv(user_inputs["rv"])
-    print(f"[RV] Residual value al final del horizonte: {rv_value:,.2f} €")
+    print(f"[RV]: {rv_value:,.2f} €")
 
-    # 4) Ejemplo de TCO (muy simple, puedes cambiar la fórmula)
+    
     N = user_inputs["operation_years"]
     tco = capex_per_year * N + opex_total * N - rv_value
 
     print("\n" + "=" * 80)
-    print("RESUMEN TCO (ejemplo simple)")
+    print("TCO SUMMARY")
     print("=" * 80)
-    print(f"Horizonte: {N} años")
-    print(f"CAPEX acumulado: {capex_per_year * N:,.2f} €")
-    print(f"OPEX acumulado: {opex_total * N:,.2f} €")
-    print(f"Residual Value restado: {rv_value:,.2f} €")
+    print(f"Horizon: {N} años")
+    print(f"CAPEX acumulated: {capex_per_year * N:,.2f} €")
+    print(f"OPEX acumulated: {opex_total * N:,.2f} €")
+    print(f"Residual Value: {rv_value:,.2f} €")
     print("-" * 80)
-    print(f"TCO total aproximado: {tco:,.2f} €")
+    print(f"TCO total: {tco:,.2f} €")
     print("=" * 80)
 
     return {
