@@ -3,8 +3,7 @@ Main TCO orchestrator for Eco4Impact / BoatTwin project.
 
 - Llama a:
     * CAPEXSystem   (capex_calculator.py)
-    * TruckOPEXCalculator (Opex_Calculator_CosApp.py)
-    * ShipOPEXCalculator  (Opex_Calculator_ships.py)
+    * TruckOPEXCalculator / ShipOPEXCalculator (Opex_Calculator.py)
     * ResidualValueSystem (rv_calculator.py, por ejemplo)
 
 - Usa una ENTRADA GENERAL (user_inputs) con:
@@ -17,9 +16,9 @@ Main TCO orchestrator for Eco4Impact / BoatTwin project.
 
 from cosapp.drivers import RunOnce
 
+# 🔹 CAMBIO: ahora importamos ambos desde el MISMO archivo
+from functions.Opex_Calculator import TruckOPEXCalculator, ShipOPEXCalculator
 
-from functions.Opex_Calculator_trucks import TruckOPEXCalculator
-from functions.Opex_Calculator_ships import ShipOPEXCalculator
 from functions.rv_calculator import ResidualValueCalculator
 from functions.capex_calculator import VehicleCAPEXCalculator
 from inputs.gen_truck_in import make_example_truck_inputs
@@ -47,13 +46,13 @@ def run_capex(capex_inputs: dict) -> float:
     sys_capex.purchase_price     = capex_inputs.get("purchase_price", 0.0)
     sys_capex.conversion_cost    = capex_inputs.get("conversion_cost", 0.0)
     sys_capex.certification_cost = capex_inputs.get("certification_cost", 0.0)
-    sys_capex.vehicle_dict = capex_inputs.get("vehicle_dict", {})
+    sys_capex.vehicle_dict       = capex_inputs.get("vehicle_dict", {})
 
     # -------------------- INFRASTRUCTURE --------------------
-    sys_capex.n_slow                = capex_inputs.get("n_slow")
-    sys_capex.n_fast                = capex_inputs.get("n_fast")
-    sys_capex.n_ultra               = capex_inputs.get("n_ultra")
-    sys_capex.n_stations            = capex_inputs.get("n_stations", 0)
+    sys_capex.n_slow                 = capex_inputs.get("n_slow")
+    sys_capex.n_fast                 = capex_inputs.get("n_fast")
+    sys_capex.n_ultra                = capex_inputs.get("n_ultra")
+    sys_capex.n_stations             = capex_inputs.get("n_stations", 0)
     sys_capex.smart_charging_enabled = capex_inputs.get("smart_charging_enabled", False)
 
     # -------------------- FINANCING --------------------
@@ -65,11 +64,12 @@ def run_capex(capex_inputs: dict) -> float:
     return sys_capex.c_capex_per_vehicle
 
 
+# -------------------- OPEX TRUCK --------------------
 def run_opex_truck(opex_inputs: dict) -> float:
-    
-    sys_opex = TruckOPEXCalculator("opex_truck", db_path="data_opex_trucks.json")
+    # 🔹 Ahora usamos el sistema unificado, sin pasar db_path (lo resuelve dentro)
+    sys_opex = TruckOPEXCalculator("opex_truck")
 
-    
+    # Asignar inputs si existen como atributos del sistema
     for key, value in opex_inputs.items():
         if hasattr(sys_opex, key):
             setattr(sys_opex, key, value)
@@ -82,9 +82,10 @@ def run_opex_truck(opex_inputs: dict) -> float:
     return sys_opex.o_opex_total
 
 
+# -------------------- OPEX SHIP --------------------
 def run_opex_ship(opex_inputs: dict) -> float:
-    
-    sys_ship = ShipOPEXCalculator("ship_opex_case", db_path="data_opex_trucks.json")
+    # 🔹 Igual: sistema unificado, sin db_path, usa db_ships internamente
+    sys_ship = ShipOPEXCalculator("ship_opex_case")
 
     for key, value in opex_inputs.items():
         if hasattr(sys_ship, key):
@@ -106,7 +107,6 @@ def run_opex_ship(opex_inputs: dict) -> float:
 
 
 def run_rv(rv_inputs: dict) -> float:
-   
     rv_sys = ResidualValueCalculator("rv_global")
 
     # Vehicle properties
@@ -128,10 +128,7 @@ def run_rv(rv_inputs: dict) -> float:
     rv_sys.in_country_properties.c02_taxes = rv_inputs["co2_taxes"]
     rv_sys.in_country_properties.subsidies = rv_inputs["subsidies"]
 
-    # Run calculation
     rv_sys.add_driver(RunOnce('run_rv'))
-
-    # Run the system
     rv_sys.run_drivers()
 
     print("\n--- RV RESULTS ---")
@@ -158,7 +155,6 @@ def run_rv(rv_inputs: dict) -> float:
 # 3. FUNCIÓN GLOBAL: RUN_TCO_SCENARIO
 # ----------------------------------------------------------------------
 def run_tco_scenario(user_inputs: dict):
-    
     asset_type = user_inputs["asset_type"]
     print("\n" + "=" * 80)
     print(f"RUNNING GLOBAL TCO SCENARIO: {user_inputs.get('description', '')}")
@@ -167,7 +163,6 @@ def run_tco_scenario(user_inputs: dict):
 
     # 1) CAPEX
     capex_inputs = dict(user_inputs["capex"])
-    
     capex_inputs["powertrain_type"] = user_inputs["powertrain_type"]
     capex_inputs["vehicle_weight_class"] = user_inputs["vehicle_weight_class"]
     capex_inputs["country"] = user_inputs["country"]
@@ -189,7 +184,6 @@ def run_tco_scenario(user_inputs: dict):
     rv_value = run_rv(user_inputs["rv"])
     print(f"[RV]: {rv_value:,.2f} €")
 
-    
     N = user_inputs["operation_years"]
     tco = capex_per_year * N + opex_total * N - rv_value
 

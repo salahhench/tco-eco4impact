@@ -575,7 +575,7 @@ class TruckOPEXCalculator(System):
         object.__setattr__(
             self,
             "_countries_data",
-            {c["country"]: c["opex_database"] for c in db_data["countries"]},
+            {c["country"]: c["data_country"] for c in db_data["countries"]},
         )
 
         # Add port
@@ -922,7 +922,7 @@ if __name__ == "__main__":
     #  - scenario4_truck_hybrid_italy
 
     scenario_name = "scenario1_ro_pax_large_diesel_france"
-    # scenario_name = "scenario1_truck_diesel_france"
+    #scenario_name = "scenario1_truck_diesel_france"
     run_opex_scenario(scenario_name)
 
     
