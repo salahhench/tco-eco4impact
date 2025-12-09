@@ -132,6 +132,98 @@
       "EF_CO2": 0.27,
       "NOxSOx_rate": 0.012,
       "annual_energy_consumption_kWh": 1200000
+    },
+
+    {
+      "name": "scenario1_truck_diesel_france",
+      "description": "Heavy diesel truck in France (N3, long-haul)",
+
+      "purchase_cost": 150000.0,
+      "type_energy": "diesel",
+      "size_vehicle": "N3",
+      "registration_country": "France",
+      "annual_distance_travel": 120000.0,
+
+      "departure_city": "Paris",
+      "arrival_city": "Marseille",
+
+      "RV": 45000.0,
+      "N_years": 5.0,
+      "team_count": 1,
+      "maintenance_cost": 7000.0,
+
+      "consumption_energy": 42000.0,
+      "fuel_multiplier": 1.0,
+      "EF_CO2_diesel": 2.65
+    },
+
+    {
+      "name": "scenario2_truck_electric_germany",
+      "description": "Electric medium truck in Germany (N2, urban)",
+
+      "purchase_cost": 95000.0,
+      "type_energy": "electric",
+      "size_vehicle": "N2",
+      "registration_country": "Germany",
+      "annual_distance_travel": 35000.0,
+
+      "departure_city": "Berlin",
+      "arrival_city": "Hamburg",
+
+      "RV": 38000.0,
+      "N_years": 5.0,
+      "team_count": 1,
+      "maintenance_cost": 3000.0,
+
+      "consumption_energy": 21000.0,
+      "fuel_multiplier": 0.3,
+      "EF_CO2_diesel": 0.0
+    },
+
+    {
+      "name": "scenario3_truck_h2_spain",
+      "description": "Hydrogen fuel-cell heavy truck in Spain (N3)",
+
+      "purchase_cost": 220000.0,
+      "type_energy": "hydrogen_fuel_cell",
+      "size_vehicle": "N3",
+      "registration_country": "Spain",
+      "annual_distance_travel": 100000.0,
+
+      "departure_city": "Madrid",
+      "arrival_city": "Barcelona",
+
+      "RV": 70000.0,
+      "N_years": 5.0,
+      "team_count": 1,
+      "maintenance_cost": 8500.0,
+
+      "consumption_energy": 3500.0,
+      "fuel_multiplier": 0.4,
+      "EF_CO2_diesel": 0.0
+    },
+
+    {
+      "name": "scenario4_truck_hybrid_italy",
+      "description": "Hybrid light truck in Italy (N1, mixed usage)",
+
+      "purchase_cost": 55000.0,
+      "type_energy": "hybrid",
+      "size_vehicle": "N1",
+      "registration_country": "Italy",
+      "annual_distance_travel": 45000.0,
+
+      "departure_city": "Rome",
+      "arrival_city": "Milan",
+
+      "RV": 22000.0,
+      "N_years": 5.0,
+      "team_count": 1,
+      "maintenance_cost": 4000.0,
+
+      "consumption_energy": 3600.0,
+      "fuel_multiplier": 0.6,
+      "EF_CO2_diesel": 1.85
     }
   ]
 }
