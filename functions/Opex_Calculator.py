@@ -840,15 +840,3 @@ def run_opex_scenario(scenario_name: str, inputs_path: str = "inputs_opex.json")
         return run_truck_scenario(scenario_name, inputs_path=inputs_path)
     else:
         raise ValueError("Scenario type unidentifiable (missing 'ship_class' or 'size_vehicle').")
-
-
-if __name__ == "__main__":
-    print("=" * 80)
-    print("Unified CosApp OPEX Calculator - SHIPS & TRUCKS")
-    print("=" * 80)
-
-    # Change this to test other scenarios
-    #scenario_name = "scenario1_ro_pax_large_diesel_france"
-    scenario_name = "scenario1_truck_diesel_france"
-    
-    run_opex_scenario(scenario_name)
