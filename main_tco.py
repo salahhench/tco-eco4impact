@@ -171,29 +171,29 @@ def run_tco_scenario(user_inputs: dict):
     capex_per_year = run_capex(capex_inputs)
     print(f"\n[CAPEX] CAPEX per vehicle: {capex_per_year:,.2f} €")
 
-    # # 2) OPEX
-    # if asset_type == "truck":
-    #     opex_total = run_opex_truck(user_inputs["opex_truck"])
-    # elif asset_type == "ship":
-    #     opex_total = run_opex_ship(user_inputs["opex_ship"])
-    # else:
-    #     raise ValueError(f"asset_type desconocido: {asset_type}")
-    # print(f"[OPEX] OPEX annual: {opex_total:,.2f} €")
+    # 2) OPEX
+    if asset_type == "truck":
+        opex_total = run_opex_truck(user_inputs["opex_truck"])
+    elif asset_type == "ship":
+        opex_total = run_opex_ship(user_inputs["opex_ship"])
+    else:
+        raise ValueError(f"asset_type desconocido: {asset_type}")
+    print(f"[OPEX] OPEX annual: {opex_total:,.2f} €")
 
     # 3) RV
     rv_value = run_rv(user_inputs["rv"])
     print(f"[RV]: {rv_value:,.2f} €")
 
     N = user_inputs["operation_years"]
-    # tco = capex_per_year * N + opex_total * N - rv_value
-    tco = capex_per_year * N  * N - rv_value
+    tco = capex_per_year * N + opex_total * N - rv_value
+    # tco = capex_per_year * N  * N - rv_value
 
     print("\n" + "=" * 80)
     print("TCO SUMMARY")
     print("=" * 80)
     print(f"Horizon: {N} años")
     print(f"CAPEX acumulated: {capex_per_year * N:,.2f} €")
-    # print(f"OPEX acumulated: {opex_total * N:,.2f} €")
+    print(f"OPEX acumulated: {opex_total * N:,.2f} €")
     print(f"Residual Value: {rv_value:,.2f} €")
     print("-" * 80)
     print(f"TCO total: {tco:,.2f} €")
@@ -201,7 +201,7 @@ def run_tco_scenario(user_inputs: dict):
 
     return {
         "capex_per_year": capex_per_year,
-        # "opex_per_year": opex_total,
+        "opex_per_year": opex_total,
         "rv": rv_value,
         "tco_total": tco,
     }
