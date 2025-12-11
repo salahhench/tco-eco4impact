@@ -848,7 +848,7 @@ if __name__ == "__main__":
     print("=" * 80)
 
     # Change this to test other scenarios
-    scenario_name = "scenario2_ro_pax_medium_diesel_spain"
-    #scenario_name = "scenario2_truck_n3_diesel_france"
+    #scenario_name = "scenario1_ro_pax_large_diesel_france"
+    scenario_name = "scenario1_truck_diesel_france"
     
     run_opex_scenario(scenario_name)
