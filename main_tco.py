@@ -33,30 +33,30 @@ def run_capex(capex_inputs: dict) -> float:
     sys_capex = VehicleCAPEXCalculator("capex_global")
 
     # -------------------- MAIN USER INPUTS --------------------
-    sys_capex.powertrain_type      = capex_inputs.get("powertrain_type", "diesel")
-    sys_capex.vehicle_number       = capex_inputs.get("vehicle_number", 1)
-    sys_capex.vehicle_id           = capex_inputs.get("vehicle_id", 1)
-    sys_capex.vehicle_weight_class = capex_inputs.get("vehicle_weight_class", "light")
-    sys_capex.country              = capex_inputs.get("country", "FR")
-    sys_capex.year                 = capex_inputs.get("year", 2025)
+    sys_capex.in_vehicle_properties.type_vehicle      = capex_inputs.get("powertrain_type", "diesel")
+    sys_capex.in_vehicle_properties.vehicle_number       = capex_inputs.get("vehicle_number", 1)
+    sys_capex.in_vehicle_properties.vehicle_id           = capex_inputs.get("vehicle_id", 1)
+    sys_capex.in_vehicle_properties.vehicle_weight_class = capex_inputs.get("vehicle_weight_class", "light")
+    sys_capex.in_vehicle_properties.country              = capex_inputs.get("country", "FR")
+    sys_capex.in_vehicle_properties.year                 = capex_inputs.get("year", 2025)
 
     # -------------------- VEHICLE ACQUISITION --------------------
-    sys_capex.is_new             = capex_inputs.get("is_new", True)
-    sys_capex.owns_vehicle       = capex_inputs.get("owns_vehicle", False)
-    sys_capex.purchase_price     = capex_inputs.get("purchase_price", 0.0)
-    sys_capex.conversion_cost    = capex_inputs.get("conversion_cost", 0.0)
-    sys_capex.certification_cost = capex_inputs.get("certification_cost", 0.0)
-    sys_capex.vehicle_dict       = capex_inputs.get("vehicle_dict", {})
+    sys_capex.in_vehicle_properties.is_new             = capex_inputs.get("is_new", True)
+    sys_capex.in_vehicle_properties.owns_vehicle       = capex_inputs.get("owns_vehicle", False)
+    sys_capex.in_vehicle_properties.purchase_cost     = capex_inputs.get("purchase_price", 0.0)
+    sys_capex.in_vehicle_properties.conversion_cost    = capex_inputs.get("conversion_cost", 0.0)
+    sys_capex.in_vehicle_properties.certification_cost = capex_inputs.get("certification_cost", 0.0)
+    sys_capex.in_vehicle_properties.vehicle_dict       = capex_inputs.get("vehicle_dict", {})
 
     # -------------------- INFRASTRUCTURE --------------------
-    sys_capex.n_slow                 = capex_inputs.get("n_slow")
-    sys_capex.n_fast                 = capex_inputs.get("n_fast")
-    sys_capex.n_ultra                = capex_inputs.get("n_ultra")
-    sys_capex.n_stations             = capex_inputs.get("n_stations", 0)
-    sys_capex.smart_charging_enabled = capex_inputs.get("smart_charging_enabled", False)
+    sys_capex.in_vehicle_properties.n_slow                 = capex_inputs.get("n_slow")
+    sys_capex.in_vehicle_properties.n_fast                 = capex_inputs.get("n_fast")
+    sys_capex.in_vehicle_properties.n_ultra                = capex_inputs.get("n_ultra")
+    sys_capex.in_vehicle_properties.n_stations             = capex_inputs.get("n_stations", 0)
+    sys_capex.in_vehicle_properties.smart_charging_enabled = capex_inputs.get("smart_charging_enabled", False)
 
     # -------------------- FINANCING --------------------
-    sys_capex.loan_years = capex_inputs.get("loan_years", 10)
+    sys_capex.in_vehicle_properties.loan_years = capex_inputs.get("loan_years", 10)
 
     sys_capex.add_driver(RunOnce("run_capex"))
     sys_capex.run_drivers()
@@ -74,7 +74,7 @@ def run_opex_truck(opex_inputs: dict) -> float:
         if hasattr(sys_opex, key):
             setattr(sys_opex, key, value)
 
-    sys_opex.print_input_summary()
+    # sys_opex.print_input_summary()
     sys_opex.add_driver(RunOnce("run_truck"))
     sys_opex.run_drivers()
     sys_opex.print_results()
@@ -108,7 +108,7 @@ def run_opex_ship(opex_inputs: dict) -> float:
 
 def run_rv(rv_inputs: dict) -> float:
     rv_sys = ResidualValueCalculator("rv_global")
-
+    print("Hello World from RV Calculator!")
     # Vehicle properties
     rv_sys.in_vehicle_properties.type_vehicle = rv_inputs["type_vehicle"]
     rv_sys.in_vehicle_properties.type_energy = rv_inputs["type_energy"]
@@ -171,28 +171,29 @@ def run_tco_scenario(user_inputs: dict):
     capex_per_year = run_capex(capex_inputs)
     print(f"\n[CAPEX] CAPEX per vehicle: {capex_per_year:,.2f} €")
 
-    # 2) OPEX
-    if asset_type == "truck":
-        opex_total = run_opex_truck(user_inputs["opex_truck"])
-    elif asset_type == "ship":
-        opex_total = run_opex_ship(user_inputs["opex_ship"])
-    else:
-        raise ValueError(f"asset_type desconocido: {asset_type}")
-    print(f"[OPEX] OPEX annual: {opex_total:,.2f} €")
+    # # 2) OPEX
+    # if asset_type == "truck":
+    #     opex_total = run_opex_truck(user_inputs["opex_truck"])
+    # elif asset_type == "ship":
+    #     opex_total = run_opex_ship(user_inputs["opex_ship"])
+    # else:
+    #     raise ValueError(f"asset_type desconocido: {asset_type}")
+    # print(f"[OPEX] OPEX annual: {opex_total:,.2f} €")
 
     # 3) RV
     rv_value = run_rv(user_inputs["rv"])
     print(f"[RV]: {rv_value:,.2f} €")
 
     N = user_inputs["operation_years"]
-    tco = capex_per_year * N + opex_total * N - rv_value
+    # tco = capex_per_year * N + opex_total * N - rv_value
+    tco = capex_per_year * N  * N - rv_value
 
     print("\n" + "=" * 80)
     print("TCO SUMMARY")
     print("=" * 80)
     print(f"Horizon: {N} años")
     print(f"CAPEX acumulated: {capex_per_year * N:,.2f} €")
-    print(f"OPEX acumulated: {opex_total * N:,.2f} €")
+    # print(f"OPEX acumulated: {opex_total * N:,.2f} €")
     print(f"Residual Value: {rv_value:,.2f} €")
     print("-" * 80)
     print(f"TCO total: {tco:,.2f} €")
@@ -200,7 +201,7 @@ def run_tco_scenario(user_inputs: dict):
 
     return {
         "capex_per_year": capex_per_year,
-        "opex_per_year": opex_total,
+        # "opex_per_year": opex_total,
         "rv": rv_value,
         "tco_total": tco,
     }

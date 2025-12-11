@@ -1,13 +1,14 @@
 """
 Residual Value (RV) Calculator - CoSApp Implementation
 """
-
+import os
 from cosapp.base import System
 import json
 import math
 from models.vehicle_port import VehiclePropertiesPort
 from models.country_port import CountryPropertiesPort
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 class ResidualValueCalculator(System):
     '''
@@ -22,9 +23,14 @@ class ResidualValueCalculator(System):
         - WARRANTY
     - EXTERNAL FACTORS
     '''
-    def setup(self, type_vehicle: str = "trucks"):
-        
-        db_path = f"db_{type_vehicle}.json"
+    def setup(self, type_vehicle: str = "trucks", db_path: str = None):
+        # -------------------- LOAD DATABASE --------------------
+        if db_path is None:
+            db_folder = os.path.abspath(os.path.join(BASE_DIR, "..", "database"))
+            if type_vehicle.lower() == "ship":
+                db_path = os.path.join(db_folder, "db_ships.json")
+            else:
+                db_path = os.path.join(db_folder, "db_trucks.json")
         
         # Load database
         with open(db_path, 'r') as f:
@@ -88,13 +94,13 @@ class ResidualValueCalculator(System):
         
 
         # Depends of the type of energy:
-        if type_energy in ["diesel", "hydrogen_h2", "cng", "lng"]:
+        if type_energy in ["DIESEL", "BIO_DIESEL", "HVO" ,"E_DIESEL", "CNG", "LNG", "H2_ICE"]:
             minimum_fuel_consumption = vp.minimum_fuel_consumption
             heating_value = self._vehicles_data["heating_value"][type_energy]
-            # ICE vehicles: η_f = 3600 / (SFC * Q_HV)
+            # ICE vehicles: η_f = 360S0 / (SFC * Q_HV)
             n_f = 3600/(minimum_fuel_consumption * heating_value)
         
-        elif type_energy in ["electric", "hydrogen_fuel_cell"]:
+        elif type_energy in ["BEV", "FCEV"]:
             # Electric/Fuel Cell: η_sys = consumption_benchmark / consumption_real
             consumption_real = vp.consumption_real
             consumption_benchmark = self._vehicles_data["consumption_benchmark"][type_energy]

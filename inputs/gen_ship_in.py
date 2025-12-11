@@ -2,17 +2,17 @@ def make_example_ship_inputs():
     """Ejemplo de diccionario de entrada para un SHIP."""
     return {
         "asset_type": "ship",
-        "description": "Cargo ship diesel in Spain",
+        "description": "Cargo ship diesel in France",
 
         # Datos comunes
-        "powertrain_type": "diesel",
+        "powertrain_type": "DIESEL",
         "vehicle_weight_class": "heavy",   # puedes inventar una clase “heavy_ship”
-        "country": "Spain",
+        "country": "France",
         "year": 2025,
         "operation_years": 5,
 
         "capex": {
-            "powertrain_type": "diesel",
+            "powertrain_type": "DIESEL",
             "vehicle_number": 1,
             "vehicle_id": 1,
             "vehicle_weight_class": "light",
@@ -51,11 +51,11 @@ def make_example_ship_inputs():
 
         # ---------- OPEX SHIP ----------
         "opex_ship": {
-            "country_reg": "Spain",
-            "country_oper": "Spain",
+            "country_reg": "France",
+            "country_oper": "France",
             "ship_class": "cargo",
             "length": 120.0,
-            "energy_type": "diesel",
+            "energy_type": "DIESEL",
             "purchase_cost": 12_000_000.0,
             "safety_class": "A",
             "annual_distance": 20_000.0,
@@ -76,12 +76,22 @@ def make_example_ship_inputs():
         # ---------- RV ----------
         "rv": {
             "type_vehicle": "Ship",
-            "type_energy": "Diesel_fosile",
-            "taxes": 50_000.0,
-            "purchase_cost": 12_000_000.0,
-            "age_vehicle": 10.0,
-            "travel_measure": 200_000.0,  # horas o millas equivalentes
-            "maintenance_cost": 500_000.0,
+            "type_energy": "DIESEL",
+            "registration_country": "France",
+            "purchase_cost": 150_000.0,
+            "year_purchase": 2020,
+            "current_year": 2025,
+            "travel_measure": 600_000.0,
+            "maintenance_cost": 7_000.0,
+            "minimum_fuel_consumption": 250.0,
+            "powertrain_model_year" : 2020,
+            "warranty" : 5.0,
+            "type_warranty" : 'years',
+
+            "energy_price": 1.5,
+            "co2_taxes": 500.0,
+            "subsidies":0.0,
+            "vehicle_number": 1,
         },
-    }
+        }
 

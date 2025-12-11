@@ -5,7 +5,7 @@ def make_example_truck_inputs():
         "description": "Heavy diesel N3 in France",
 
         # Datos comunes
-        "powertrain_type": "diesel",      # para CAPEX / RV (ajusta a tu DB)
+        "powertrain_type": "DIESEL",      # para CAPEX / RV (ajusta a tu DB)
         "vehicle_weight_class": "heavy",
         "country": "France",
         "year": 2025,
@@ -13,7 +13,7 @@ def make_example_truck_inputs():
 
         # ---------- CAPEX ----------
         "capex": {
-            "powertrain_type": "diesel",
+            "powertrain_type": "DIESEL",
             "vehicle_number": 1,
             "vehicle_id": 1,
             "vehicle_weight_class": "light",
@@ -54,7 +54,7 @@ def make_example_truck_inputs():
         # ---------- OPEX TRUCK ----------
         "opex_truck": {
             "purchase_cost": 150_000.0,
-            "type_energy": "diesel",
+            "type_energy": "DIESEL",
             "size_vehicle": "N3",
             "registration_country": "France",
             "annual_distance_travel": 120_000.0,
@@ -72,7 +72,7 @@ def make_example_truck_inputs():
         # ---------- RV ----------
         "rv": {
             "type_vehicle": "truck",
-            "type_energy": "diesel",
+            "type_energy": "DIESEL",
             "registration_country": "France",
             "purchase_cost": 150_000.0,
             "year_purchase": 2020,
@@ -85,8 +85,8 @@ def make_example_truck_inputs():
             "type_warranty" : 'years',
 
             "energy_price": 1.5,
-            "c02_taxes": 500,
-            "subsidies":0,
+            "co2_taxes": 500.0,
+            "subsidies":0.0,
             "vehicle_number": 1,
         },
     }
