@@ -69,7 +69,7 @@ class VehicleCAPEXCalculator(System):
         
         object.__setattr__(self, "_vehicle_type", vehicle_type.lower())
         
-        countries_dict = {c['country']: c['data_country'] for c in db_data.get("countries", [])}
+        countries_dict = {c['country']: c for c in db_data.get("countries", [])}
         object.__setattr__(self, "_db", db_data)
         object.__setattr__(self, "_countries", countries_dict)
         

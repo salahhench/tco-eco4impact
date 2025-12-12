@@ -512,7 +512,7 @@ class TruckOPEXCalculator(System):
         object.__setattr__(
             self,
             "_countries_data",
-            {c["country"]: c["data_country"] for c in db_data["countries"]},
+            {c["country"]: c for c in db_data["countries"]},
         )
 
         # Add port

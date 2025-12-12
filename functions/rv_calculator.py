@@ -37,7 +37,7 @@ class ResidualValueCalculator(System):
             db_rv = json.load(f)
 
         object.__setattr__(self, '_countries_data',
-                           {c['country']: c['data_country'] for c in db_rv['countries']})
+                           {c['country']: c for c in db_rv['countries']})
         
         object.__setattr__(self, '_vehicles_data',db_rv['vehicle'])
         
