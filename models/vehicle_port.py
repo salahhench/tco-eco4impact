@@ -66,6 +66,7 @@ class VehiclePropertiesPort(Port):
                 "Ship class key used in DB "
                 "(ro_pax_small, fishing_large, ctv_medium, ro_pax, small, medium, large, ctv...)"
             ),
+            value="small"
         )
         self.add_variable("length", dtype=float, desc="Ship length in meters", value=120.0)
         self.add_variable("safety_class", dtype=str, desc="Safety class", value="A")
@@ -81,6 +82,17 @@ class VehiclePropertiesPort(Port):
         self.add_variable("days_per_trip", dtype=float, desc="Number of days per trip", value=5.0)
 
         # Crew
+        self.add_variable(
+            "crew_list",
+            value=[
+                { "rank": "skipper",  "attribute": "ro_pax_large", "team_size": 1 },
+                { "rank": "deckhand", "attribute": "ro_pax_large", "team_size": 10 },
+                { "rank": "engineer", "attribute": "ro_pax_large", "team_size": 3 }
+            ],
+            desc="CREW: rank, attribute, team_size",
+            dtype=list
+        )
+
         self.add_variable("planning_horizon_years", dtype=float, desc="Number of years N", value=1.0)
         self.add_variable(
             "maintenance_cost_annual",
@@ -120,12 +132,12 @@ class VehiclePropertiesPort(Port):
         )
 
         # Opex Truck
-        self.add_variable("size_vehicle", dtype=str, desc="Vehicle class (N1, N2, N3)")
-        self.add_variable("annual_distance_travel", dtype=float, desc="Annual distance in km")
-        self.add_variable("RV", dtype=float, desc="Residual Value in EUR")
-        self.add_variable("N_years", dtype=float, desc="Number of years")
-        self.add_variable("team_count", dtype=int, desc="Number of drivers")
+        self.add_variable("size_vehicle", dtype=str, desc="Vehicle class (N1, N2, N3)", value="N3")
+        self.add_variable("annual_distance_travel", dtype=float, desc="Annual distance in km", value=20_000.0)
+        self.add_variable("RV", dtype=float, desc="Residual Value in EUR", value=45000.0)
+        self.add_variable("N_years", dtype=float, desc="Number of years", value=5.0)
+        self.add_variable("team_count", dtype=int, desc="Number of drivers", value=1)
 
         # Digital Twin Simulation Outputs
-        self.add_variable("consumption_energy", dtype=float, desc="Energy consumption (kWh or liters)")
-        self.add_variable("fuel_multiplier", dtype=float, desc="Fuel multiplier from DTS")
+        self.add_variable("consumption_energy", dtype=float, desc="Energy consumption (kWh or liters)", value=42000.0)
+        self.add_variable("fuel_multiplier", dtype=float, desc="Fuel multiplier from DTS", value=1.0)

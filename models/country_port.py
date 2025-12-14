@@ -20,6 +20,6 @@ class CountryPropertiesPort(Port):
         )
 
         # Opex Trucks
-        self.add_variable("departure_city", dtype=str, desc="Departure city")
-        self.add_variable("arrival_city", dtype=str, desc="Arrival city")
+        self.add_variable("departure_city", dtype=str, desc="Departure city", value="Paris")
+        self.add_variable("arrival_city", dtype=str, desc="Arrival city", value="Marseille")
 

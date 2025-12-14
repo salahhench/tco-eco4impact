@@ -38,86 +38,6 @@ SHIP_CLASS_TO_DB_KEY = {
     "cargo_large": "ro_pax_large",
 }
 
-
-class ShipOPEXPort(Port):
-    """Port for OPEX calculation inputs and outputs for ships."""
-
-    def setup(self):
-        # -------------------- USER INPUTS (ORANGE) --------------------
-        self.add_variable("registration_country", dtype=str, desc="Country of registration")
-        self.add_variable("country_oper", dtype=str, desc="Country of operation")
-
-        self.add_variable(
-            "ship_class",
-            dtype=str,
-            desc=(
-                "Ship class key used in DB "
-                "(ro_pax_small, fishing_large, ctv_medium, ro_pax, small, medium, large, ctv...)"
-            ),
-        )
-        self.add_variable("length", dtype=float, desc="Ship length in meters")
-        self.add_variable("type_energy", dtype=str, desc="Type of energy (DIESEL, BET, FCET...)")
-        self.add_variable("purchase_cost", dtype=float, desc="Purchase cost in EUR")
-        self.add_variable("safety_class", dtype=str, desc="Safety class")
-        self.add_variable(
-            "annual_distance", dtype=float, desc="Annual distance travelled (km or nm)"
-        )
-
-        # Gross tonnage
-        self.add_variable("GT", dtype=float, desc="Gross tonnage (GT) of the ship")
-
-        # Ports / trips
-        self.add_variable("n_trips_per_year", dtype=float, desc="Number of trips per year")
-        self.add_variable("days_per_trip", dtype=float, desc="Number of days per trip")
-
-        # Crew
-        self.add_variable("planning_horizon_years", dtype=float, desc="Number of years N")
-        self.add_variable(
-            "maintenance_cost_annual",
-            dtype=float,
-            desc="Annual maintenance cost in EUR (legacy)",
-        )
-        self.add_variable(
-            "crew_monthly_total",
-            dtype=float,
-            desc="Total monthly crew cost (EUR). If 0, use seafarer * crew size.",
-        )
-
-        # -------------------- DIGITAL TWIN / USER ENV (ORANGE) --------------------
-        self.add_variable("I_energy", dtype=float, desc="Energy consumption per km (MWh/km or ton/km)")
-        self.add_variable(
-            "EF_CO2",
-            dtype=float,
-            desc="CO2 emission factor per unit of energy (kg CO2 / kWh or per ton)",
-        )
-        self.add_variable(
-            "NOxSOx_rate",
-            dtype=float,
-            desc="NOx/SOx emission per km (kg/km)",
-        )
-        self.add_variable(
-            "annual_energy_consumption_kWh",
-            dtype=float,
-            desc="Annual energy consumption retrieved from digital twin (kWh)",
-        )
-
-        # fuel mass: inward in kg, converted to ton in formulas
-        self.add_variable(
-            "fuel_mass_kg",
-            dtype=float,
-            desc="Fuel mass used in a period (kg), provided by digital twin",
-        )
-
-        # -------------------- OUTPUTS (GREEN) --------------------
-        self.add_variable("o_taxes", dtype=float, desc="Total annual taxes for ship in EUR")
-        self.add_variable("o_ports", dtype=float, desc="Total annual ports costs in EUR")
-        self.add_variable("o_insurance", dtype=float, desc="Total annual insurance in EUR")
-        self.add_variable("o_crew", dtype=float, desc="Total crew cost in EUR")
-        self.add_variable("o_maintenance", dtype=float, desc="Annual maintenance in EUR")
-        self.add_variable("o_energy", dtype=float, desc="Annual energy cost in EUR")
-        self.add_variable("o_opex_total", dtype=float, desc="Total OPEX for ship in EUR")
-
-
 class ShipOPEXCalculator(System):
     """CosApp System for ship OPEX."""
 
@@ -134,8 +54,7 @@ class ShipOPEXCalculator(System):
             {c["country"]: c for c in db_data["countries"]},
         )
 
-        # -------------------- PORT SHIP (ORANGE+GREEN) --------------------
-        self.add_inward("opex_ship", ShipOPEXPort, desc="OPEX calculation port for ships")
+        # -------------------- PORTS --------------------
         self.add_input(VehiclePropertiesPort, 'in_vehicle_properties')
         self.add_input(CountryPropertiesPort, 'in_country_properties')
 
@@ -177,12 +96,13 @@ class ShipOPEXCalculator(System):
     # ==================== O_TAXES SHIP ====================
 
     def compute_o_taxes_ship(self):
-        taxes_opex = self.get_db_params(self.registration_country, "taxes_opex")
+        vp = self.in_vehicle_properties
+        taxes_opex = self.get_db_params(vp.registration_country, "taxes_opex")
         tax_energy = taxes_opex["tax_energy_c_e"]
         co2_price = tax_energy["co2_price"]
 
-        class_key = self._map_ship_class_to_db_key(self.ship_class)
-        energy_key = self.type_energy
+        class_key = self._map_ship_class_to_db_key(vp.ship_class)
+        energy_key = vp.type_energy
 
         if class_key not in tax_energy:
             self.o_taxes = 0.0
@@ -200,7 +120,7 @@ class ShipOPEXCalculator(System):
             return
 
         # Convert kg → ton
-        fuel_mass_ton = self.fuel_mass_kg / 1000.0
+        fuel_mass_ton = vp.fuel_mass_kg / 1000.0
 
         f1, f2, f3 = factors
         summed = fuel_mass_ton * f1 + fuel_mass_ton * f2 + fuel_mass_ton * f3
@@ -209,9 +129,10 @@ class ShipOPEXCalculator(System):
     # ==================== O_PORTS SHIP ====================
 
     def compute_o_ports_ship(self):
-        ports_db = self.get_db_params(self.country_oper, "ports")
+        vp = self.in_vehicle_properties
+        ports_db = self.get_db_params(vp.country_oper, "ports")
 
-        class_key = self._map_ship_class_to_db_key(self.ship_class)
+        class_key = self._map_ship_class_to_db_key(vp.ship_class)
         if class_key not in ports_db:
             self.o_ports = 0.0
             return
@@ -224,15 +145,16 @@ class ShipOPEXCalculator(System):
         for p, d in zip(params, discounts):
             base_factor += p * d
 
-        self.o_ports = base_factor * self.GT
+        self.o_ports = base_factor * vp.GT
 
     # ==================== O_INSURANCE SHIP ====================
 
     def compute_o_insurance_ship(self):
-        insurance_db = self.get_db_params(self.registration_country, "insurance")
+        vp = self.in_vehicle_properties
+        insurance_db = self.get_db_params(vp.registration_country, "insurance")
 
-        class_key = self._map_ship_class_to_db_key(self.ship_class)
-        energy_key = self.type_energy
+        class_key = self._map_ship_class_to_db_key(vp.ship_class)
+        energy_key = vp.type_energy
 
         insurance_rate = 0.0
 
@@ -244,31 +166,34 @@ class ShipOPEXCalculator(System):
             insurance_rate = per_energy.get(energy_key, 0.0)
 
         RV_ship = 0.0 
-        self.o_insurance = insurance_rate * (self.purchase_cost - RV_ship)
+        self.o_insurance = insurance_rate * (vp.purchase_cost - RV_ship)
 
     # ==================== O_CREW SHIP ====================
 
     def compute_o_crew_ship(self):
-        crew_db = self.get_db_params(self.registration_country, "crew")
+        vp = self.in_vehicle_properties
+        cp = self.in_country_properties
+        crew_db = self.get_db_params(vp.registration_country, "crew")
         wages = crew_db["wage_of_crew_rank"]
         seafarer_wage = wages.get("seafarer", 0.0)
 
-        if self.crew_monthly_total and self.crew_monthly_total > 0:
-            annual_cost = self.crew_monthly_total * 12.0
+        if cp.crew_monthly_total and cp.crew_monthly_total > 0:
+            annual_cost = cp.crew_monthly_total * 12.0
         else:
             total_crew = 0
-            for member in self.crew_list:
+            for member in vp.crew_list:
                 total_crew += member.get("team_size", 0)
             annual_cost = seafarer_wage * total_crew
 
-        self.o_crew = annual_cost * self.planning_horizon_years
+        self.o_crew = annual_cost * vp.planning_horizon_years
 
     # ==================== O_MAINTENANCE SHIP ====================
 
     def compute_o_maintenance_ship(self):
-        maintenance_db = self.get_db_params(self.country_oper, "maintenance")
+        vp = self.in_vehicle_properties
+        maintenance_db = self.get_db_params(vp.country_oper, "maintenance")
 
-        class_key = self._map_ship_class_to_db_key(self.ship_class)
+        class_key = self._map_ship_class_to_db_key(vp.ship_class)
         maintenance_rate = maintenance_db.get(class_key, 0.0)
 
         base_sum = (
@@ -284,16 +209,16 @@ class ShipOPEXCalculator(System):
     # ==================== O_ENERGY SHIP ====================
 
     def compute_o_energy_ship(self):
-        energy_db = self.get_db_params(self.country_oper, "energy")
+        vp = self.in_vehicle_properties
+        energy_db = self.get_db_params(vp.country_oper, "energy")
         prices = energy_db["energy_price_c_e"]
-        energy_price = prices.get(self.type_energy, 0.0)
+        energy_price = prices.get(vp.type_energy, 0.0)
 
-        self.o_energy = self.annual_energy_consumption_kWh * energy_price
+        self.o_energy = vp.annual_energy_consumption_kWh * energy_price
 
     # ==================== MAIN COMPUTE SHIP ====================
 
     def compute(self):
-        p = self.opex_ship
         self.compute_o_taxes_ship()
         self.compute_o_ports_ship()
         self.compute_o_insurance_ship()
@@ -310,55 +235,30 @@ class ShipOPEXCalculator(System):
             + self.o_energy
         )
 
-        p.registration_country = self.registration_country
-        p.country_oper = self.country_oper
-        p.ship_class = self.ship_class
-        p.length = self.length
-        p.type_energy = self.type_energy
-        p.purchase_cost = self.purchase_cost
-        p.safety_class = self.safety_class
-        p.annual_distance = self.annual_distance
-        p.GT = self.GT
-        p.n_trips_per_year = self.n_trips_per_year
-        p.days_per_trip = self.days_per_trip
-        p.planning_horizon_years = self.planning_horizon_years
-        p.maintenance_cost_annual = self.maintenance_cost_annual
-        p.crew_monthly_total = self.crew_monthly_total
-        p.I_energy = self.I_energy
-        p.EF_CO2 = self.EF_CO2
-        p.NOxSOx_rate = self.NOxSOx_rate
-        p.annual_energy_consumption_kWh = self.annual_energy_consumption_kWh
-        p.fuel_mass_kg = self.fuel_mass_kg
-        p.o_taxes = self.o_taxes
-        p.o_ports = self.o_ports
-        p.o_insurance = self.o_insurance
-        p.o_crew = self.o_crew
-        p.o_maintenance = self.o_maintenance
-        p.o_energy = self.o_energy
-        p.o_opex_total = self.o_opex_total
-
     def save_results_to_json(self, filename: str = "resultado_opex_ship.json"):
+        vp = self.in_vehicle_properties
+        cp = self.in_country_properties
         data_out = {
-            "registration_country": self.registration_country,
-            "country_oper": self.country_oper,
-            "ship_class": self.ship_class,
-            "length": self.length,
-            "type_energy": self.type_energy,
-            "purchase_cost": self.purchase_cost,
-            "safety_class": self.safety_class,
-            "annual_distance": self.annual_distance,
-            "GT": self.GT,
-            "n_trips_per_year": self.n_trips_per_year,
-            "days_per_trip": self.days_per_trip,
-            "planning_horizon_years": self.planning_horizon_years,
-            "maintenance_cost_annual": self.maintenance_cost_annual,
-            "crew_monthly_total": self.crew_monthly_total,
-            "crew_list": self.crew_list,
-            "I_energy": self.I_energy,
-            "EF_CO2": self.EF_CO2,
-            "NOxSOx_rate": self.NOxSOx_rate,
-            "annual_energy_consumption_kWh": self.annual_energy_consumption_kWh,
-            "fuel_mass_kg": self.fuel_mass_kg,
+            "registration_country": vp.registration_country,
+            "country_oper": vp.country_oper,
+            "ship_class": vp.ship_class,
+            "length": vp.length,
+            "type_energy": vp.type_energy,
+            "purchase_cost": vp.purchase_cost,
+            "safety_class": vp.safety_class,
+            "annual_distance": vp.annual_distance,
+            "GT": vp.GT,
+            "n_trips_per_year": vp.n_trips_per_year,
+            "days_per_trip": vp.days_per_trip,
+            "planning_horizon_years": vp.planning_horizon_years,
+            "maintenance_cost_annual": vp.maintenance_cost_annual,
+            "crew_monthly_total": cp.crew_monthly_total,
+            "crew_list": vp.crew_list,
+            "I_energy": vp.I_energy,
+            "EF_CO2": vp.EF_CO2,
+            "NOxSOx_rate": vp.NOxSOx_rate,
+            "annual_energy_consumption_kWh": vp.annual_energy_consumption_kWh,
+            "fuel_mass_kg": vp.fuel_mass_kg,
             "o_taxes": self.o_taxes,
             "o_ports": self.o_ports,
             "o_insurance": self.o_insurance,
@@ -372,98 +272,9 @@ class ShipOPEXCalculator(System):
         print(f"\nShip OPEX results saved to: {filename}")
 
 
-def run_ship_scenario(scenario_name: str, inputs_path: str = "inputs\inputs_opex.json", db_path: str = "database\db_ships.json"):
-    print("\n" + "#" * 80)
-    print(f"### RUNNING SHIP SCENARIO: {scenario_name} ###")
-    print("#" * 80)
-    inputs_full_path = os.path.abspath(os.path.join(BASE_DIR, "..", "inputs", "inputs_opex.json"))
-    db_full_path = db_path
-    
-    with open(inputs_full_path, "r", encoding="utf-8") as f:
-        all_data = json.load(f)
-
-    scenarios = all_data.get("scenarios", [])
-    scenario = None
-    for sc in scenarios:
-        if sc.get("name") == scenario_name:
-            scenario = sc
-            break
-
-    if scenario is None:
-        raise ValueError(f"Scenario '{scenario_name}' not found in {inputs_full_path}")
-
-    sys_ship = ShipOPEXCalculator("ship_opex_case", db_path=db_full_path)
-
-    for key, value in scenario.items():
-        if key in ("name", "description"):
-            continue
-        if not hasattr(sys_ship, key):
-            continue
-        current = getattr(sys_ship, key)
-        try:
-            if isinstance(current, (float, int)) and isinstance(value, (int, float)):
-                value = type(current)(value)
-            elif isinstance(current, str):
-                value = str(value)
-        except Exception:
-            pass
-        setattr(sys_ship, key, value)
-
-    driver = sys_ship.add_driver(RunOnce("run"))
-    sys_ship.run_drivers()
-
-    print("\n--- SHIP OPEX RESULTS ---")
-    print(f"O_taxes:       {sys_ship.o_taxes:.2f} €")
-    print(f"O_ports:       {sys_ship.o_ports:.2f} €")
-    print(f"O_insurance:   {sys_ship.o_insurance:.2f} €")
-    print(f"O_crew:        {sys_ship.o_crew:.2f} €")
-    print(f"O_maintenance: {sys_ship.o_maintenance:.2f} €")
-    print(f"O_energy:      {sys_ship.o_energy:.2f} €")
-    print(f"OPEX_total:    {sys_ship.o_opex_total:.2f} €")
-
-    safe_name = scenario_name.replace(" ", "_")
-    out_json = os.path.join(BASE_DIR, f"resultado_opex_ship_{safe_name}.json")
-    sys_ship.save_results_to_json(out_json)
-    print(f"Resultados guardados en: {out_json}")
-    return sys_ship
-
-
 # =============================================================================
 # TRUCK PART - REVISED & CORRECTED
 # =============================================================================
-
-class OPEXPort(Port):
-    """Port for OPEX calculation inputs and outputs (trucks)."""
-
-    def setup(self):
-        # User Inputs
-        self.add_variable("purchase_cost", dtype=float, desc="Purchase cost in EUR")
-        self.add_variable("type_energy", dtype=str, desc="Type of energy")
-        self.add_variable("size_vehicle", dtype=str, desc="Vehicle class (N1, N2, N3)")
-        self.add_variable("registration_country", dtype=str, desc="Registration country")
-        self.add_variable("annual_distance_travel", dtype=float, desc="Annual distance in km")
-        self.add_variable("departure_city", dtype=str, desc="Departure city")
-        self.add_variable("arrival_city", dtype=str, desc="Arrival city")
-        self.add_variable("RV", dtype=float, desc="Residual Value in EUR")
-        self.add_variable("N_years", dtype=float, desc="Number of years")
-        self.add_variable("team_count", dtype=int, desc="Number of drivers")
-        self.add_variable("maintenance_cost_annual", dtype=float, desc="Annual maintenance cost in EUR")
-
-        # Digital Twin Simulation Outputs
-        self.add_variable("consumption_energy", dtype=float, desc="Energy consumption (kWh or liters)")
-        self.add_variable("fuel_multiplier", dtype=float, desc="Fuel multiplier from DTS")
-        
-        # NOTE: Renamed from EF_CO2_diesel to EF_CO2 for better semantics (agnostic to energy type)
-        self.add_variable("EF_CO2", dtype=float, desc="CO2 emission factor kg/km")
-
-        # Outputs
-        self.add_variable("o_taxes", dtype=float, desc="Total annual taxes in EUR")
-        self.add_variable("o_tolls", dtype=float, desc="Total tolls cost in EUR")
-        self.add_variable("o_insurance", dtype=float, desc="Total insurance cost in EUR")
-        self.add_variable("o_crew", dtype=float, desc="Total crew cost in EUR")
-        self.add_variable("o_energy", dtype=float, desc="Total energy cost in EUR")
-        self.add_variable("o_opex_total", dtype=float, desc="Total OPEX in EUR")
-
 
 class TruckOPEXCalculator(System):
     """CosApp System for calculating truck OPEX costs."""
@@ -481,28 +292,9 @@ class TruckOPEXCalculator(System):
             {c["country"]: c for c in db_data["countries"]},
         )
 
-        # Add port
-        self.add_inward("opex", OPEXPort, desc="OPEX calculation port")
-
-        # USER INPUTS
-        self.add_inward("purchase_cost", 150000.0, desc="Purchase cost in EUR")
-        self.add_inward("type_energy", "DIESEL", dtype=str, desc="Type of energy")
-        self.add_inward("size_vehicle", "N3", dtype=str, desc="Vehicle class")
-        self.add_inward("registration_country", "France", dtype=str, desc="Registration country")
-        self.add_inward("annual_distance_travel", 80000.0, desc="Annual distance in km")
-        self.add_inward("departure_city", "Paris", dtype=str, desc="Departure city")
-        self.add_inward("arrival_city", "Lyon", dtype=str, desc="Arrival city")
-        self.add_inward("RV", 50000.0, desc="Residual Value in EUR")
-        self.add_inward("N_years", 1.0, desc="Number of years")
-        self.add_inward("team_count", 1, desc="Number of drivers")
-        self.add_inward("maintenance_cost_annual", 5000.0, desc="Annual maintenance in EUR")
-
-        # DIGITAL TWIN SIMULATION OUTPUTS
-        self.add_inward("consumption_energy", 28000.0, desc="Energy consumption kWh or liters")
-        self.add_inward("fuel_multiplier", 1.0, desc="Fuel multiplier from DTS")
-        
-        # CORRECTED: Uses generic name EF_CO2
-        self.add_inward("EF_CO2", 0.85, desc="CO2 emission factor kg/km")
+        # Add ports
+        self.add_input(VehiclePropertiesPort, 'in_vehicle_properties')
+        self.add_input(CountryPropertiesPort, 'in_country_properties')
 
         # OUTPUTS
         self.add_outward("o_taxes", 0.0, desc="Total annual taxes in EUR")
@@ -516,21 +308,24 @@ class TruckOPEXCalculator(System):
 
     def get_country_data(self):
         """Get the full country data."""
-        if self.registration_country not in self._countries_data:
-            raise ValueError(f"Country '{self.registration_country}' not found in database")
-        return self._countries_data[self.registration_country]
+        country_name = self.in_vehicle_properties.registration_country
+        if country_name not in self._countries_data:
+            raise ValueError(f"Country '{country_name}' not found in database")
+        return self._countries_data[country_name]
 
     def normalize_type_energy(self):
         """Normalize energy type to uppercase for database lookup (e.g. 'diesel' -> 'DIESEL')."""
-        if not self.type_energy:
+        energy_type = self.in_vehicle_properties.type_energy
+        if not energy_type:
             return "DIESEL"
-        return self.type_energy.upper().strip()
+        return energy_type.upper().strip()
 
     def normalize_vehicle_size(self):
         """Normalize vehicle size to uppercase (e.g. 'n3' -> 'N3')."""
-        if not self.size_vehicle:
+        size_vehicle = self.in_vehicle_properties.size_vehicle
+        if not size_vehicle:
             return "N3"
-        return self.size_vehicle.upper().strip()
+        return size_vehicle.upper().strip()
 
     # ==================== O_TAXES CALCULATION ====================
 
@@ -538,6 +333,7 @@ class TruckOPEXCalculator(System):
         """
         O_taxes = variable_taxes + fixed_taxes
         """
+        vp = self.in_vehicle_properties
         country_data = self.get_country_data()
         
         # Normalize keys to match JSON (Case Insensitive Safety)
@@ -560,11 +356,11 @@ class TruckOPEXCalculator(System):
         B_env = country_data.get("B_env_c_k_e", {}).get(energy_key, 0.0)
 
         variable_taxes = (
-            self.consumption_energy
+            vp.consumption_energy
             * price_energy_km
             * tax_energy
-            * self.fuel_multiplier
-            * self.EF_CO2  # Uses the agnostic variable
+            * vp.fuel_multiplier
+            * vp.EF_CO2  # Uses the agnostic variable
             * tax_CO2
             * regional_coefficient
         )
@@ -575,6 +371,7 @@ class TruckOPEXCalculator(System):
     # ==================== O_TOLLS CALCULATION ====================
 
     def compute_o_tolls(self):
+        vp = self.in_vehicle_properties
         country_data = self.get_country_data()
         tolls_db = country_data.get("tolls", {})
         
@@ -591,11 +388,12 @@ class TruckOPEXCalculator(System):
             return
 
         price_per_km = tolls_db["price_per_km"][vehicle_key][energy_key]
-        self.o_tolls = price_per_km * self.annual_distance_travel
+        self.o_tolls = price_per_km * vp.annual_distance_travel
 
     # ==================== O_INSURANCE CALCULATION ====================
 
     def compute_o_insurance(self):
+        vp = self.in_vehicle_properties
         country_data = self.get_country_data()
         insurance_db = country_data.get("insurance", {})
         energy_key = self.normalize_type_energy()
@@ -607,20 +405,22 @@ class TruckOPEXCalculator(System):
         else:
             insurance_rate = rate_table[energy_key]
 
-        self.o_insurance = insurance_rate * (self.purchase_cost - self.RV)
+        self.o_insurance = insurance_rate * (vp.purchase_cost - vp.RV)
 
     # ==================== O_CREW CALCULATION ====================
 
     def compute_o_crew(self):
+        vp = self.in_vehicle_properties
         country_data = self.get_country_data()
         crew_db = country_data.get("crew", {})
         wage_of_driver = crew_db.get("wage_of_crew_rank", {}).get("driver", 0.0)
 
-        self.o_crew = wage_of_driver * self.N_years * self.team_count
+        self.o_crew = wage_of_driver * vp.N_years * vp.team_count
 
     # ==================== O_ENERGY CALCULATION ====================
 
     def compute_o_energy(self):
+        vp = self.in_vehicle_properties
         country_data = self.get_country_data()
         energy_db = country_data.get("energy", {})
         energy_key = self.normalize_type_energy()
@@ -631,7 +431,7 @@ class TruckOPEXCalculator(System):
         else:
             energy_price = price_table[energy_key]
 
-        self.o_energy = self.consumption_energy * energy_price
+        self.o_energy = vp.consumption_energy * energy_price
 
     # ==================== MAIN COMPUTE ====================
 
@@ -648,161 +448,27 @@ class TruckOPEXCalculator(System):
             + self.o_insurance
             + self.o_crew
             + self.o_energy
-            + self.maintenance_cost_annual
+            + self.in_vehicle_properties.maintenance_cost_annual
         )
 
-        # Output assignment
-        p = self.opex
-        p.purchase_cost = self.purchase_cost
-        p.type_energy = self.type_energy
-        p.size_vehicle = self.size_vehicle
-        p.registration_country = self.registration_country
-        p.annual_distance_travel = self.annual_distance_travel
-        p.departure_city = self.departure_city
-        p.arrival_city = self.arrival_city
-        p.RV = self.RV
-        p.N_years = self.N_years
-        p.team_count = self.team_count
-        p.maintenance_cost_annual = self.maintenance_cost_annual
-        p.consumption_energy = self.consumption_energy
-        p.fuel_multiplier = self.fuel_multiplier
-        p.EF_CO2 = self.EF_CO2
-        p.o_taxes = self.o_taxes
-        p.o_tolls = self.o_tolls
-        p.o_insurance = self.o_insurance
-        p.o_crew = self.o_crew
-        p.o_energy = self.o_energy
-        p.o_opex_total = self.o_opex_total
-
     def print_results(self):
+        vp = self.in_vehicle_properties
         print("\n" + "=" * 80)
         print("TRUCK OPEX CALCULATION RESULTS")
         print("=" * 80)
-        print(f"Country: {self.registration_country}")
-        print(f"Vehicle Class: {self.size_vehicle}")
-        print(f"Energy Type: {self.type_energy}")
-        print(f"Annual Distance: {self.annual_distance_travel:.2f} km")
-        print(f"Purchase Cost: {self.purchase_cost:.2f} EUR")
+        print(f"Country: {vp.registration_country}")
+        print(f"Vehicle Class: {vp.size_vehicle}")
+        print(f"Energy Type: {vp.type_energy}")
+        print(f"Annual Distance: {vp.annual_distance_travel:.2f} km")
+        print(f"Purchase Cost: {vp.purchase_cost:.2f} EUR")
         print("-" * 80)
         print(f"→ TOTAL O_TAXES: {self.o_taxes:.2f} EUR")
         print(f"→ TOTAL O_TOLLS: {self.o_tolls:.2f} EUR")
         print(f"→ TOTAL O_INSURANCE: {self.o_insurance:.2f} EUR")
         print(f"→ TOTAL O_CREW: {self.o_crew:.2f} EUR")
         print(f"→ TOTAL O_ENERGY: {self.o_energy:.2f} EUR")
-        print(f"→ Annual Maintenance: {self.maintenance_cost_annual:.2f} EUR")
+        print(f"→ Annual Maintenance: {vp.maintenance_cost_annual:.2f} EUR")
         print("\n" + "=" * 80)
         print(f"TOTAL OPEX: {self.o_opex_total:.2f} EUR")
         print("=" * 80 + "\n")
 
-
-def run_truck_scenario(
-    scenario_name: str,
-    inputs_path: str = "inputs\\inputs_opex.json",
-    db_path: str = "database\\db_trucks.json",
-):
-    """Load a truck scenario from JSON and run TruckOPEXCalculator with Compatibility Mapping."""
-    print("\n" + "#" * 80)
-    print(f"### RUNNING TRUCK SCENARIO: {scenario_name} ###")
-    print("#" * 80)
-
-    inputs_full_path = os.path.abspath(os.path.join(BASE_DIR, "..", "inputs", "inputs_opex.json"))
-    db_full_path = db_path
-
-    with open(inputs_full_path, "r", encoding="utf-8") as f:
-        all_data = json.load(f)
-
-    scenarios = all_data.get("scenarios", [])
-    scenario = None
-    for sc in scenarios:
-        if sc.get("name") == scenario_name:
-            scenario = sc
-            break
-
-    if scenario is None:
-        raise ValueError(f"Scenario '{scenario_name}' not found")
-
-    sys_truck = TruckOPEXCalculator("truck_opex_case", db_path=db_full_path)
-
-    # --- COMPATIBILITY MAPPING (JSON -> Python) ---
-    # Maps old JSON keys (like 'EF_CO2_diesel') to new Python keys ('EF_CO2')
-    key_mapping = {
-        "EF_CO2_diesel": "EF_CO2",
-        "EF_CO2_electric": "EF_CO2" # Just in case
-    }
-
-    for key, value in scenario.items():
-        if key in ("name", "description"):
-            continue
-        
-        # Check if we need to rename the key
-        target_key = key_mapping.get(key, key)
-
-        if not hasattr(sys_truck, target_key):
-            continue
-
-        current = getattr(sys_truck, target_key)
-        try:
-            if isinstance(current, (float, int)) and isinstance(value, (int, float)):
-                value = type(current)(value)
-            elif isinstance(current, str):
-                value = str(value)
-        except Exception:
-            pass
-
-        setattr(sys_truck, target_key, value)
-
-    driver = sys_truck.add_driver(RunOnce("run"))
-    sys_truck.run_drivers()
-
-    sys_truck.print_results()
-
-    # save compact JSON
-    safe_name = scenario_name.replace(" ", "_")
-    out_json = os.path.join(BASE_DIR, f"resultado_opex_truck_{safe_name}.json")
-    
-    data_out = {
-        "purchase_cost": sys_truck.purchase_cost,
-        "type_energy": sys_truck.type_energy,
-        "size_vehicle": sys_truck.size_vehicle,
-        "registration_country": sys_truck.registration_country,
-        "o_taxes": sys_truck.o_taxes,
-        "o_tolls": sys_truck.o_tolls,
-        "o_insurance": sys_truck.o_insurance,
-        "o_crew": sys_truck.o_crew,
-        "o_energy": sys_truck.o_energy,
-        "o_opex_total": sys_truck.o_opex_total,
-    }
-    with open(out_json, "w", encoding="utf-8") as f:
-        json.dump(data_out, f, indent=4, ensure_ascii=False)
-
-    print(f"Truck OPEX results saved to: {out_json}")
-    return sys_truck
-
-
-# =============================================================================
-# MAIN DISPATCHER
-# =============================================================================
-
-def run_opex_scenario(scenario_name: str, inputs_path: str = "inputs_opex.json"):
-    """Dispatcher: read scenario and run either Ship or Truck calculator."""
-    inputs_full_path = os.path.abspath(os.path.join(BASE_DIR, "..", "inputs", "inputs_opex.json"))
-
-    with open(inputs_full_path, "r", encoding="utf-8") as f:
-        all_data = json.load(f)
-
-    scenarios = all_data.get("scenarios", [])
-    scenario = None
-    for sc in scenarios:
-        if sc.get("name") == scenario_name:
-            scenario = sc
-            break
-
-    if scenario is None:
-        raise ValueError(f"Scenario '{scenario_name}' not found.")
-
-    if "ship_class" in scenario:
-        return run_ship_scenario(scenario_name, inputs_path=inputs_path)
-    elif "size_vehicle" in scenario:
-        return run_truck_scenario(scenario_name, inputs_path=inputs_path)
-    else:
-        raise ValueError("Scenario type unidentifiable (missing 'ship_class' or 'size_vehicle').")
