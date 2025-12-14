@@ -1,0 +1,64 @@
+from cosapp.base import Port
+from datetime import datetime
+
+class VehiclePropertiesPort(Port):
+    '''
+    Port for Vehicle Properties inputs and outputs for ships and trucks.
+    '''
+
+    def setup(self):
+        # -------------------- USER INPUTS --------------------
+        # Common inputs
+        self.add_variable('type_vehicle', dtype=str, desc='Vehicle type: Truck or Ship', value='truck')
+        self.add_variable('type_energy', dtype=str, desc='Energy type: diesel, electric, hybrid, hydrogen_fuel_cell, hydrogen_h2, cng, lng', value='DIESEL')
+        self.add_variable('purchase_cost', dtype=float, desc='Initial purchase cost', value=0.0)
+        self.add_variable('registration_country', dtype=str, desc='Registration country of the vehicle', value='France')
+        
+        self.add_variable('travel_measure', dtype=float, desc='Total Distance (km) or hours (h)', value=0.0)
+        self.add_variable('maintenance_cost', dtype=float, desc='Total maintenance cost incurred', value=0.0)
+        
+        self.add_variable('minimum_fuel_consumption', dtype=float, desc='SFC (g/kWh)', value=250.0)
+        self.add_variable('consumption_real', dtype=float, desc='Real consumption (kWh/km or kg/100km)', value=0.0)
+        self.add_variable('utility_factor', dtype=float, desc='Electric fraction for hybrids', value=0.0)
+        
+        self.add_variable('E_annual_kwh', dtype=float, desc='Annual energy consumption (kWh)', value=0.0)
+        self.add_variable('C_bat_kwh', dtype=float, desc='Battery capacity (kWh)', value=0.0)
+        self.add_variable('DoD', dtype=float, desc='Depth of discharge', value=0.8)
+        self.add_variable('S_slow', dtype=float, desc='Proportion slow charging', value=0.0)
+        self.add_variable('S_fast', dtype=float, desc='Proportion fast charging', value=0.0)
+        self.add_variable('S_ultra', dtype=float, desc='Proportion ultra-fast charging', value=0.0)
+        
+        self.add_variable('powertrain_model_year', dtype=int, desc='Powertrain model year', value=2020)
+        
+        self.add_variable('warranty', dtype=float, desc='Warranty duration (years or km)', value=5.0)
+        self.add_variable('type_warranty', dtype=str, desc='Type of warranty: years or km', value='years')
+        self.add_variable('year_purchase', dtype=int, desc='Year of purchase', value=2020)
+        
+        self.add_variable('current_year', dtype=int, desc='Current year', value=datetime.now().year)
+        self.add_variable('vehicle_number', dtype=int, desc='Numbers of vehicle', value=0)
+
+        self.add_variable("energy_price", dtype=float, desc="Energy price in EUR/unit", value=0.0)
+        self.add_variable("co2_taxes", dtype=float, desc="CO2 taxes in EUR/ton", value=0.0)
+        self.add_variable("subsidies", dtype=float, desc="Subsidies in EUR", value=0.0)
+
+
+        # CAPEX INPUTS
+        self.add_variable("vehicle_id", dtype=int, desc="Vehicle ID in fleet")
+        self.add_variable("vehicle_weight_class", dtype=str, desc="Weight class", value="light")
+        self.add_variable("country", dtype=str, desc="Country code", value="France") # Should be the same as registration_country
+        self.add_variable("year", dtype=int, desc="Year for subsidies calculation", value=2025) # Should be the same as current_year
+        # Vehicle acquisition
+        self.add_variable("is_new", dtype=bool, desc="True if buying new vehicle", value=True)
+        self.add_variable("owns_vehicle", dtype=bool, desc="True if already owns vehicle", value=False)
+        self.add_variable("conversion_cost", dtype=float, desc="Conversion cost in EUR", value=0.0)
+        self.add_variable("certification_cost", dtype=float, desc="Certification cost in EUR", value=0.0)
+        # Fleet dictionary
+        self.add_variable("vehicle_dict", {}, desc="Dictionary of vehicles with energy data")
+        # Infrastructure parameters
+        self.add_variable("n_slow", dtype=int, desc="Number of slow chargers", value=None)
+        self.add_variable("n_fast", dtype=int, desc="Number of fast chargers", value=None)
+        self.add_variable("n_ultra", dtype=int, desc="Number of ultra-fast chargers", value=None)
+        self.add_variable("n_stations", dtype=int, desc="Number of stations", value=1)
+        self.add_variable("smart_charging_enabled", dtype=bool, desc="Smart charging enabled", value=False)
+        # Financing
+        self.add_variable("loan_years", dtype=int, desc="Number of years for loan", value=10)

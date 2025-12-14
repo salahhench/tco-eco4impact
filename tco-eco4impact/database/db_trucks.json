@@ -1,0 +1,598 @@
+{"countries": [
+    {
+      "country": "France",
+      "data_country": {
+        "taxes_registration": {
+          "heavy": {
+            "DIESEL": 3500,
+            "BIO_DIESEL": 2800,
+            "HVO": 2800,
+            "E_DIESEL": 2800,
+            "GNV": 2500,
+            "LNG": 2500,
+            "BET": 0,
+            "FCET": 0,
+            "HEV": 2800,
+            "H2_ICE": 1000
+          },
+          "medium": {
+            "DIESEL": 2800,
+            "BIODIESEL": 2200,
+            "HVO": 2200,
+            "E_DIESEL": 2200,
+            "GNV": 2000,
+            "LNG": 2000,
+            "BET": 0,
+            "FCET": 0,
+            "HEV": 2200,
+            "H2_ICE": 800
+          },
+          "light": {
+            "DIESEL": 2000,
+            "BIODIESEL": 1500,
+            "HVO": 1500,
+            "E_DIESEL": 1500,
+            "GNV": 1500,
+            "LNG": 1500,
+            "BET": 0,
+            "FCET": 0,
+            "HEV": 1500,
+            "H2_ICE": 500
+          }
+        },
+        "subsidies": {
+          "2025": {
+            "heavy": {
+              "vehicle_subsidies": {
+                "DIESEL": 0,
+                "BIODIESEL": 0,
+                "HVO": 0,
+                "E_DIESEL": 0,
+                "GNV": 5000,
+                "LNG": 5000,
+                "BET": 40000,
+                "FCET": 50000,
+                "HEV": 0,
+                "H2_ICE": 50000
+              },
+              "infrastructure_subsidy_rates": {
+                "DIESEL": 0.0,
+                "BIODIESEL": 0.0,
+                "HVO": 0.0,
+                "E_DIESEL": 0.0,
+                "GNV": 0.30,
+                "LNG": 0.30,
+                "BET": 0.40,
+                "FCET": 0.50,
+                "HEV": 0.0,
+                "H2_ICE": 0.50
+              }
+            },
+            "medium": {
+              "vehicle_subsidies": {
+                "DIESEL": 0,
+                "BIODIESEL": 0,
+                "HVO": 0,
+                "E_DIESEL": 0,
+                "GNV": 3000,
+                "LNG": 3000,
+                "BET": 25000,
+                "FCET": 30000,
+                "HEV": 0,
+                "H2_ICE": 30000
+              },
+              "infrastructure_subsidy_rates": {
+                "DIESEL": 0.0,
+                "BIODIESEL": 0.0,
+                "HVO": 0.0,
+                "E_DIESEL": 0.0,
+                "GNV": 0.30,
+                "LNG": 0.30,
+                "BET": 0.40,
+                "FCET": 0.50,
+                "HEV": 0.0,
+                "H2_ICE": 0.50
+              }
+            },
+            "light": {
+              "vehicle_subsidies": {
+                "DIESEL": 0,
+                "BIODIESEL": 0,
+                "HVO": 0,
+                "E_DIESEL": 0,
+                "GNV": 2000,
+                "LNG": 2000,
+                "BET": 4000,
+                "FCET": 7000,
+                "HEV": 0,
+                "H2_ICE": 7000
+              },
+              "infrastructure_subsidy_rates": {
+                "DIESEL": 0.0,
+                "BIODIESEL": 0.0,
+                "HVO": 0.0,
+                "E_DIESEL": 0.0,
+                "GNV": 0.25,
+                "LNG": 0.25,
+                "BET": 0.30,
+                "FCET": 0.50,
+                "HEV": 0.0,
+                "H2_ICE": 0.50
+              }
+            }
+          }
+        },
+        "licensing": {
+          "FCET": 25000,
+          "H2_ICE": 25000,
+          "GNV": 18000,
+          "LNG": 18000,
+          "BET": 6000,
+          "PHEV": 6000,
+          "DIESEL": 2500,
+          "BIODIESEL": 2500,
+          "HVO": 2500,
+          "E_DIESEL": 2500,
+          "HEV": 2500
+        },
+        "financing": {
+          "base_interest_rate": 0.045,
+          "origination_fee_rate": 0.012,
+          "esg_adjustments": {
+            "BET": -0.008,
+            "FCET": -0.010,
+            "PHEV": -0.004,
+            "HEV": -0.003,
+            "H2_ICE": -0.007
+          }
+        },
+        "conversion_costs": {
+          "diesel_to_bet": { "conversion_cost_eur": 95000, "certification_cost_eur": 6000 },
+          "diesel_to_fcet": { "conversion_cost_eur": 185000, "certification_cost_eur": 12000 },
+          "diesel_to_hice": { "conversion_cost_eur": 135000, "certification_cost_eur": 12000 },
+          "diesel_to_gnv": { "conversion_cost_eur": 25000, "certification_cost_eur": 5000 },
+          "diesel_to_lng": { "conversion_cost_eur": 38000, "certification_cost_eur": 6000 },
+          "diesel_to_biodiesel": { "conversion_cost_eur": 5000, "certification_cost_eur": 1200 },
+          "diesel_to_hvo": { "conversion_cost_eur": 0, "certification_cost_eur": 0 },
+          "diesel_to_e_diesel": { "conversion_cost_eur": 0, "certification_cost_eur": 0 }
+        },
+        "infrastructure": {
+          "chargers": {
+            "slow": {
+              "power_kw": 11,
+              "price_eur": 1800,
+              "installation_cost_eur": 1800,
+              "operating_hours_per_day": 20,
+              "operating_days_per_year": 365,
+              "charging_efficiency": 0.95
+            },
+            "fast": {
+              "power_kw": 50,
+              "price_eur": 15000,
+              "installation_cost_eur": 10000,
+              "operating_hours_per_day": 20,
+              "operating_days_per_year": 365,
+              "charging_efficiency": 0.95
+            },
+            "ultra": {
+              "power_kw": 150,
+              "price_eur": 110000,
+              "installation_cost_eur": 70000,
+              "operating_hours_per_day": 20,
+              "operating_days_per_year": 365,
+              "charging_efficiency": 0.95
+            }
+          },
+          "stations": {
+            "diesel": {
+              "hardware_cost_per_station_eur": 55000,
+              "installation_cost_per_pump_eur": 28000,
+              "vehicles_per_station": 20
+            },
+            "H2_ICE": {
+              "hardware_cost_per_station_eur": 1500000,
+              "hardware_cost_per_station_with_electrolyzer_eur": 2800000,
+              "installation_cost_per_station_eur": 700000,
+              "vehicles_per_station": 10,
+              "electrolyzer_grid_connection_cost_eur": 200000
+            },
+            "GNV": {
+              "hardware_cost_per_station_eur": 900000,
+              "installation_cost_per_station_eur": 250000,
+              "vehicles_per_station": 15,
+              "electricity_connection_cost_eur": 120000
+            },
+            "LNG": {
+              "hardware_cost_per_station_eur": 1400000,
+              "installation_cost_per_station_eur": 350000,
+              "vehicles_per_station": 15,
+              "electricity_connection_cost_eur": 150000
+            }
+          },
+          "grid_connection": {
+            "tiers": [
+              { "max_power_kw": 50, "cost_eur": 6000 },
+              { "max_power_kw": 500, "cost_eur": 60000 },
+              { "max_power_kw": 2000, "cost_eur": 250000 },
+              { "max_power_kw": 999999, "cost_eur": 600000 }
+            ]
+          },
+          "software": {
+            "BET": { "base_cost_eur": 18000, "load_management_addon_eur": 12000 },
+            "FCET": { "H2_ICE_monitoring_cost_eur": 30000 },
+            "GNV": { "gas_monitoring_cost_eur": 6000 },
+            "LNG": { "gas_monitoring_cost_eur": 6000 }
+          },
+          "site_preparation": {
+            "cost_eur": {
+              "BET": 25000,
+              "FCET": 60000,
+              "H2_ICE": 60000,
+              "GNV": 35000,
+              "LNG": 45000,
+              "DIESEL": 12000,
+              "BIO_DIESEL": 12000,
+              "HVO": 12000,
+              "E_DIESEL": 12000,
+              "HEV": 12000
+            }
+          },
+          "safety": {
+            "cost_per_station_eur": {
+              "BET": 6000,
+              "FCET": 18000,
+              "H2_ICE": 18000,
+              "GNV": 10000,
+              "LNG": 12000,
+              "DIESEL": 3500,
+              "BIO_DIESEL": 3500,
+              "E_DIESEL": 3500,
+              "HEV": 3500,
+              "HVO": 3500
+            }
+          }
+ 
+      },
+        "external_factors": {
+          "energy_price_factor": {
+            "DIESEL": 0.05,
+            "BEV": 0.00001,
+            "PHEV": 0.03,
+            "FCEV": 0.07,
+            "H2_ICE": 0.07,
+            "CNG": 0.04,
+            "LNG": 0.04,
+            "HVO": 0.06,
+            "E_DIESEL": 0.04,
+            "BIO_DIESEL": 0.03
+          },
+          "price_energy_km": {
+            "h1": {
+              "DIESEL": 0.09,
+              "BEV": 0.000015,
+              "PHEV": 0.05,
+              "FCEV": 0.1,
+              "H2_ICE": 0.1,
+              "CNG": 0.06,
+              "LNG": 0.06,
+              "HVO": 0.06,
+              "E_DIESEL": 0.04,
+              "BIO_DIESEL": 0.03
+            },
+            "h2": {
+              "DIESEL": 0.12,
+              "BEV": 0.00002,
+              "PHEV": 0.07,
+              "FCEV": 0.12,
+              "H2_ICE": 0.12,
+              "CNG": 0.08,
+              "LNG": 0.08,
+              "HVO": 0.06,
+              "E_DIESEL": 0.04,
+              "BIO_DIESEL": 0.03
+            },
+            "h3": {
+              "DIESEL": 0.15,
+              "BEV": 0.000025,
+              "PHEV": 0.09,
+              "FCEV": 0.15,
+              "H2_ICE": 0.15,
+              "CNG": 0.1,
+              "LNG": 0.1,
+              "HVO": 0.06,
+              "E_DIESEL": 0.04,
+              "BIO_DIESEL": 0.03
+            }
+          },
+          "CO2_taxes_factor": 10,
+          "subsidies_factor": {
+            "DIESEL": 0,
+            "BEV": 5000,
+            "PHEV": 2000,
+            "FCEV": 8000,
+            "H2_ICE": 8000,
+            "CNG": 3000,
+            "LNG": 3000,
+            "HVO": 0.06,
+            "E_DIESEL": 0.04,
+            "BIO_DIESEL": 0.03
+          }
+        },
+        "yearly_obsolescence_rate": {
+          "DIESEL": 0.05,
+          "BEV": 0.07,
+          "PHEV": 0.06,
+          "FCEV": 0.08,
+          "H2_ICE": 0.08,
+          "CNG": 0.05,
+          "LNG": 0.05,
+          "HVO": 0.06,
+          "E_DIESEL": 0.04,
+          "BIO_DIESEL": 0.03
+        },
+        "tolls": {
+          "price_per_km": {
+            "N1": {
+              "DIESEL": 0.15,
+              "BEV": 0.12,
+              "PHEV": 0.14,
+              "FCEV": 0.13,
+              "H2_ICE": 0.13,
+              "CNG": 0.14,
+              "LNG": 0.14,
+              "HVO": 0.06,
+              "E_DIESEL": 0.04,
+              "BIO_DIESEL": 0.03
+            },
+            "N2": {
+              "DIESEL": 0.25,
+              "BEV": 0.2,
+              "PHEV": 0.23,
+              "FCEV": 0.22,
+              "H2_ICE": 0.22,
+              "CNG": 0.24,
+              "LNG": 0.24,
+              "HVO": 0.06,
+              "E_DIESEL": 0.04,
+              "BIO_DIESEL": 0.03
+            },
+            "N3": {
+              "DIESEL": 0.35,
+              "BEV": 0.28,
+              "PHEV": 0.32,
+              "FCEV": 0.3,
+              "H2_ICE": 0.3,
+              "CNG": 0.33,
+              "LNG": 0.33,
+              "HVO": 0.06,
+              "E_DIESEL": 0.04,
+              "BIO_DIESEL": 0.03
+            }
+          }
+        },
+        "insurance": {
+          "insurance_rate_c_L_e_safety": {
+            "DIESEL": 0.03,
+            "BEV": 0.045,
+            "PHEV": 0.035,
+            "FCEV": 0.05,
+            "H2_ICE": 0.05,
+            "CNG": 0.032,
+            "LNG": 0.032,
+            "HVO": 0.06,
+            "E_DIESEL": 0.04,
+            "BIO_DIESEL": 0.03
+          }
+        },
+        "crew": {
+          "wage_of_crew_rank": {
+            "driver": 35000
+          }
+        },
+        "energy": {
+          "energy_price_c_e": {
+            "DIESEL": 1.65,
+            "BEV": 0.18,
+            "PHEV": 1.5,
+            "FCEV": 12,
+            "H2_ICE": 12,
+            "CNG": 1.2,
+            "LNG": 1.1,
+            "HVO": 0.06,
+            "E_DIESEL": 0.04,
+            "BIO_DIESEL": 0.03
+          }
+        },
+        "tax_energy_c_e": {
+          "DIESEL": 0.7,
+          "BEV": 0.12,
+          "PHEV": 0.5,
+          "FCEV": 0.25,
+          "H2_ICE": 0.25,
+          "CNG": 0.55,
+          "LNG": 0.55,
+          "HVO": 0.06,
+          "E_DIESEL": 0.04,
+          "BIO_DIESEL": 0.03
+        },
+        "tax_reg_c_k_L": {
+          "N1": 220,
+          "N2": 370,
+          "N3": 520
+        },
+        "tax_annual_c_k_L": {
+          "N1": 130,
+          "N2": 210,
+          "N3": 320
+        },
+        "regional_coefficient": 1,
+        "tax_CO2_c_e": 0.045,
+        "B_env_c_k_e": {
+          "DIESEL": 0,
+          "BEV": -200,
+          "PHEV": -100,
+          "FCEV": -150,
+          "H2_ICE": -150,
+          "CNG": -80,
+          "LNG": -80,
+          "HVO": 0.06,
+          "E_DIESEL": 0.04,
+          "BIO_DIESEL": 0.03
+        },
+        "depreciation": {
+          "depreciation_rate_per_year": {
+            "DIESEL": 0.05,
+            "BEV": 0.07,
+            "PHEV": 0.06,
+            "FCEV": 0.08,
+            "H2_ICE": 0.08,
+            "CNG": 0.05,
+            "LNG": 0.05,
+            "HVO": 0.06,
+            "E_DIESEL": 0.04,
+            "BIO_DIESEL": 0.03
+          },
+          "depreciation_rate_by_usage": {
+            "DIESEL": 0.05,
+            "BEV": 0.07,
+            "PHEV": 0.06,
+            "FCEV": 0.08,
+            "H2_ICE": 0.08,
+            "CNG": 0.05,
+            "LNG": 0.05,
+            "HVO": 0.06,
+            "E_DIESEL": 0.04,
+            "BIO_DIESEL": 0.03
+          },
+          "coef_depreciation_maintenance": {
+            "DIESEL": 0.05,
+            "BEV": 0.07,
+            "PHEV": 0.06,
+            "FCEV": 0.08,
+            "H2_ICE": 0.08,
+            "CNG": 0.05,
+            "LNG": 0.05,
+            "HVO": 0.06,
+            "E_DIESEL": 0.04,
+            "BIO_DIESEL": 0.03
+          }
+        }
+      }
+    },
+    {
+      "country": "Germany",
+      "data_country": {
+        "external_factors": {
+          "energy_price_factor": {
+            "DIESEL": 0.06,
+            "BEV": 0.00002,
+            "PHEV": 0.04,
+            "FCEV": 0.08,
+            "H2_ICE": 0.08,
+            "CNG": 0.05,
+            "LNG": 0.05,
+            "HVO": 0.06,
+            "E_DIESEL": 0.04,
+            "BIO_DIESEL": 0.03
+          },
+          "CO2_taxes_factor": 12,
+          "subsidies_factor": {
+            "DIESEL": 0,
+            "BEV": 6000,
+            "PHEV": 2500,
+            "FCEV": 9000,
+            "H2_ICE": 9000,
+            "CNG": 3500,
+            "LNG": 3500,
+            "HVO": 0.06,
+            "E_DIESEL": 0.04,
+            "BIO_DIESEL": 0.03
+          }
+        },
+        "yearly_obsolescence_rate": {
+          "DIESEL": 0.06,
+          "BEV": 0.08,
+          "PHEV": 0.07,
+          "FCEV": 0.09,
+          "H2_ICE": 0.09,
+          "CNG": 0.06,
+          "LNG": 0.06,
+          "HVO": 0.06,
+          "E_DIESEL": 0.04,
+          "BIO_DIESEL": 0.03
+        },
+        "depreciation": {
+          "depreciation_rate_per_year": {
+            "DIESEL": 0.05,
+            "BEV": 0.07,
+            "PHEV": 0.06,
+            "FCEV": 0.08,
+            "H2_ICE": 0.08,
+            "CNG": 0.05,
+            "LNG": 0.05,
+            "HVO": 0.06,
+            "E_DIESEL": 0.04,
+            "BIO_DIESEL": 0.03
+          },
+          "depreciation_rate_by_usage": {
+            "DIESEL": 0.05,
+            "BEV": 0.07,
+            "PHEV": 0.06,
+            "FCEV": 0.08,
+            "H2_ICE": 0.08,
+            "CNG": 0.05,
+            "LNG": 0.05,
+            "HVO": 0.06,
+            "E_DIESEL": 0.04,
+            "BIO_DIESEL": 0.03
+          },
+          "coef_depreciation_maintenance": {
+            "DIESEL": 0.05,
+            "BEV": 0.07,
+            "PHEV": 0.06,
+            "FCEV": 0.08,
+            "H2_ICE": 0.08,
+            "CNG": 0.05,
+            "LNG": 0.05,
+            "HVO": 0.06,
+            "E_DIESEL": 0.04,
+            "BIO_DIESEL": 0.03
+          }
+        }
+      }
+    }
+  ],
+  "vehicle": {
+    "consumption_benchmark": {
+      "BEV": 20,
+      "FCEV": 50
+    },
+    "heating_value": {
+      "DIESEL": 36,
+      "H2_ICE": 120,
+      "CNG": 50,
+      "LNG": 70,
+      "HVO": 0.06,
+      "E_DIESEL": 0.04,
+      "BIO_DIESEL": 0.03
+    },
+    "n_ev": {
+      "PHEV": 150
+    },
+    "n_ice": {
+      "PHEV": 0
+    },
+    "d_slow": {
+      "BEV": 0
+    },
+    "d_fast": {
+      "BEV": 0.3
+    },
+    "d_ultra": {
+      "BEV": 0.1
+    },
+    "k_d": {
+      "BEV": 0.00001
+    }
+  }
+}
