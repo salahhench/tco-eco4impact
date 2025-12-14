@@ -37,11 +37,6 @@ class VehiclePropertiesPort(Port):
         self.add_variable('current_year', dtype=int, desc='Current year', value=datetime.now().year)
         self.add_variable('vehicle_number', dtype=int, desc='Numbers of vehicle', value=0)
 
-        self.add_variable("energy_price", dtype=float, desc="Energy price in EUR/unit", value=0.0)
-        self.add_variable("co2_taxes", dtype=float, desc="CO2 taxes in EUR/ton", value=0.0)
-        self.add_variable("subsidies", dtype=float, desc="Subsidies in EUR", value=0.0)
-
-
         # CAPEX INPUTS
         self.add_variable("vehicle_id", dtype=int, desc="Vehicle ID in fleet")
         self.add_variable("vehicle_weight_class", dtype=str, desc="Weight class", value="light")
@@ -62,3 +57,75 @@ class VehiclePropertiesPort(Port):
         self.add_variable("smart_charging_enabled", dtype=bool, desc="Smart charging enabled", value=False)
         # Financing
         self.add_variable("loan_years", dtype=int, desc="Number of years for loan", value=10)
+
+
+        # SHIP OPEX
+        self.add_variable("country_oper", dtype=str, desc="Country of operation", value="France")
+        self.add_variable("ship_class", dtype=str,
+            desc=(
+                "Ship class key used in DB "
+                "(ro_pax_small, fishing_large, ctv_medium, ro_pax, small, medium, large, ctv...)"
+            ),
+        )
+        self.add_variable("length", dtype=float, desc="Ship length in meters", value=120.0)
+        self.add_variable("safety_class", dtype=str, desc="Safety class", value="A")
+        self.add_variable(
+            "annual_distance", dtype=float, desc="Annual distance travelled (km or nm)", value=20_000.0
+        )
+
+        # Gross tonnage
+        self.add_variable("GT", dtype=float, desc="Gross tonnage (GT) of the ship", value=0.0)
+
+        # Ports / trips
+        self.add_variable("n_trips_per_year", dtype=float, desc="Number of trips per year", value=10.0)
+        self.add_variable("days_per_trip", dtype=float, desc="Number of days per trip", value=5.0)
+
+        # Crew
+        self.add_variable("planning_horizon_years", dtype=float, desc="Number of years N", value=1.0)
+        self.add_variable(
+            "maintenance_cost_annual",
+            dtype=float,
+            desc="Annual maintenance cost in EUR (legacy)",
+            value=100_000.0
+        )
+        
+
+        # -------------------- DIGITAL TWIN / USER ENV (ORANGE) --------------------
+        self.add_variable("I_energy", dtype=float, desc="Energy consumption per km (MWh/km or ton/km)", value=0.5)
+        self.add_variable(
+            "EF_CO2",
+            dtype=float,
+            desc="CO2 emission factor per unit of energy (kg CO2 / kWh or per ton)",
+            value=0.27
+        )
+        self.add_variable(
+            "NOxSOx_rate",
+            dtype=float,
+            desc="NOx/SOx emission per km (kg/km)",
+            value=0.01
+        )
+        self.add_variable(
+            "annual_energy_consumption_kWh",
+            dtype=float,
+            desc="Annual energy consumption retrieved from digital twin (kWh)",
+            value=5_000_000.0
+        )
+
+        # fuel mass: inward in kg, converted to ton in formulas
+        self.add_variable(
+            "fuel_mass_kg",
+            dtype=float,
+            desc="Fuel mass used in a period (kg), provided by digital twin",
+            value=0.0
+        )
+
+        # Opex Truck
+        self.add_variable("size_vehicle", dtype=str, desc="Vehicle class (N1, N2, N3)")
+        self.add_variable("annual_distance_travel", dtype=float, desc="Annual distance in km")
+        self.add_variable("RV", dtype=float, desc="Residual Value in EUR")
+        self.add_variable("N_years", dtype=float, desc="Number of years")
+        self.add_variable("team_count", dtype=int, desc="Number of drivers")
+
+        # Digital Twin Simulation Outputs
+        self.add_variable("consumption_energy", dtype=float, desc="Energy consumption (kWh or liters)")
+        self.add_variable("fuel_multiplier", dtype=float, desc="Fuel multiplier from DTS")
