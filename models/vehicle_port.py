@@ -36,7 +36,7 @@ class VehiclePropertiesPort(Port):
         self.add_variable('year_purchase', dtype=int, desc='Year of purchase', value=2020)
         
         self.add_variable('current_year', dtype=int, desc='Current year', value=datetime.now().year)
-        self.add_variable('vehicle_number', dtype=int, desc='Numbers of vehicle', value=0)
+        self.add_variable('vehicle_number', dtype=int, desc='Numbers of vehicle', value=1)
 
         # CAPEX INPUTS
         self.add_variable("vehicle_id", dtype=int, desc="Vehicle ID in fleet")

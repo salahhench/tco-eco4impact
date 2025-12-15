@@ -72,7 +72,8 @@ class ResidualValueCalculator(System):
 
         # Depreciation components
         purchase_cost = vp.purchase_cost
-        vehicle_age = vp.current_year - vp.year_purchase        
+        vehicle_age = vp.current_year - vp.year_purchase    
+        print(rf"Valores de INPUTS {vp}, {type_energy}, {country}, {number_of_vehicles}, {purchase_cost}, {vehicle_age}")    
 
         # Parameters of database
         rate_per_year = self._countries_data[country]["depreciation"]["depreciation_rate_per_year"][type_energy]
@@ -88,6 +89,8 @@ class ResidualValueCalculator(System):
         # Total depreciation
         self.total_depreciation = purchase_cost - (dep_per_year + dep_by_usage + dep_maintenance)
         self.total_depreciation = self.total_depreciation*number_of_vehicles
+        print(rf"===========================================")
+        print(rf"Valor de DEPRECIATION {self.total_depreciation}")
 
     # 2.1.- PENALIZATION OF EFICIENCY
     def compute_eficiency(self):
@@ -273,8 +276,11 @@ class ResidualValueCalculator(System):
 
     # 4.- RV
     def compute(self):
-        self.compute_depreciation()
-        self.compute_impact_health()
-        self.compute_external_factors()
+        try:
+            self.compute_depreciation()
+            self.compute_impact_health()
+            self.compute_external_factors()
 
-        self.rv = (self.total_depreciation+self.total_impact_health+self.total_external_factors)
+            self.rv = (self.total_depreciation+self.total_impact_health+self.total_external_factors)
+        except Exception as e:
+            print(f"ERROR in RV compute: {e}")

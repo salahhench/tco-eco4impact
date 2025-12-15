@@ -82,11 +82,11 @@ def make_example_truck_inputs():
             "minimum_fuel_consumption": 200.0,
             "powertrain_model_year" : 2023,
             "warranty" : 2.0,
-            "type_warranty" : 'years',
+            "type_warranty" : 'year',
             "energy_price": 1.5,
             "co2_taxes": 0.0,
             "subsidies":0.0,
-            "vehicle_number": 1,
+            "vehicle_number": 3,
         },
     }
 
