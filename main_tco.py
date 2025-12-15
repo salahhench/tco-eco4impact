@@ -108,7 +108,6 @@ def run_opex_ship(opex_inputs: dict) -> float:
 
 def run_rv(rv_inputs: dict) -> float:
     rv_sys = ResidualValueCalculator("rv_global", type_vehicle=rv_inputs["type_vehicle"])
-    print("Hello World from RV Calculator!")
     # Vehicle properties
     rv_sys.in_vehicle_properties.type_vehicle = rv_inputs["type_vehicle"]
     rv_sys.in_vehicle_properties.type_energy = rv_inputs["type_energy"]
@@ -127,32 +126,12 @@ def run_rv(rv_inputs: dict) -> float:
     rv_sys.in_country_properties.energy_price = rv_inputs["energy_price"]
     rv_sys.in_country_properties.c02_taxes = rv_inputs["co2_taxes"]
     rv_sys.in_country_properties.subsidies = rv_inputs["subsidies"]
-    
-    # Print all variables
-    print("\n--- RV INPUT PARAMETERS ---")
-    print(f"Type Vehicle: {rv_sys.in_vehicle_properties.type_vehicle}")
-    print(f"Type Energy: {rv_sys.in_vehicle_properties.type_energy}")
-    print(f"Registration Country: {rv_sys.in_vehicle_properties.registration_country}")
-    print(f"Purchase Cost: {rv_sys.in_vehicle_properties.purchase_cost}")
-    print(f"Year Purchase: {rv_sys.in_vehicle_properties.year_purchase}")
-    print(f"Current Year: {rv_sys.in_vehicle_properties.current_year}")
-    print(f"Travel Measure: {rv_sys.in_vehicle_properties.travel_measure}")
-    print(f"Maintenance Cost: {rv_sys.in_vehicle_properties.maintenance_cost}")
-    print(f"Minimum Fuel Consumption: {rv_sys.in_vehicle_properties.minimum_fuel_consumption}")
-    print(f"Powertrain Model Year: {rv_sys.in_vehicle_properties.powertrain_model_year}")
-    print(f"Warranty: {rv_sys.in_vehicle_properties.warranty}")
-    print(f"Type Warranty: {rv_sys.in_vehicle_properties.type_warranty}")
-    print(f"Energy Price: {rv_sys.in_country_properties.energy_price}")
-    print(f"CO2 Taxes: {rv_sys.in_country_properties.c02_taxes}")
-    print(f"Subsidies: {rv_sys.in_country_properties.subsidies}")
-
-
 
     rv_sys.add_driver(RunOnce('run_rv'))
     rv_sys.run_drivers()
-
-    print("\n--- RV RESULTS ---")
-    print("\n" + "-"*80)
+    print("\n" + "="*80)
+    print("RV RESULTS")
+    print("\n" + "="*80)
     print("DEPRECIATION")
     print(f"Total Depreciation Value: ${rv_sys.total_depreciation:,.2f}")
     
