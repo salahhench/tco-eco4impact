@@ -5,7 +5,7 @@ def make_example_truck_inputs():
         "description": "Heavy diesel N3 in France",
 
         # Datos comunes
-        "powertrain_type": "DIESEL",      # para CAPEX / RV (ajusta a tu DB)
+        "powertrain_type": "diesel",      # para CAPEX / RV (ajusta a tu DB)
         "vehicle_weight_class": "heavy",
         "country": "France",
         "year": 2025,
@@ -13,7 +13,7 @@ def make_example_truck_inputs():
 
         # ---------- CAPEX ----------
         "capex": {
-            "powertrain_type": "DIESEL",
+            "powertrain_type": "diesel",
             "vehicle_number": 1,
             "vehicle_id": 1,
             "vehicle_weight_class": "light",
@@ -53,8 +53,8 @@ def make_example_truck_inputs():
 
         # ---------- OPEX TRUCK ----------
         "opex_truck": {
-            "purchase_cost": 150_000.0,
-            "type_energy": "DIESEL",
+            "purchase_cost": 155000.0,
+            "type_energy": "diesel",
             "size_vehicle": "N3",
             "registration_country": "France",
             "annual_distance_travel": 120_000.0,
@@ -63,8 +63,8 @@ def make_example_truck_inputs():
             "RV": 45_000.0,
             "N_years": 5.0,
             "team_count": 1,
-            "maintenance_cost": 7_000.0,
-            "consumption_energy": 42_000.0,
+            "maintenance_cost": 0,
+            "consumption_energy": 0,
             "fuel_multiplier": 1.0,
             "EF_CO2_diesel": 2.65,
         },
@@ -72,21 +72,20 @@ def make_example_truck_inputs():
         # ---------- RV ----------
         "rv": {
             "type_vehicle": "truck",
-            "type_energy": "DIESEL",
+            "type_energy": "diesel",
             "registration_country": "France",
-            "purchase_cost": 150_000.0,
-            "year_purchase": 2020,
+            "purchase_cost": 155000.0,
+            "year_purchase": 2025,
             "current_year": 2025,
-            "travel_measure": 600_000.0,
-            "maintenance_cost": 7_000.0,
-            "minimum_fuel_consumption": 250.0,
-            "powertrain_model_year" : 2020,
-            "warranty" : 5.0,
+            "travel_measure": 0,
+            "maintenance_cost": 0,
+            "minimum_fuel_consumption": 200,
+            "powertrain_model_year" : 2023,
+            "warranty" : 2,
             "type_warranty" : 'years',
-
             "energy_price": 1.5,
-            "co2_taxes": 500.0,
-            "subsidies":0.0,
+            "c02_taxes": 0,
+            "subsidies":0,
             "vehicle_number": 1,
         },
     }
