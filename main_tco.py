@@ -70,6 +70,9 @@ def run_opex_truck(opex_inputs: dict) -> float:
     sys_opex = TruckOPEXCalculator("opex_truck")
 
     # Asignar inputs si existen como atributos del sistema
+    print("============================================================")
+    print("OPEX INPUTS")
+    print(opex_inputs)
     for key, value in opex_inputs.items():
         if hasattr(sys_opex, key):
             setattr(sys_opex, key, value)
