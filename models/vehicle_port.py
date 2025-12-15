@@ -19,10 +19,11 @@ class VehiclePropertiesPort(Port):
         
         self.add_variable('minimum_fuel_consumption', dtype=float, desc='SFC (g/kWh)', value=250.0)
         self.add_variable('consumption_real', dtype=float, desc='Real consumption (kWh/km or kg/100km)', value=0.0)
+        self.add_variable('C_bat_kwh', dtype=float, desc='Battery capacity (kWh)', value=1.0)
+        self.add_variable('autonomy', dtype=float, desc="Autonomy (km)", value=1.0)
         self.add_variable('utility_factor', dtype=float, desc='Electric fraction for hybrids', value=0.0)
         
         self.add_variable('E_annual_kwh', dtype=float, desc='Annual energy consumption (kWh)', value=0.0)
-        self.add_variable('C_bat_kwh', dtype=float, desc='Battery capacity (kWh)', value=0.0)
         self.add_variable('DoD', dtype=float, desc='Depth of discharge', value=0.8)
         self.add_variable('S_slow', dtype=float, desc='Proportion slow charging', value=0.0)
         self.add_variable('S_fast', dtype=float, desc='Proportion fast charging', value=0.0)

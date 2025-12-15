@@ -70,17 +70,20 @@ class ResidualValueCalculator(System):
         country = vp.registration_country
         number_of_vehicles = vp.vehicle_number
 
-        # Parameters of database
-        rate_per_year = self._countries_data[country]["depreciation"]["depreciation_rate_per_year"][type_energy]
-        rate_by_usage = self._countries_data[country]["depreciation"]["depreciation_rate_by_usage"][type_energy]
-        coef_maintenance = self._countries_data[country]["depreciation"]["coef_depreciation_maintenance"][type_energy]
-
         # Depreciation components
         purchase_cost = vp.purchase_cost
-        vehicle_age = vp.current_year - vp.year_purchase
+        vehicle_age = vp.current_year - vp.year_purchase        
+
+        # Parameters of database
+        rate_per_year = self._countries_data[country]["depreciation"]["depreciation_rate_per_year"][type_energy]
+        r_usage = self._countries_data[country]["depreciation"]["r_usage"][type_energy]
+        rate_by_usage = purchase_cost*r_usage
+        coef_maintenance = self._countries_data[country]["depreciation"]["coef_depreciation_maintenance"][type_energy]
+
         dep_per_year = rate_per_year * vehicle_age
         dep_by_usage = rate_by_usage * vp.travel_measure
         dep_maintenance = coef_maintenance * vp.maintenance_cost
+
 
         # Total depreciation
         self.total_depreciation = purchase_cost - (dep_per_year + dep_by_usage + dep_maintenance)
@@ -103,7 +106,10 @@ class ResidualValueCalculator(System):
         elif type_energy in ["BEV", "FCEV"]:
             # Electric/Fuel Cell: η_sys = consumption_benchmark / consumption_real
             consumption_real = vp.consumption_real
-            consumption_benchmark = self._vehicles_data["consumption_benchmark"][type_energy]
+            battery_capacity = vp.C_bat_kwh
+            autonomy = vp.autonomy
+
+            consumption_benchmark = battery_capacity/autonomy
 
             if consumption_real>0:
                 n_f = consumption_benchmark / consumption_real
@@ -113,8 +119,25 @@ class ResidualValueCalculator(System):
         elif type_energy in ["HEV", "PHEV"]:
             # Hybrid: η_hybrid = 1 / [(α/η_EV) + (1-α)/η_ICE]
             utility_factor = vp.utility_factor
-            n_ev = self._vehicles_data["n_ev"][type_energy]
-            n_ice = self._vehicles_data["n_ice"][type_energy]
+
+            # Part of ICE
+            minimum_fuel_consumption = vp.minimum_fuel_consumption
+            heating_value = self._vehicles_data["heating_value"][type_energy]
+            # ICE vehicles: η_f = 360S0 / (SFC * Q_HV)
+            n_ice = 3600/(minimum_fuel_consumption * heating_value)
+
+
+            # Part of BEV
+            consumption_real = vp.consumption_real
+            battery_capacity = vp.C_bat_kwh
+            autonomy = vp.autonomy
+
+            consumption_benchmark = battery_capacity/autonomy
+
+            if consumption_real>0:
+                n_ev = consumption_benchmark / consumption_real
+            else:
+                n_ev = 0.85
 
             if utility_factor>0 and utility_factor <1:
                 n_f = 1.0/((utility_factor/n_ev)+((1-utility_factor)/n_ice))

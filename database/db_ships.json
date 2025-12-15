@@ -356,7 +356,7 @@
               "PHEV": 0.05,
               "FCEV": 0.06
             },
-            "depreciation_rate_by_usage": {
+            "r_usage": {
               "DIESEL": 0.03,
               "BIODIESEL": 0.03,
               "HVO": 0.03,
@@ -733,7 +733,7 @@
               "PHEV": 0.05,
               "FCEV": 0.06
             },
-            "depreciation_rate_by_usage": {
+            "r_usage": {
               "DIESEL": 0.03,
               "BIODIESEL": 0.03,
               "HVO": 0.03,

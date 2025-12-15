@@ -452,7 +452,7 @@
           "E_DIESEL": 0.04,
           "BIO_DIESEL": 0.03
         },
-        "depreciation_rate_by_usage": {
+        "r_usage": {
           "DIESEL": 0.05,
           "BEV": 0.07,
           "PHEV": 0.06,
@@ -534,7 +534,7 @@
             "E_DIESEL": 0.04,
             "BIO_DIESEL": 0.03
           },
-          "depreciation_rate_by_usage": {
+          "r_usage": {
             "DIESEL": 0.05,
             "BEV": 0.07,
             "PHEV": 0.06,
