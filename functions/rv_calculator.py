@@ -77,7 +77,7 @@ class ResidualValueCalculator(System):
         # Parameters of database
         rate_per_year = self._countries_data[country]["depreciation"]["depreciation_rate_per_year"][type_energy]
         r_usage = self._countries_data[country]["depreciation"]["r_usage"][type_energy]
-        rate_by_usage = purchase_cost*r_usage
+        rate_by_usage = r_usage
         coef_maintenance = self._countries_data[country]["depreciation"]["coef_depreciation_maintenance"][type_energy]
 
         dep_per_year = rate_per_year * vehicle_age

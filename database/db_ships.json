@@ -293,17 +293,17 @@
               "seafarer": 35000.0
             }
           },
-          "energy": {
-            "energy_price_c_e": {
-              "DIESEL": 1500,
-              "BIODIESEL": 1800,
-              "HVO": 2000,
-              "E_DIESEL": 4000,
-              "BEV": 150,
-              "FCET": 8000,
-              "HEV": 1500,
-              "HICE": 5000
-            }
+        "energy": {
+          "energy_price_c_e": {
+            "DIESEL": 0.127,
+            "BIODIESEL": 0.165,
+            "HVO": 0.182,
+            "E_DIESEL": 0.360,
+            "BEV": 0.150,
+            "FCET": 0.240,
+            "HEV": 0.127,
+            "HICE": 0.150
+          }
           },
           "maintenance": {
             "ro_pax_small": 0.1765,
@@ -329,12 +329,12 @@
           "CO2_taxes_factor": 80.0,
           "subsidies_factor": {
             "DIESEL": 0.0,
-            "BIODIESEL": 20000.0,
-            "HVO": 20000.0,
-            "LNG": 50000.0,
-            "BEV": 150000.0,
-            "PHEV": 75000.0,
-            "FCEV": 250000.0
+            "BIODIESEL": 0.0,
+            "HVO": 0.0,
+            "LNG": 0.0,
+            "BEV": 0.0,
+            "PHEV": 0.0,
+            "FCEV": 0.0
           }
           },
           "yearly_obsolescence_rate": {
