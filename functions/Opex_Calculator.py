@@ -185,7 +185,7 @@ class ShipOPEXCalculator(System):
                 total_crew += member.get("team_size", 0)
             annual_cost = seafarer_wage * total_crew
 
-        self.o_crew = annual_cost * vp.planning_horizon_years
+        self.o_crew = annual_cost
 
     # ==================== O_MAINTENANCE SHIP ====================
 
@@ -415,7 +415,7 @@ class TruckOPEXCalculator(System):
         crew_db = country_data.get("crew", {})
         wage_of_driver = crew_db.get("wage_of_crew_rank", {}).get("driver", 0.0)
 
-        self.o_crew = wage_of_driver * vp.N_years * vp.team_count
+        self.o_crew = wage_of_driver  * vp.team_count
 
     # ==================== O_ENERGY CALCULATION ====================
 

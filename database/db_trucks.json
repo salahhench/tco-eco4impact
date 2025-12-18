@@ -10,7 +10,7 @@
           "E_DIESEL": 2800,
           "GNV": 2500,
           "LNG": 2500,
-          "BET": 0,
+          "BEV": 0,
           "FCET": 0,
           "HEV": 2800,
           "H2_ICE": 1000
@@ -22,7 +22,7 @@
           "E_DIESEL": 2200,
           "GNV": 2000,
           "LNG": 2000,
-          "BET": 0,
+          "BEV": 0,
           "FCET": 0,
           "HEV": 2200,
           "H2_ICE": 800
@@ -34,7 +34,7 @@
           "E_DIESEL": 1500,
           "GNV": 1500,
           "LNG": 1500,
-          "BET": 0,
+          "BEV": 0,
           "FCET": 0,
           "HEV": 1500,
           "H2_ICE": 500
@@ -50,7 +50,7 @@
               "E_DIESEL": 0,
               "GNV": 5000,
               "LNG": 5000,
-              "BET": 40000,
+              "BEV": 40000,
               "FCET": 50000,
               "HEV": 0,
               "H2_ICE": 50000
@@ -62,7 +62,7 @@
               "E_DIESEL": 0.0,
               "GNV": 0.30,
               "LNG": 0.30,
-              "BET": 0.40,
+              "BEV": 0.40,
               "FCET": 0.50,
               "HEV": 0.0,
               "H2_ICE": 0.50
@@ -76,7 +76,7 @@
               "E_DIESEL": 0,
               "GNV": 3000,
               "LNG": 3000,
-              "BET": 25000,
+              "BEV": 25000,
               "FCET": 30000,
               "HEV": 0,
               "H2_ICE": 30000
@@ -88,7 +88,7 @@
               "E_DIESEL": 0.0,
               "GNV": 0.30,
               "LNG": 0.30,
-              "BET": 0.40,
+              "BEV": 0.40,
               "FCET": 0.50,
               "HEV": 0.0,
               "H2_ICE": 0.50
@@ -102,7 +102,7 @@
               "E_DIESEL": 0,
               "GNV": 2000,
               "LNG": 2000,
-              "BET": 4000,
+              "BEV": 4000,
               "FCET": 7000,
               "HEV": 0,
               "H2_ICE": 7000
@@ -114,7 +114,7 @@
               "E_DIESEL": 0.0,
               "GNV": 0.25,
               "LNG": 0.25,
-              "BET": 0.30,
+              "BEV": 0.30,
               "FCET": 0.50,
               "HEV": 0.0,
               "H2_ICE": 0.50
@@ -127,7 +127,7 @@
         "H2_ICE": 25000,
         "GNV": 18000,
         "LNG": 18000,
-        "BET": 6000,
+        "BEV": 6000,
         "PHEV": 6000,
         "DIESEL": 2500,
         "BIODIESEL": 2500,
@@ -139,7 +139,7 @@
         "base_interest_rate": 0.045,
         "origination_fee_rate": 0.012,
         "esg_adjustments": {
-          "BET": -0.008,
+          "BEV": -0.008,
           "FCET": -0.010,
           "PHEV": -0.004,
           "HEV": -0.003,
@@ -218,14 +218,14 @@
           ]
         },
         "software": {
-          "BET": { "base_cost_eur": 18000, "load_management_addon_eur": 12000 },
+          "BEV": { "base_cost_eur": 18000, "load_management_addon_eur": 12000 },
           "FCET": { "H2_ICE_monitoring_cost_eur": 30000 },
           "GNV": { "gas_monitoring_cost_eur": 6000 },
           "LNG": { "gas_monitoring_cost_eur": 6000 }
         },
         "site_preparation": {
           "cost_eur": {
-            "BET": 25000,
+            "BEV": 25000,
             "FCET": 60000,
             "H2_ICE": 60000,
             "GNV": 35000,
@@ -239,7 +239,7 @@
         },
         "safety": {
           "cost_per_station_eur": {
-            "BET": 6000,
+            "BEV": 6000,
             "FCET": 18000,
             "H2_ICE": 18000,
             "GNV": 10000,
@@ -307,15 +307,15 @@
         "CO2_taxes_factor": 10,
         "subsidies_factor": {
           "DIESEL": 0,
-          "BEV": 5000,
-          "PHEV": 2000,
-          "FCEV": 8000,
-          "H2_ICE": 8000,
-          "CNG": 3000,
-          "LNG": 3000,
-          "HVO": 0.06,
-          "E_DIESEL": 0.04,
-          "BIO_DIESEL": 0.03
+          "BEV": 0,
+          "PHEV": 0,
+          "FCEV": 0,
+          "H2_ICE": 0,
+          "CNG": 0,
+          "LNG": 0,
+          "HVO": 0.0,
+          "E_DIESEL": 0.0,
+          "BIO_DIESEL": 0.0
         }
       },
       "yearly_obsolescence_rate": {
@@ -498,12 +498,12 @@
           "CO2_taxes_factor": 12,
           "subsidies_factor": {
             "DIESEL": 0,
-            "BEV": 6000,
-            "PHEV": 2500,
-            "FCEV": 9000,
-            "H2_ICE": 9000,
-            "CNG": 3500,
-            "LNG": 3500,
+            "BEV": 0,
+            "PHEV": 0,
+            "FCEV": 0,
+            "H2_ICE": 0,
+            "CNG": 0,
+            "LNG": 0,
             "HVO": 0.06,
             "E_DIESEL": 0.04,
             "BIO_DIESEL": 0.03

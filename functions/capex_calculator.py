@@ -35,7 +35,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 # 0. VEHICLE TYPES MAPPING
 # ============================================================================
 POWERTRAIN_TYPES = [
-    'BET', 'PHEV', 'FCET', 'H2_ICE', 'GNV', 'LNG',
+    'BEV', 'PHEV', 'FCET', 'H2_ICE', 'GNV', 'LNG',
     'DIESEL', 'BIO_DIESEL', 'HVO', 'E_DIESEL', 'HEV'
 ]
 
@@ -130,8 +130,8 @@ class VehicleCAPEXCalculator(System):
         country_data = self.get_country_data()
         software = country_data.get('infrastructure', {}).get('software', {})
         
-        if vp.type_energy in ['BET', 'PHEV']:
-            bet_data = software.get('BET', {})
+        if vp.type_energy in ['BEV', 'PHEV']:
+            bet_data = software.get('BEV', {})
             base = bet_data.get('base_cost_eur', 0.0)
             if vp.smart_charging_enabled:
                 base += bet_data.get('load_management_addon_eur', 0.0)
@@ -184,7 +184,7 @@ class VehicleCAPEXCalculator(System):
         self.E_total_ultra = 0.0
         self.E_total_private = 0.0
         
-        if vp.type_energy in ['BET', 'PHEV']:
+        if vp.type_energy in ['BEV', 'PHEV']:
             for vid, vdata in vp.vehicle_dict.items():
                 E = vdata.get('E_t', 0.0)
                 S = vdata.get('Private_S_t', 0.0)
@@ -217,7 +217,7 @@ class VehicleCAPEXCalculator(System):
     def compute_c_infrastructure_cost(self):
         """Calculate infrastructure cost per vehicle."""
         vp = self.in_vehicle_properties
-        if vp.type_energy in ['BET', 'PHEV']:
+        if vp.type_energy in ['BEV', 'PHEV']:
             self._compute_charging_infrastructure()
         else:
             self._compute_fueling_infrastructure()
@@ -252,7 +252,7 @@ class VehicleCAPEXCalculator(System):
         )
     
     def _compute_charging_infrastructure(self):
-        """Compute charging infrastructure for BET/PHEV."""
+        """Compute charging infrastructure for BEV/PHEV."""
         vp = self.in_vehicle_properties
         slow_params = self.get_charger_params('slow')
         fast_params = self.get_charger_params('fast')
@@ -439,6 +439,3 @@ class VehicleCAPEXCalculator(System):
             self.c_financing_cost -
             self.c_subsidies
         )
-        
-        # CAPEX per year
-        self.c_capex_per_vehicle = self.c_capex_total * self.c_crf
