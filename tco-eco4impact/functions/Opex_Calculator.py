@@ -479,7 +479,14 @@ class OPEXPort(Port):
         self.add_variable("departure_city", dtype=str, desc="Departure city")
         self.add_variable("arrival_city", dtype=str, desc="Arrival city")
         self.add_variable("RV", dtype=float, desc="Residual Value in EUR")
-        self.add_variable("N_years", dtype=float, desc="Number of years")
+        # NOTE:
+        #   For the OPEX module we return ANNUAL operating costs.
+        #   The wage stored in the DB (`crew.wage_of_crew_rank.driver`) is already
+        #   an ANNUAL cost per driver.
+        #   Therefore `N_years` should generally be kept at 1.0 here and
+        #   multi‑year horizons should be handled at the TCO aggregation level,
+        #   not inside the OPEX formulas.
+        self.add_variable("N_years", dtype=float, desc="Planning horizon [years] (not used in annual OPEX formulas)")
         self.add_variable("team_count", dtype=int, desc="Number of drivers")
         self.add_variable("maintenance_cost", dtype=float, desc="Annual maintenance cost in EUR")
 
@@ -650,7 +657,13 @@ class TruckOPEXCalculator(System):
         crew_db = country_data.get("crew", {})
         wage_of_driver = crew_db.get("wage_of_crew_rank", {}).get("driver", 0.0)
 
-        self.o_crew = wage_of_driver * self.N_years * self.team_count
+        # IMPORTANT:
+        #   `wage_of_driver` in the DB is already an ANNUAL full‑employer cost
+        #   (see CNR documentation). To keep OPEX on an annual basis and avoid
+        #   double‑counting the time horizon, we **do not** multiply by N_years
+        #   here. Multi‑year horizons should be handled by multiplying the
+        #   annual OPEX externally at TCO level.
+        self.o_crew = wage_of_driver * self.team_count
 
     # ==================== O_ENERGY CALCULATION ====================
 
