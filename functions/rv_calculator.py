@@ -278,6 +278,6 @@ class ResidualValueCalculator(System):
             self.compute_impact_health()
             self.compute_external_factors()
 
-            self.rv = (self.total_depreciation+self.total_impact_health+self.total_external_factors)
+            self.rv = (self.total_depreciation/ self.total_impact_health+self.total_external_factors)
         except Exception as e:
             print(f"ERROR in RV compute: {e}")
